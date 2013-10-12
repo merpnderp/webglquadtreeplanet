@@ -27,13 +27,16 @@ QuadTree.prototype = {
         //Get projection of camera onto this QuadTree's plane
 
         this.rootNode.Update();
+
     },
 
     AssignNeighbors: function(left, top, right, bottom){
+
         this.rootNode.leftNeighbor = left;
         this.rootNode.topNeighbor = top;
         this.rootNode.rightNeighbor = right;
         this.rootNode.bottomNeighbor = bottom;
+
     }
 
 };

@@ -20,18 +20,25 @@ var QuadTreeSphere = function (options) {
 
     this.quadTrees = [];
 
-    this.localCameraPosition;
+    this.localCameraPosition = new THREE.Vector3();
 
     this.meshProvider = new MeshProvider(this.patchSize);
+
+    this.fov = options.fov || 30;
+
+    this.vs = Math.tan(this.fov / screen.width);
 
     this.maxLevel = parseInt(Math.log(this.radius * 2), 10);
     this.maxLevel -= parseInt(Math.log(Math.pow(this.patchSize, 2)), 10);
     this.maxLevel = this.maxLevel < 0 ? 0 : this.maxLevel;
 
+    this.splitTable = [];
+    this.BuildSplitTable();
+
     this.InitQuadTrees();
 };
 
-QuadTree.prototype = Object.create( THREE.Object3D.prototype );
+QuadTree.prototype = Object.create(THREE.Object3D.prototype);
 
 QuadTree.prototype = {
 
@@ -59,10 +66,22 @@ QuadTree.prototype = {
 
 
     Update: function () {
-        //Get local position of player
-        this.localCameraPosition = this.worldToLocal(this.camera.position);
 
-    },
+        var i, l;
+
+        return function () {
+
+            //Get local position of player
+            this.localCameraPosition = this.worldToLocal(this.camera.position);
+            this.localCameraPlanetProjectionPosition = this.localCameraPosition.normalize().multiplyScalar(this.radius);
+            this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
+
+            l = this.quadTrees.length;
+            for (i = 0; i < l; i++) {
+                this.quadTrees[i].Update();
+            }
+        };
+    }(),
 
 
     AssignNeighbors: function () {
@@ -79,6 +98,18 @@ QuadTree.prototype = {
         this.quadTrees[0].AssignNeighbors(right, front, left, back);
         this.quadTrees[0].AssignNeighbors(top, left, bottom, right);
         this.quadTrees[0].AssignNeighbors(back, bottom, front, top);
+    },
+
+    BuildSplitTable: function(){
+        var t = 10, i = 0;
+        while(true){
+            t = (Math.PI / 2) / Math.pow(2, i);
+            this.splitTable[i] = (t / this.patchSize) * this.radius / this.vs;
+            if(this.splitTable[i] < 1){
+                break;
+            }
+            i++;
+        }
     }
 };
 

@@ -17,6 +17,7 @@ var TerrainNode = function (options) {
     this.width = this.tree.sphere.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
 
+    //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();
 //    this.center = this.position.clone().add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
 //    this.center.add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
@@ -24,14 +25,51 @@ var TerrainNode = function (options) {
     this.isSplit = false;
     this.isDrawn = false;
 
-
 };
 
 
 TerrainNode.prototype = {
 
     Update: function () {
+        if (this.InCameraFrustum()) {
+            this.GetDistanceFromCamera();
+            if (this.ShouldSplit()) {
+                if(this.isDrawn){
+                    this.UnDraw();
+                }
+                this.Split();
+            } else if (this.ShouldUnSplit()) {
+                this.UnSplit();
+            } else if (!this.isDrawn) {
+                this.Draw();
+            }
+        }
+    },
 
+    Draw: function () {
+
+        this.isDrawn = true;
+    },
+
+    UnDraw: function () {
+
+        this.isDrawn = false;
+    },
+
+    GetDistanceFromCamera: function () {
+        this.distance = Math.acos(this.center.dot(this.tree.sphere.localCameraPlanetProjectionPosition)) + this.tree.sphere.cameraHeight;
+    },
+
+    ShouldSplit: function () {
+        return this.tree.sphere.splitTable[this.level] > this.distance;
+    },
+
+    ShouldUnSplit: function () {
+        return this.level === 0 || this.tree.sphere.splitTable[this.level - 1] < this.distance ? false : true;
+    },
+
+    InCameraFrustum: function () {
+        return true;
     },
 
     Split: function () {
@@ -51,8 +89,32 @@ TerrainNode.prototype = {
 
             options.position = this.position.clone().add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
             this.bottomRightChild = new Node(options);
+
+            this.isSplit = true;
         };
     }(),
+
+    Die: function () {
+        if (this.isDrawn) {
+            this.UnDraw();
+        } else if (this.isSplit) {
+            this.UnSplit();
+        }
+    },
+
+    UnSplit: function () {
+        if (this.isSplit) {
+            this.topLeftChild.Die();
+            this.topRightChild.Die();
+            this.bottomLeftChild.Die();
+            this.bottomRightChild.Die();
+            delete this.topLeftChild;
+            delete this.topRightChild;
+            delete this.bottomLeftChild;
+            delete this.bottomRightChild;
+        }
+        this.isSplit = false;
+    },
 
     FindCenter: function () {
         var x, y, z, w, wd, hd;
@@ -68,9 +130,8 @@ TerrainNode.prototype = {
             x = x + wd.x * w + hd.x * w;
             y = y + wd.y * w + hd.y * w;
             z = z + wd.z * w + hd.z * w;
-            return new THREE.Vector3(x, y, z);
+            return new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
         };
-
     }()
 };
 
