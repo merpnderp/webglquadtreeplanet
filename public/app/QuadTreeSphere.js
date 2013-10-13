@@ -5,7 +5,7 @@
 "use strict";
 
 var THREE = require('../libs/three.js');
-var MeshProvider = require('./MeshProvider');
+var MeshProvider = require('./GeometryProvider');
 var QuadTree = require('./QuadTree');
 
 var QuadTreeSphere = function (options) {
@@ -22,7 +22,7 @@ var QuadTreeSphere = function (options) {
 
     this.localCameraPosition = new THREE.Vector3();
 
-    this.meshProvider = new MeshProvider(this.patchSize);
+    this.meshProvider = new GeometryProvider(this.patchSize);
 
     this.fov = options.fov || 30;
 
@@ -33,6 +33,7 @@ var QuadTreeSphere = function (options) {
     this.maxLevel = this.maxLevel < 0 ? 0 : this.maxLevel;
 
     this.splitTable = [];
+
     this.BuildSplitTable();
 
     this.InitQuadTrees();
@@ -67,21 +68,18 @@ QuadTree.prototype = {
 
     Update: function () {
 
-        var i, l;
+        //Get local position of player
+        this.localCameraPosition = this.worldToLocal(this.camera.position);
+        this.localCameraPlanetProjectionPosition = this.localCameraPosition.normalize().multiplyScalar(this.radius);
+        this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
 
-        return function () {
-
-            //Get local position of player
-            this.localCameraPosition = this.worldToLocal(this.camera.position);
-            this.localCameraPlanetProjectionPosition = this.localCameraPosition.normalize().multiplyScalar(this.radius);
-            this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
-
-            l = this.quadTrees.length;
-            for (i = 0; i < l; i++) {
-                this.quadTrees[i].Update();
-            }
-        };
-    }(),
+        this.quadTrees[0].Update();
+        this.quadTrees[1].Update();
+        this.quadTrees[2].Update();
+        this.quadTrees[3].Update();
+        this.quadTrees[4].Update();
+        this.quadTrees[5].Update();
+    },
 
 
     AssignNeighbors: function () {
@@ -93,19 +91,19 @@ QuadTree.prototype = {
         var right = this.quadTrees[5];
 
         this.quadTrees[0].AssignNeighbors(left, back, right, front);
-        this.quadTrees[0].AssignNeighbors(left, top, right, bottom);
-        this.quadTrees[0].AssignNeighbors(bottom, back, top, front);
-        this.quadTrees[0].AssignNeighbors(right, front, left, back);
-        this.quadTrees[0].AssignNeighbors(top, left, bottom, right);
-        this.quadTrees[0].AssignNeighbors(back, bottom, front, top);
+        this.quadTrees[1].AssignNeighbors(left, top, right, bottom);
+        this.quadTrees[2].AssignNeighbors(bottom, back, top, front);
+        this.quadTrees[3].AssignNeighbors(right, front, left, back);
+        this.quadTrees[4].AssignNeighbors(top, left, bottom, right);
+        this.quadTrees[5].AssignNeighbors(back, bottom, front, top);
     },
 
-    BuildSplitTable: function(){
-        var t = 10, i = 0;
-        while(true){
+    BuildSplitTable: function () {
+        var t, i = 0;
+        while (true) {
             t = (Math.PI / 2) / Math.pow(2, i);
             this.splitTable[i] = (t / this.patchSize) * this.radius / this.vs;
-            if(this.splitTable[i] < 1){
+            if (this.splitTable[i] < 0.1) {
                 break;
             }
             i++;

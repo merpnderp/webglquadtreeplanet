@@ -31,7 +31,6 @@ QuadTree.prototype = {
     },
 
     AssignNeighbors: function(left, top, right, bottom){
-
         this.rootNode.leftNeighbor = left;
         this.rootNode.topNeighbor = top;
         this.rootNode.rightNeighbor = right;

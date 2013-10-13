@@ -40,8 +40,10 @@ TerrainNode.prototype = {
                 this.Split();
             } else if (this.ShouldUnSplit()) {
                 this.UnSplit();
-            } else if (!this.isDrawn) {
+            } else if (! this.isSplit && !this.isDrawn) {
                 this.Draw();
+            } else if (this.isSplit){
+                this.UpdateChildren();
             }
         }
     },
@@ -114,6 +116,13 @@ TerrainNode.prototype = {
             delete this.bottomRightChild;
         }
         this.isSplit = false;
+    },
+
+    UpdateChildren: function(){
+        this.topLeftChild.Update();
+        this.topRightChild.Update();
+        this.bottomLeftChild.Update();
+        this.bottomRightChild.Update();
     },
 
     FindCenter: function () {
