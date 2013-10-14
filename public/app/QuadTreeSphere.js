@@ -75,12 +75,14 @@ QuadTreeSphere.prototype.Update = function () {
     this.localCameraPlanetProjectionPosition = this.localCameraPosition.normalize().multiplyScalar(this.radius);
     this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
 
-    this.quadTrees[0].Update();
+    //this.quadTrees[0].Update();
     this.quadTrees[1].Update();
+    /*
     this.quadTrees[2].Update();
     this.quadTrees[3].Update();
     this.quadTrees[4].Update();
     this.quadTrees[5].Update();
+     */
 };
 
 

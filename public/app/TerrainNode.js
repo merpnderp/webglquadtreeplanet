@@ -10,6 +10,7 @@ var THREE = require('../libs/three.js');
 
 
 var TerrainNode = function (options) {
+
     this.level = options.level;
     this.parent = options.parent;
     this.tree = options.tree;
@@ -20,8 +21,6 @@ var TerrainNode = function (options) {
 
     //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();
-//    this.center = this.position.clone().add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
-//    this.center.add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
 
     this.isSplit = false;
     this.isDrawn = false;
@@ -31,56 +30,96 @@ var TerrainNode = function (options) {
 
 TerrainNode.prototype = {
 
+
     Update: function () {
+
         if (this.InCameraFrustum()) {
+
             this.GetDistanceFromCamera();
-            if (this.ShouldSplit()) {
-                if(this.isDrawn){
+
+            //Not split but should
+            if (!this.isSplit && this.ShouldSplit()) {
+
+                //If this is drawn, undraw
+                if (this.isDrawn) {
+
                     this.UnDraw();
+
                 }
+
                 this.Split();
+
+            //Should unsplit
             } else if (this.ShouldUnSplit()) {
+
                 this.UnSplit();
-            } else if (! this.isSplit && !this.isDrawn) {
+
+            //Not split and not drawn
+            } else if (!this.isSplit && !this.isDrawn) {
+
                 this.Draw();
-            } else if (this.isSplit){
+
+            //If split, update
+            } else if (this.isSplit) {
+
                 this.UpdateChildren();
+
             }
         }
+
     },
 
+
     Draw: function () {
+
         this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry());
         this.tree.sphere.add(this.mesh);
         this.isDrawn = true;
-        console.log("Drawing");
+
     },
 
+
     UnDraw: function () {
+
         this.tree.sphere.child.remove(this.mesh);
         delete this.mesh;
         this.isDrawn = false;
-        console.log('UnDrawing');
+
     },
+
 
     GetDistanceFromCamera: function () {
+
         this.distance = Math.acos(this.center.dot(this.tree.sphere.localCameraPlanetProjectionPosition)) + this.tree.sphere.cameraHeight;
+
     },
+
 
     ShouldSplit: function () {
+
         return this.tree.sphere.splitTable[this.level] > this.distance;
+
     },
+
 
     ShouldUnSplit: function () {
+
         return this.level === 0 || this.tree.sphere.splitTable[this.level - 1] < this.distance ? false : true;
+
     },
+
 
     InCameraFrustum: function () {
+
         return true;
+
     },
 
+
     Split: function () {
+
         var options;
+
         return function () {
             options = {level: this.level + 1, parent: this, tree: this.tree};
 
@@ -98,18 +137,25 @@ TerrainNode.prototype = {
             this.bottomRightChild = new TerrainNode(options);
 
             this.isSplit = true;
+
         };
+
     }(),
 
+
     Die: function () {
+
         if (this.isDrawn) {
             this.UnDraw();
         } else if (this.isSplit) {
             this.UnSplit();
         }
+
     },
 
+
     UnSplit: function () {
+
         if (this.isSplit) {
             this.topLeftChild.Die();
             this.topRightChild.Die();
@@ -121,16 +167,22 @@ TerrainNode.prototype = {
             delete this.bottomRightChild;
         }
         this.isSplit = false;
+
     },
 
-    UpdateChildren: function(){
+
+    UpdateChildren: function () {
+
         this.topLeftChild.Update();
         this.topRightChild.Update();
         this.bottomLeftChild.Update();
         this.bottomRightChild.Update();
+
     },
 
+
     FindCenter: function () {
+
         var x, y, z, w, wd, hd;
 
         return function () {
@@ -147,6 +199,8 @@ TerrainNode.prototype = {
             return new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
         };
     }()
+
+
 };
 
 
