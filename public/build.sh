@@ -1,3 +1,3 @@
-browserify -r ./libs/jquery.js -r ./libs/three.js > libs/libs.js 
+browserify -r ./libs/three.js > libs/libs.js 
 
-watchify -v -t brfs -x ./libs/three.js -x ./libs/jquery.js app/main.js -o app/app.js
+watchify -v -d -t brfs -x ./libs/three.js app/main.js -o app/app.js

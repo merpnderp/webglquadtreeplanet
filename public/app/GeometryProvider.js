@@ -4,8 +4,10 @@
 
 "use strict";
 
+
+
 var THREE = require('../libs/three.js');
-var QuadBuilder = require('./QuadBuilder');
+var QuadBuilder = require('./QuadBuilder.js');
 
 var GeometryProvider = function (patchSize) {
     this.patchSize = patchSize;
@@ -14,13 +16,16 @@ var GeometryProvider = function (patchSize) {
 
     this.geometries = [];
 
+    this.quadBuilder = new QuadBuilder();
+
+    this.CreateGeometries();
 };
 
 GeometryProvider.prototype = {
 
     CreateGeometries: function () {
         this.geo = new THREE.Geometry();
-        this.CreateGeometries();
+        this.CreateGeometry();
 
         //Now create all 9 permutations of the geometry
 
@@ -41,9 +46,9 @@ GeometryProvider.prototype = {
 
                 var buildTriangles = x > 0 && y > 0;
 
-                var swapOrder = x % 2 === y % 2 ? true : false;
+                var swapOrder = x % 2 === y % 2;
 
-                QuadBuilder.BuildQuadForGrid(this.geo, offset, uv, buildTriangles, this.patchSize + 1, swapOrder);
+                this.quadBuilder.BuildQuadForGrid(this.geo, offset, uv, buildTriangles, this.patchSize + 1, swapOrder);
 
             }
 

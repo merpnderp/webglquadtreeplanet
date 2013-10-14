@@ -2,6 +2,7 @@
  * Created by kalebmurphy on 10/8/13.
  */
 
+
 "use strict";
 
 
@@ -49,12 +50,14 @@ TerrainNode.prototype = {
     },
 
     Draw: function () {
-
+        this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry());
+        this.tree.sphere.child.add(this.mesh);
         this.isDrawn = true;
     },
 
     UnDraw: function () {
-
+        this.tree.sphere.child.remove(this.mesh);
+        delete this.mesh;
         this.isDrawn = false;
     },
 

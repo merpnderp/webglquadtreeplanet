@@ -5,26 +5,26 @@
 "use strict";
 
 var THREE = require('../libs/three.js');
-var MeshProvider = require('./GeometryProvider');
+var GeometryProvider = require('./GeometryProvider.js');
 var QuadTree = require('./QuadTree');
 
 var QuadTreeSphere = function (options) {
 
     THREE.Object3D.call(this);
 
+    this.camera = options.camera;
+
     this.radius = options.radius || 100;
 
     this.patchSize = options.patchSize || 32;
 
-    this.camera = options.camera;
+    this.fov = options.fov || 30;
 
     this.quadTrees = [];
 
     this.localCameraPosition = new THREE.Vector3();
 
-    this.meshProvider = new GeometryProvider(this.patchSize);
-
-    this.fov = options.fov || 30;
+    this.geometryProvider = new GeometryProvider(this.patchSize);
 
     this.vs = Math.tan(this.fov / screen.width);
 
@@ -39,9 +39,9 @@ var QuadTreeSphere = function (options) {
     this.InitQuadTrees();
 };
 
-QuadTree.prototype = Object.create(THREE.Object3D.prototype);
+QuadTreeSphere.prototype = Object.create(THREE.Object3D.prototype);
 
-QuadTree.prototype = {
+QuadTreeSphere.prototype = {
 
     InitQuadTrees: function () {
         var nearCorner = new THREE.Vector3(1, 1, 1).multiplyScalar(this.radius);
@@ -50,19 +50,19 @@ QuadTree.prototype = {
 
         //Near quadtrees
         quadOptions = {name: "Bottom", corner: nearCorner, widthDir: new THREE.Vector3(0, 0, -1), heightDir: new THREE.Vector3(-1, 0, 0), sphere: this};
-        this.quadTrees.add(new QuadTree(quadOptions));
+        this.quadTrees.push(new QuadTree(quadOptions));
         quadOptions = {name: "Front", corner: nearCorner, widthDir: new THREE.Vector3(-1, 0, 0), heightDir: new THREE.Vector3(0, -1, 0), sphere: this};
-        this.quadTrees.add(new QuadTree(quadOptions));
+        this.quadTrees.push(new QuadTree(quadOptions));
         quadOptions = {name: "Left", corner: nearCorner, widthDir: new THREE.Vector3(0, -1, 0), heightDir: new THREE.Vector3(0, 0, -1), sphere: this};
-        this.quadTrees.add(new QuadTree(quadOptions));
+        this.quadTrees.push(new QuadTree(quadOptions));
 
         //Far quadtrees
         quadOptions = {name: "Top", corner: farCorner, widthDir: new THREE.Vector3(1, 0, 0), heightDir: new THREE.Vector3(0, 0, 1), sphere: this};
-        this.quadTrees.add(new QuadTree(quadOptions));
+        this.quadTrees.push(new QuadTree(quadOptions));
         quadOptions = {name: "Back", corner: farCorner, widthDir: new THREE.Vector3(0, 1, 0), heightDir: new THREE.Vector3(1, 0, 0), sphere: this};
-        this.quadTrees.add(new QuadTree(quadOptions));
+        this.quadTrees.push(new QuadTree(quadOptions));
         quadOptions = {name: "Right", corner: farCorner, widthDir: new THREE.Vector3(0, 0, 1), heightDir: new THREE.Vector3(0, 1, 0), sphere: this};
-        this.quadTrees.add(new QuadTree(quadOptions));
+        this.quadTrees.push(new QuadTree(quadOptions));
     },
 
 
