@@ -51,14 +51,16 @@ TerrainNode.prototype = {
 
     Draw: function () {
         this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry());
-        this.tree.sphere.child.add(this.mesh);
+        this.tree.sphere.add(this.mesh);
         this.isDrawn = true;
+        console.log("Drawing");
     },
 
     UnDraw: function () {
         this.tree.sphere.child.remove(this.mesh);
         delete this.mesh;
         this.isDrawn = false;
+        console.log('UnDrawing');
     },
 
     GetDistanceFromCamera: function () {
@@ -83,17 +85,17 @@ TerrainNode.prototype = {
             options = {level: this.level + 1, parent: this, tree: this.tree};
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
-            this.topLeftChild = new Node(options);
+            this.topLeftChild = new TerrainNode(options);
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
             options.position.add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
-            this.topRightChild = new Node(options);
+            this.topRightChild = new TerrainNode(options);
 
             options.position = this.position.clone();
-            this.bottomLeftChild = new Node(options);
+            this.bottomLeftChild = new TerrainNode(options);
 
             options.position = this.position.clone().add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
-            this.bottomRightChild = new Node(options);
+            this.bottomRightChild = new TerrainNode(options);
 
             this.isSplit = true;
         };

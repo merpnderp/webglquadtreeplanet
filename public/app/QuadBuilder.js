@@ -32,11 +32,11 @@ QuadBuilder.prototype = {
                 index3 = baseIndex - vertsPerRow - 1;
 
                 if (swapOrder) {
-                    geo.faces.push(new THREE.Face3(index0, index3, index1, [n, n, n]));
-                    geo.faces.push(new THREE.Face3(index0, index2, index3, [n, n, n]));
+                    geo.faces.push(new THREE.Face3(index0, index1, index3, [n, n, n]));
+                    geo.faces.push(new THREE.Face3(index0, index3, index2, [n, n, n]));
                 } else {
-                    geo.faces.push(new THREE.Face3(index2, index3, index1, [n, n, n]));
-                    geo.faces.push(new THREE.Face3(index0, index2, index1, [n, n, n]));
+                    geo.faces.push(new THREE.Face3(index2, index1, index3, [n, n, n]));
+                    geo.faces.push(new THREE.Face3(index0, index1, index2, [n, n, n]));
                 }
             }
         };
