@@ -15,6 +15,7 @@ var TerrainNode = function (options) {
     this.parent = options.parent;
     this.tree = options.tree;
     this.position = options.position;
+    this.name = options.name;
 
     this.width = this.tree.sphere.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
@@ -34,9 +35,9 @@ TerrainNode.prototype = {
     Update: function () {
 
         if (this.InCameraFrustum()) {
-
+            console.log("Node: " + this.name);
             this.GetDistanceFromCamera();
-
+//console.log(this.tree.sphere.cameraHeight + " : " + this.distance);
             //Not split but should
             if (!this.isSplit && this.ShouldSplit()) {
 
@@ -46,24 +47,26 @@ TerrainNode.prototype = {
                     this.UnDraw();
 
                 }
-
+                console.log("Splitting");
                 this.Split();
 
-            //Should unsplit
+                //Should unsplit
             } else if (this.ShouldUnSplit()) {
-
+                console.log("Unsplitting");
                 this.UnSplit();
 
-            //Not split and not drawn
+                //Not split and not drawn
             } else if (!this.isSplit && !this.isDrawn) {
-
+                console.log("Drawning");
                 this.Draw();
 
-            //If split, update
+                //If split, update
             } else if (this.isSplit) {
-
+                console.log("Updating children");
                 this.UpdateChildren();
 
+            } else {
+                console.log("I'm already drawn");
             }
         }
 
@@ -73,6 +76,7 @@ TerrainNode.prototype = {
     Draw: function () {
 
         this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry());
+        console.dir(this.tree.sphere.geometryProvider.GetStandardGeometry());
         this.tree.sphere.add(this.mesh);
         this.isDrawn = true;
 
@@ -89,14 +93,24 @@ TerrainNode.prototype = {
 
 
     GetDistanceFromCamera: function () {
+        var center, cameraProjection, temp;
+        return function () {
+            center = this.center.clone().normalize();
+            temp = this.center.clone().normalize();
+            cameraProjection = this.tree.sphere.localCameraPlanetProjectionPosition.clone().normalize();
 
-        this.distance = Math.acos(this.center.dot(this.tree.sphere.localCameraPlanetProjectionPosition)) + this.tree.sphere.cameraHeight;
+//            console.log("Camera: " + this.tree.sphere.localCameraPosition.toArray().join(","));
+//            console.log("Camera Portected: " + this.tree.sphere.localCameraPlanetProjectionPosition.toArray().join(","));
 
-    },
+            this.distance = Math.atan2(temp.cross(cameraProjection).length(), center.dot(cameraProjection));
+            this.distance *= this.tree.sphere.radius;
+            this.distance += this.tree.sphere.cameraHeight;
+        };
+    }(),
 
 
     ShouldSplit: function () {
-
+        console.log("\tShould Split if: " + this.distance + " < " + this.tree.sphere.splitTable[this.level]);
         return this.tree.sphere.splitTable[this.level] > this.distance;
 
     },
@@ -104,7 +118,8 @@ TerrainNode.prototype = {
 
     ShouldUnSplit: function () {
 
-        return this.level === 0 || this.tree.sphere.splitTable[this.level - 1] < this.distance ? false : true;
+        console.log("\tShould UnSplit if: " + this.level + " > 0 && " + this.distance + " > " + this.tree.sphere.splitTable[this.level - 1]);
+        return this.level > 0 && this.tree.sphere.splitTable[this.level - 1] < this.distance;
 
     },
 
@@ -124,16 +139,20 @@ TerrainNode.prototype = {
             options = {level: this.level + 1, parent: this, tree: this.tree};
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
+            options.name = "TopLeft";
             this.topLeftChild = new TerrainNode(options);
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
             options.position.add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
+            options.name = "TopRight";
             this.topRightChild = new TerrainNode(options);
 
             options.position = this.position.clone();
+            options.name = "BottomLeft";
             this.bottomLeftChild = new TerrainNode(options);
 
             options.position = this.position.clone().add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
+            options.name = "BottomRight";
             this.bottomRightChild = new TerrainNode(options);
 
             this.isSplit = true;

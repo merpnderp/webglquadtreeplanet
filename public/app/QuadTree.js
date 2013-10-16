@@ -16,7 +16,7 @@ var QuadTree = function (options) {
     this.heightDir = options.heightDir;
     this.sphere = options.sphere;
 
-    this.rootNode = new TerrainNode({ parent: undefined, level: 0, tree: this, position: this.position });
+    this.rootNode = new TerrainNode({ parent: undefined, level: 0, tree: this, position: this.position, name: "RootNode" });
 };
 
 QuadTree.prototype = {

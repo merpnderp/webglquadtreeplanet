@@ -34,6 +34,8 @@ var QuadTreeSphere = function (options) {
 
     this.splitTable = [];
 
+    this.updateMatrixWorld(true);
+
 };
 
 QuadTreeSphere.prototype = Object.create(THREE.Object3D.prototype);
@@ -71,9 +73,15 @@ QuadTreeSphere.prototype.InitQuadTrees = function () {
 QuadTreeSphere.prototype.Update = function () {
 
     //Get local position of player
-    this.localCameraPosition = this.worldToLocal(this.camera.clone().position);
-    this.localCameraPlanetProjectionPosition = this.localCameraPosition.normalize().multiplyScalar(this.radius);
+    this.localCameraPosition = this.worldToLocal(this.camera.position.clone());
+    this.localCameraPlanetProjectionPosition = this.localCameraPosition.clone().normalize().multiplyScalar(this.radius);
     this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
+    /*
+    console.dir(this.camera.position);
+    console.dir(this.localCameraPosition);
+    console.log(this.localCameraPosition.clone().distanceTo(this.position));
+    console.info(this.cameraHeight);
+    */
 
     //this.quadTrees[0].Update();
     this.quadTrees[1].Update();
