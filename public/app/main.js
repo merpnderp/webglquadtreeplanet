@@ -5,6 +5,7 @@
 "use strict";
 
 var THREE = require('../libs/three.js');
+var OrbitControl = require('./OrbitControls');
 var Planet = require('./QuadTreeSphere.js');
 
 
@@ -13,6 +14,10 @@ var main = function () {
     camera.position.z = 400;
  //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+    var control = new OrbitControl(camera);
+    control.zoomSpeed = 1;
+
 
     var scene = new THREE.Scene();
 
@@ -33,12 +38,13 @@ var main = function () {
             requestAnimationFrame(render);
             renderer.render(scene, camera);
             planet.Update();
+            control.update();
         }
     }
 
 
     render();
-    setTimeout(function(){pause = !pause;}, 500);
+//    setTimeout(function(){pause = !pause;}, 500);
 
     window.addEventListener("keypress", function (key) {
         if (key.key === "Spacebar") {

@@ -35,7 +35,7 @@ TerrainNode.prototype = {
     Update: function () {
 
         if (this.InCameraFrustum()) {
-            console.log("Node: " + this.name);
+//            console.log("Node: " + this.name);
             this.GetDistanceFromCamera();
 //console.log(this.tree.sphere.cameraHeight + " : " + this.distance);
             //Not split but should
@@ -47,26 +47,26 @@ TerrainNode.prototype = {
                     this.UnDraw();
 
                 }
-                console.log("Splitting");
+//                console.log("Splitting");
                 this.Split();
 
                 //Should unsplit
             } else if (this.ShouldUnSplit()) {
-                console.log("Unsplitting");
+//                console.log("Unsplitting");
                 this.UnSplit();
 
                 //Not split and not drawn
             } else if (!this.isSplit && !this.isDrawn) {
-                console.log("Drawning");
+//                console.log("Drawning");
                 this.Draw();
 
                 //If split, update
             } else if (this.isSplit) {
-                console.log("Updating children");
+//                console.log("Updating children");
                 this.UpdateChildren();
 
             } else {
-                console.log("I'm already drawn");
+//                console.log("I'm already drawn");
             }
         }
 
@@ -88,7 +88,24 @@ TerrainNode.prototype = {
             this.mesh.material.uniforms.StartPosition.value = this.position;
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
             this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
-            this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0,1,0.5);
+
+            if(this.tree.name === 'Front'){
+                var val = 1/this.level + 1;
+                if(this.name === 'TopLeft'){
+                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val,0,0);
+                }else if(this.name === 'TopRight'){
+                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0,val,0);
+                }else if(this.name === 'BottomRight'){
+                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0,0,val);
+                }else if(this.name === 'BottomRight'){
+                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val/2,val/2,val/2);
+                }else{
+                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(.5,.5,.5);
+                }
+            }else{
+                this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0,.5,0.5);
+            }
+
 
             this.tree.sphere.add(this.mesh);
             this.isDrawn = true;
@@ -124,7 +141,7 @@ TerrainNode.prototype = {
 
 
     ShouldSplit: function () {
-        console.log("\tShould Split if: " + this.distance + " < " + this.tree.sphere.splitTable[this.level]);
+//        console.log("\tShould Split if: " + this.distance + " < " + this.tree.sphere.splitTable[this.level]);
         return this.tree.sphere.splitTable[this.level] > this.distance;
 
     },
@@ -132,7 +149,7 @@ TerrainNode.prototype = {
 
     ShouldUnSplit: function () {
 
-        console.log("\tShould UnSplit if: " + this.level + " > 0 && " + this.distance + " > " + this.tree.sphere.splitTable[this.level - 1]);
+//        console.log("\tShould UnSplit if: " + this.level + " > 0 && " + this.distance + " > " + this.tree.sphere.splitTable[this.level - 1]);
         return this.level > 0 && this.tree.sphere.splitTable[this.level - 1] < this.distance;
 
     },
