@@ -24,14 +24,15 @@ var GeometryProvider = function (patchSize) {
 GeometryProvider.prototype = {
 
     CreateGeometries: function () {
-        this.geo = new THREE.Geometry();
-        this.CreateGeometry();
+        var geo = new THREE.Geometry();
+        this.CreateGeometry(geo);
 
+        this.geometries.push(geo);
         //Now create all 9 permutations of the geometry
 
     },
 
-    CreateGeometry: function(){
+    CreateGeometry: function(geo){
 
         var step = 1 / this.patchSize;
 
@@ -48,16 +49,15 @@ GeometryProvider.prototype = {
 
                 var swapOrder = x % 2 === y % 2;
 
-                this.quadBuilder.BuildQuadForGrid(this.geo, offset, uv, buildTriangles, this.patchSize + 1, swapOrder);
+                this.quadBuilder.BuildQuadForGrid(geo, offset, uv, buildTriangles, this.patchSize + 1, swapOrder);
 
             }
-
         }
 
     },
 
     GetStandardGeometry: function(){
-        return this.geometry;
+        return this.geometries[0];
     }
 
 };

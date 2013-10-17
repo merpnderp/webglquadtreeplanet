@@ -83,14 +83,12 @@ QuadTreeSphere.prototype.Update = function () {
     console.info(this.cameraHeight);
     */
 
-    //this.quadTrees[0].Update();
+    this.quadTrees[0].Update();
     this.quadTrees[1].Update();
-    /*
     this.quadTrees[2].Update();
     this.quadTrees[3].Update();
     this.quadTrees[4].Update();
     this.quadTrees[5].Update();
-     */
 };
 
 

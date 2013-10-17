@@ -21,7 +21,7 @@ QuadBuilder.prototype = {
 
             geo.vertices.push(position);
 
-            geo.faceVertexUvs[0].push([]);
+//            geo.faceVertexUvs[0].push([]);
 
             if (buildTriangles) {
 

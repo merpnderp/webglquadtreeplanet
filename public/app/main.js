@@ -10,7 +10,7 @@ var Planet = require('./QuadTreeSphere.js');
 
 var main = function () {
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 200;
+    camera.position.z = 400;
  //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -22,7 +22,7 @@ var main = function () {
 
     var planet = new Planet({camera: camera}).Init();
 
-planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
+//planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
 
     scene.add(planet);
 

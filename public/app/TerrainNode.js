@@ -7,7 +7,7 @@
 
 
 var THREE = require('../libs/three.js');
-
+var fs = require('fs');
 
 var TerrainNode = function (options) {
 
@@ -75,12 +75,26 @@ TerrainNode.prototype = {
 
     Draw: function () {
 
-        this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry());
-        console.dir(this.tree.sphere.geometryProvider.GetStandardGeometry());
-        this.tree.sphere.add(this.mesh);
-        this.isDrawn = true;
+        var vertex = fs.readFileSync('shaders/VertexShader.glsl');
+        var frag = fs.readFileSync('shaders/FragmentShader.glsl');
 
-    },
+        return function () {
+            var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
+                StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'} };
+            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag});
+
+            this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry(), mat);
+            this.mesh.material.uniforms.Width.value = this.width;
+            this.mesh.material.uniforms.StartPosition.value = this.position;
+            this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
+            this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
+            this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0,1,0.5);
+
+            this.tree.sphere.add(this.mesh);
+            this.isDrawn = true;
+        };
+
+    }(),
 
 
     UnDraw: function () {
