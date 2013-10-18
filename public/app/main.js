@@ -10,8 +10,8 @@ var Planet = require('./QuadTreeSphere.js');
 
 
 var main = function () {
-    var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 100000);
-    camera.position.z = 4000;
+    var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 10000000);
+    camera.position.z = 400000;
  //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -25,7 +25,7 @@ var main = function () {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: 1000}).Init();
+    var planet = new Planet({camera: camera, radius: 100000}).Init();
 
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
 
@@ -34,11 +34,11 @@ var main = function () {
     var pause = false;
 
     function render() {
+        requestAnimationFrame(render);
+        renderer.render(scene, camera);
+        control.update();
         if (!pause) {
-            requestAnimationFrame(render);
-            renderer.render(scene, camera);
             planet.Update();
-            control.update();
         }
     }
 

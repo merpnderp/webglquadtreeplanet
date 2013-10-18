@@ -33,43 +33,59 @@ TerrainNode.prototype = {
 
 
     Update: function () {
-
         if (this.InCameraFrustum()) {
-//            console.log("Node: " + this.name);
             this.GetDistanceFromCamera();
-//console.log(this.tree.sphere.cameraHeight + " : " + this.distance);
-            //Not split but should
-            if (!this.isSplit && this.ShouldSplit()) {
-
-                //If this is drawn, undraw
+            if (this.isSplit) {
+                this.UpdateChildren();
+            } else if (this.ShouldSplit()) {
                 if (this.isDrawn) {
-
                     this.UnDraw();
-
                 }
                 console.log(this.name + " Splitting");
                 this.Split();
-
-                //Should unsplit
-            } else if (this.isSplit && this.ShouldUnSplit()) {
-                console.log(this.name + " Unsplitting");
-                this.UnSplit();
-
-                //Not split and not drawn
-            } else if (!this.isSplit && !this.isDrawn) {
-                console.log(this.name + " Drawning");
+            } else if (this.ShouldUnSplit()) {
+                this.parent.UnSplit();
+            } else if (!this.isDrawn) {
                 this.Draw();
-
-                //If split, update
-            } else if (this.isSplit) {
-//                console.log("Updating children");
-                this.UpdateChildren();
-
-            } else {
-//                console.log("I'm already drawn");
             }
         }
+        /*
+         if (this.InCameraFrustum()) {
+         //            console.log("Node: " + this.name);
+         this.GetDistanceFromCamera();
+         //console.log(this.tree.sphere.cameraHeight + " : " + this.distance);
+         //Not split but should
+         if (!this.isSplit && this.ShouldSplit()) {
 
+         //If this is drawn, undraw
+         if (this.isDrawn) {
+
+         this.UnDraw();
+
+         }
+         console.log(this.name + " Splitting");
+         this.Split();
+
+         //Should unsplit
+         } else if (this.isSplit && this.ShouldUnSplit()) {
+         console.log(this.name + " Unsplitting");
+         this.UnSplit();
+
+         //Not split and not drawn
+         } else if (!this.isSplit && !this.isDrawn) {
+         console.log(this.name + " Drawning");
+         this.Draw();
+
+         //If split, update
+         } else if (this.isSplit) {
+         //                console.log("Updating children");
+         this.UpdateChildren();
+
+         } else {
+         //                console.log("I'm already drawn");
+         }
+         }
+         */
     },
 
 
@@ -141,17 +157,17 @@ TerrainNode.prototype = {
 
 
     ShouldSplit: function () {
-//        console.log("\tShould Split if: " + this.distance + " < " + this.tree.sphere.splitTable[this.level]);
-        return this.tree.sphere.splitTable[this.level] >= this.distance;
+        console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
+        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level] >= this.distance;
 
     },
 
 
     ShouldUnSplit: function () {
 
-//        console.log("\tShould UnSplit if: " + this.level + " > 0 && " + this.distance + " > " + this.tree.sphere.splitTable[this.level]);
-        //return this.level > 0 && this.tree.sphere.splitTable[this.level] > this.distance;
-        return this.tree.sphere.splitTable[this.level] < this.distance;
+        console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
+        return this.level > 0 && this.tree.sphere.splitTable[this.level-1] < this.distance;
+//        return this.tree.sphere.splitTable[this.level] < this.distance;
 
     },
 
