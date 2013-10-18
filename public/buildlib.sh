@@ -1,1 +1,1 @@
-browserify -r ./libs/three.js > ./libs.js
+browserify -r ./libs/three.js -r ./libs/stats.js > ./libs.js

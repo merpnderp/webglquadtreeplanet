@@ -8,6 +8,7 @@
 
 var THREE = require('../libs/three.js');
 var fs = require('fs');
+var Logger = require('./Logger.js');
 
 var TerrainNode = function (options) {
 
@@ -26,6 +27,13 @@ var TerrainNode = function (options) {
     this.isSplit = false;
     this.isDrawn = false;
 
+    var l1 = new Logger();
+    var l2 = new Logger();
+    console.log(l1.Add());
+    console.log(l2.Add());
+
+//    console.log(new Logger() instanceof Logger);
+
 };
 
 
@@ -41,7 +49,7 @@ TerrainNode.prototype = {
                 if (this.isDrawn) {
                     this.UnDraw();
                 }
-                console.log(this.name + " Splitting");
+                //console.log(this.name + " Splitting");
                 this.Split();
             } else if (this.ShouldUnSplit()) {
                 this.parent.UnSplit();
@@ -157,7 +165,7 @@ TerrainNode.prototype = {
 
 
     ShouldSplit: function () {
-        console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
+        //console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
         return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level] >= this.distance;
 
     },
@@ -165,7 +173,7 @@ TerrainNode.prototype = {
 
     ShouldUnSplit: function () {
 
-        console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
+        //console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
         return this.level > 0 && this.tree.sphere.splitTable[this.level-1] < this.distance;
 //        return this.tree.sphere.splitTable[this.level] < this.distance;
 

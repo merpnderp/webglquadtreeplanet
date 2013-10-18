@@ -7,12 +7,21 @@
 var THREE = require('../libs/three.js');
 var OrbitControl = require('./OrbitControls');
 var Planet = require('./QuadTreeSphere.js');
-
+var Stats = require('../libs/stats.js');
 
 var main = function () {
+
+    var stats = new Stats();
+    stats.setMode(0);
+    stats.domElement.style.position = 'absolute';
+    stats.domElement.style.top = '0px';
+    stats.domElement.style.zIndex = 100;
+    document.body.appendChild(stats.domElement);
+
+
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 10000000);
     camera.position.z = 400000;
- //   camera.position.x = 200;
+    //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     var control = new OrbitControl(camera);
@@ -40,6 +49,7 @@ var main = function () {
         if (!pause) {
             planet.Update();
         }
+        stats.update();
     }
 
 
@@ -49,9 +59,9 @@ var main = function () {
     window.addEventListener("keypress", function (key) {
         if (key.key === "Spacebar") {
             pause = !pause;
-        }
-        if(! pause){
-            setTimeout(render, 100);
+            if (!pause) {
+                setTimeout(render, 100);
+            }
         }
     });
 
