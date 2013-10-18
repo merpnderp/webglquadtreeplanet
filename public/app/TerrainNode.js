@@ -97,7 +97,7 @@ TerrainNode.prototype = {
         return function () {
             var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
                 StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'} };
-            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag});
+            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
 
             this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry(), mat);
             this.mesh.material.uniforms.Width.value = this.width;
