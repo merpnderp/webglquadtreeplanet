@@ -8,6 +8,7 @@ var THREE = require('../libs/three.js');
 var OrbitControl = require('./OrbitControls');
 var Planet = require('./QuadTreeSphere.js');
 var Stats = require('../libs/stats.js');
+var Logger = require('./Logger.js');
 
 var main = function () {
 
@@ -18,6 +19,11 @@ var main = function () {
     stats.domElement.style.zIndex = 100;
     document.body.appendChild(stats.domElement);
 
+    var logger = new Logger();
+    logger.domElement.style.position = 'absolute';
+    logger.domElement.style.top = '100px';
+    logger.domElement.style.zIndex = 100;
+    document.body.appendChild(logger.domElement);
 
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 10000000);
     camera.position.z = 400000;
@@ -42,6 +48,8 @@ var main = function () {
 
     var pause = false;
 
+    var logger = new Logger();
+
     function render() {
         requestAnimationFrame(render);
         renderer.render(scene, camera);
@@ -50,6 +58,12 @@ var main = function () {
             planet.Update();
         }
         stats.update();
+
+        logger.Log("Geometries ",renderer.info.memory.geometries);
+        logger.Log("Textures ",renderer.info.memory.textures);
+        logger.Log("Calls ",renderer.info.render.calls);
+        logger.Log("Vertices ",renderer.info.render.vertices);
+
     }
 
 
