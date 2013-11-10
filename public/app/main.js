@@ -40,7 +40,7 @@ var main = function () {
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: 100000}).Init();
+    var planet = new Planet({camera: camera, radius: 100000, patchSize: 32 }).Init();
 
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
 

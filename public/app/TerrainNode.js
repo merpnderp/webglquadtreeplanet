@@ -45,7 +45,7 @@ TerrainNode.prototype = {
                 this.Split();
                 this.UpdateChildren();
             } else if (this.ShouldUnSplit()) {
-                this.parent.UnSplit();
+                this.UnSplit();
             } else if (!this.isDrawn) {
                 this.Draw();
             }
@@ -157,7 +157,7 @@ TerrainNode.prototype = {
 
     ShouldSplit: function () {
         //console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
-        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level] >= this.distance;
+        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level + 1] >= this.distance;
 
     },
 
@@ -165,7 +165,7 @@ TerrainNode.prototype = {
     ShouldUnSplit: function () {
 
         //console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
-        return this.level > 0 && this.tree.sphere.splitTable[this.level - 1] < this.distance;
+        return this.level > 0 && this.tree.sphere.splitTable[this.level] < this.distance;
 //        return this.tree.sphere.splitTable[this.level] < this.distance;
 
     },
