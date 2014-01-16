@@ -31,7 +31,7 @@ var QuadTreeSphere = function (options) {
     this.maxLevel = parseInt(Math.log(this.radius * 2), 10);
     this.maxLevel -= parseInt(Math.log(Math.pow(this.patchSize, 2)), 10);
     this.maxLevel = this.maxLevel < 0 ? 0 : this.maxLevel;
-
+this.maxLevel = 100;
     this.splitTable = [];
 
     this.updateMatrixWorld(true);
@@ -76,6 +76,8 @@ QuadTreeSphere.prototype.Update = function () {
     this.localCameraPosition = this.worldToLocal(this.camera.position.clone());
     this.localCameraPlanetProjectionPosition = this.localCameraPosition.clone().normalize().multiplyScalar(this.radius);
     this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
+
+		this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
 
     this.quadTrees[0].Update();
     this.quadTrees[1].Update();

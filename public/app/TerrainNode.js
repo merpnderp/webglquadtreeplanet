@@ -10,7 +10,6 @@ var THREE = require('../libs/three.js');
 var fs = require('fs');
 
 var TerrainNode = function (options) {
-
     this.level = options.level;
     this.parent = options.parent;
     this.tree = options.tree;
@@ -50,43 +49,6 @@ TerrainNode.prototype = {
                 this.Draw();
             }
         }
-        /*
-         if (this.InCameraFrustum()) {
-         //            console.log("Node: " + this.name);
-         this.GetDistanceFromCamera();
-         //console.log(this.tree.sphere.cameraHeight + " : " + this.distance);
-         //Not split but should
-         if (!this.isSplit && this.ShouldSplit()) {
-
-         //If this is drawn, undraw
-         if (this.isDrawn) {
-
-         this.UnDraw();
-
-         }
-         console.log(this.name + " Splitting");
-         this.Split();
-
-         //Should unsplit
-         } else if (this.isSplit && this.ShouldUnSplit()) {
-         console.log(this.name + " Unsplitting");
-         this.UnSplit();
-
-         //Not split and not drawn
-         } else if (!this.isSplit && !this.isDrawn) {
-         console.log(this.name + " Drawning");
-         this.Draw();
-
-         //If split, update
-         } else if (this.isSplit) {
-         //                console.log("Updating children");
-         this.UpdateChildren();
-
-         } else {
-         //                console.log("I'm already drawn");
-         }
-         }
-         */
     },
 
 
@@ -98,7 +60,8 @@ TerrainNode.prototype = {
         return function () {
             var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
                 StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'} };
-            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
+            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
+            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
             this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry(), mat);
             this.mesh.material.uniforms.Width.value = this.width;
@@ -106,16 +69,17 @@ TerrainNode.prototype = {
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
             this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
 
-            if (this.tree.name === 'Front') {
+            if (this.tree.name === 'Front' || true) {
                 var val = 1 / this.level + 1;
+console.log(val);
                 if (this.name === 'TopLeft') {
                     this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val, 0, 0);
                 } else if (this.name === 'TopRight') {
                     this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, val, 0);
                 } else if (this.name === 'BottomRight') {
                     this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, 0, val);
-                } else if (this.name === 'BottomRight') {
-                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val / 2, val / 2, val / 2);
+                } else if (this.name === 'BottomLeft') {
+                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val / 2, val / 2, 0);
                 } else {
                     this.mesh.material.uniforms.iColor.value = new THREE.Vector3(.5, .5, .5);
                 }
@@ -157,7 +121,7 @@ TerrainNode.prototype = {
 
     ShouldSplit: function () {
         //console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
-        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level + 1] >= this.distance;
+        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level] > this.distance;
 
     },
 
@@ -165,7 +129,8 @@ TerrainNode.prototype = {
     ShouldUnSplit: function () {
 
         //console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
-        return this.level > 0 && this.tree.sphere.splitTable[this.level] < this.distance;
+//        return this.level > 0 && this.tree.sphere.splitTable[this.level] < this.distance;
+return false;
 //        return this.tree.sphere.splitTable[this.level] < this.distance;
 
     },
