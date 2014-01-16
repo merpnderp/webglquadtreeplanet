@@ -35,16 +35,17 @@ TerrainNode.prototype = {
         if (this.InCameraFrustum()) {
             this.GetDistanceFromCamera();
             if (this.isSplit) {
+							if(this.ShouldUnSplit()){
+								this.UnSplit();
+							}else{
                 this.UpdateChildren();
+							}
             } else if (this.ShouldSplit()) {
                 if (this.isDrawn) {
                     this.UnDraw();
                 }
-                //console.log(this.name + " Splitting");
                 this.Split();
                 this.UpdateChildren();
-            } else if (this.ShouldUnSplit()) {
-                this.UnSplit();
             } else if (!this.isDrawn) {
                 this.Draw();
             }
@@ -121,7 +122,7 @@ console.log(val);
 
     ShouldSplit: function () {
         //console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
-        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level] > this.distance;
+        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level] >= this.distance;
 
     },
 
@@ -129,9 +130,7 @@ console.log(val);
     ShouldUnSplit: function () {
 
         //console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
-//        return this.level > 0 && this.tree.sphere.splitTable[this.level] < this.distance;
-return false;
-//        return this.tree.sphere.splitTable[this.level] < this.distance;
+        return this.level >= 0 && this.tree.sphere.splitTable[this.level] < this.distance;
 
     },
 
@@ -198,7 +197,6 @@ return false;
             delete this.bottomRightChild;
         }
         this.isSplit = false;
-
     },
 
 
