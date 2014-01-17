@@ -37,6 +37,7 @@ TerrainNode.prototype = {
             if (this.isSplit) {
 							if(this.ShouldUnSplit()){
 								this.UnSplit();
+                this.Draw();
 							}else{
                 this.UpdateChildren();
 							}
@@ -72,7 +73,6 @@ TerrainNode.prototype = {
 
             if (this.tree.name === 'Front' || true) {
                 var val = 1 / this.level + 1;
-console.log(val);
                 if (this.name === 'TopLeft') {
                     this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val, 0, 0);
                 } else if (this.name === 'TopRight') {
@@ -115,6 +115,7 @@ console.log(val);
 
             this.distance = Math.atan2(temp.cross(cameraProjection).length(), center.dot(cameraProjection));
             this.distance *= this.tree.sphere.radius;
+						this.distance -= this.width/2;
             this.distance += this.tree.sphere.cameraHeight;
         };
     }(),

@@ -38,7 +38,7 @@ var main = function () {
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    document.getElementById('viewport').appendChild(renderer.domElement);
 
     var planet = new Planet({camera: camera, radius: 100000, patchSize: 32, control: control }).Init();
 
@@ -75,7 +75,9 @@ var main = function () {
             pause = !pause;
             if (!pause) {
                 setTimeout(render, 100);
-            }
+            }else{
+							control.zoomSpeed = 1;
+						}
         }
     });
 

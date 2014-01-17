@@ -34,9 +34,12 @@ var QuadTreeSphere = function (options) {
     this.maxLevel -= parseInt(Math.log(Math.pow(this.patchSize, 2)), 10);
     this.maxLevel = this.maxLevel < 0 ? 0 : this.maxLevel;
 this.maxLevel = 100;
+
     this.splitTable = [];
 
     this.updateMatrixWorld(true);
+
+
 
 };
 
