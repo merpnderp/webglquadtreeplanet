@@ -36,17 +36,14 @@ TerrainNode.prototype = {
 
     Update: function () {
         if (this.OccludedByHorizon()) {
-            if(!this.Occluded){
-                console.log("OCCLUDED");
-            }
-            this.Occluded = true;
+            this.isOccluded = true;
             if(this.isSplit){
                 this.UnSplit();
             }else if(this.isDrawn){
                 this.UnDraw();
             }
         } else {
-            this.Occluded = false;
+            this.isOccluded = false;
             if (this.InCameraFrustum()) {
                 this.GetDistanceFromCamera();
                 if (this.isSplit) {
@@ -172,13 +169,11 @@ TerrainNode.prototype = {
     },
 
     OccludedByHorizon: function () {
-        var angleToCamera =  this.tree.sphere.localCameraPlanetProjectionPosition.angleTo(this.position);
+        var angleToCamera =  this.tree.sphere.localCameraPlanetProjectionPosition.angleTo(this.center);
+
         angleToCamera = angleToCamera > Math.PI ? angleToCamera - Math.PI : angleToCamera;
-        //console.log(angleToCamera + " : " + this.tree.sphere.localCameraMaxAngle);
+
         if(angleToCamera > this.tree.sphere.localCameraMaxAngle){
-            if(!this.Occluded){
-                console.log(angleToCamera + " > " + this.tree.sphere.localCameraMaxAngle);
-            }
             return true;
         }
         return false;
