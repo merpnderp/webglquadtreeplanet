@@ -24,6 +24,9 @@ var TerrainNode = function (options) {
 
     this.isSplit = false;
     this.isDrawn = false;
+    this.isOccluded = false;
+
+    this.tree.sphere.totalNodes++;
 
 };
 
@@ -32,23 +35,40 @@ TerrainNode.prototype = {
 
 
     Update: function () {
-        if (this.InCameraFrustum()) {
-            this.GetDistanceFromCamera();
-            if (this.isSplit) {
-							if(this.ShouldUnSplit()){
-								this.UnSplit();
-                this.Draw();
-							}else{
-                this.UpdateChildren();
-							}
-            } else if (this.ShouldSplit()) {
-                if (this.isDrawn) {
-                    this.UnDraw();
+        if (this.OccludedByHorizon()) {
+            if(!this.Occluded){
+                console.log("OCCLUDED");
+            }
+            this.Occluded = true;
+            if(this.isSplit){
+                this.UnSplit();
+            }else if(this.isDrawn){
+                this.UnDraw();
+            }
+        } else {
+            this.Occluded = false;
+            if (this.InCameraFrustum()) {
+                this.GetDistanceFromCamera();
+                if (this.isSplit) {
+                    if (this.ShouldUnSplit()) {
+                        this.UnSplit();
+                        this.Update();
+                    } else {
+                        this.UpdateChildren();
+                    }
+                } else if (this.ShouldSplit()) {
+                    if (this.isDrawn) {
+                        this.UnDraw();
+                    }
+                    this.Split();
+                    this.UpdateChildren();
+                } else if (!this.isDrawn) {
+                    this.Draw();
+                } else {
+                    var d = this.tree.sphere.deepestNode;
+                    if (d < this.level)
+                        this.tree.sphere.deepestNode = this.level;
                 }
-                this.Split();
-                this.UpdateChildren();
-            } else if (!this.isDrawn) {
-                this.Draw();
             }
         }
     },
@@ -56,14 +76,17 @@ TerrainNode.prototype = {
 
     Draw: function () {
 
+
         var vertex = fs.readFileSync('shaders/VertexShader.glsl');
         var frag = fs.readFileSync('shaders/FragmentShader.glsl');
 
         return function () {
+            this.tree.sphere.leafNodes++;
+
             var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
                 StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'} };
-            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
-            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
+            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
+            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
             this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry(), mat);
             this.mesh.material.uniforms.Width.value = this.width;
@@ -84,7 +107,9 @@ TerrainNode.prototype = {
                 } else {
                     this.mesh.material.uniforms.iColor.value = new THREE.Vector3(.5, .5, .5);
                 }
-            } else { this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, .5, 0.5); }
+            } else {
+                this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, .5, 0.5);
+            }
 
 
             this.tree.sphere.add(this.mesh);
@@ -96,6 +121,8 @@ TerrainNode.prototype = {
 
     UnDraw: function () {
 
+        this.tree.sphere.leafNodes--;
+
         this.tree.sphere.remove(this.mesh);
         delete this.mesh;
         this.isDrawn = false;
@@ -104,19 +131,21 @@ TerrainNode.prototype = {
 
 
     GetDistanceFromCamera: function () {
-        var center, cameraProjection, temp;
+//        var center, temp, cameraProjection;
         return function () {
-            center = this.center.clone().normalize();
-            temp = this.center.clone().normalize();
-            cameraProjection = this.tree.sphere.localCameraPlanetProjectionPosition.clone().normalize();
+//            center = this.center.clone().normalize();
+//            temp = this.center.clone().normalize();
+//            cameraProjection = this.tree.sphere.localCameraPlanetProjectionPosition.clone().normalize();
 
 //            console.log("Camera: " + this.tree.sphere.localCameraPosition.toArray().join(","));
 //            console.log("Camera Portected: " + this.tree.sphere.localCameraPlanetProjectionPosition.toArray().join(","));
-
-            this.distance = Math.atan2(temp.cross(cameraProjection).length(), center.dot(cameraProjection));
-            this.distance *= this.tree.sphere.radius;
-						this.distance -= this.width/2;
-            this.distance += this.tree.sphere.cameraHeight;
+            /*
+             this.distance = Math.atan2(temp.cross(cameraProjection).length(), center.dot(cameraProjection));
+             this.distance *= this.tree.sphere.radius;
+             this.distance -= this.width/2;
+             this.distance += this.tree.sphere.cameraHeight;
+             */
+            this.distance = this.tree.sphere.localCameraPosition.distanceTo(this.center);
         };
     }(),
 
@@ -140,6 +169,19 @@ TerrainNode.prototype = {
 
         return true;
 
+    },
+
+    OccludedByHorizon: function () {
+        var angleToCamera =  this.tree.sphere.localCameraPlanetProjectionPosition.angleTo(this.position);
+        angleToCamera = angleToCamera > Math.PI ? angleToCamera - Math.PI : angleToCamera;
+        //console.log(angleToCamera + " : " + this.tree.sphere.localCameraMaxAngle);
+        if(angleToCamera > this.tree.sphere.localCameraMaxAngle){
+            if(!this.Occluded){
+                console.log(angleToCamera + " > " + this.tree.sphere.localCameraMaxAngle);
+            }
+            return true;
+        }
+        return false;
     },
 
 
@@ -175,7 +217,7 @@ TerrainNode.prototype = {
 
 
     Die: function () {
-
+        this.tree.sphere.totalNodes--;
         if (this.isDrawn) {
             this.UnDraw();
         } else if (this.isSplit) {

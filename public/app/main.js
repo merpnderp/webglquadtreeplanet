@@ -26,7 +26,7 @@ var main = function () {
     document.body.appendChild(logger.domElement);
 
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 10000000);
-    camera.position.z = 400000;
+    camera.position.z = 12000000;
     //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -38,9 +38,11 @@ var main = function () {
 
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
+//		renderer.setClearColor( 0xffffff, 1) 
     document.getElementById('viewport').appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: 100000, patchSize: 32, control: control }).Init();
+    var planet = new Planet({camera: camera, radius: 6000000, patchSize: 32, control: control });
+    planet.Init();
 
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
 
@@ -59,10 +61,13 @@ var main = function () {
         }
         stats.update();
 
-        logger.Log("Geometries ",renderer.info.memory.geometries);
-        logger.Log("Textures ",renderer.info.memory.textures);
-        logger.Log("Calls ",renderer.info.render.calls);
-        logger.Log("Vertices ",renderer.info.render.vertices);
+        logger.Log("Geometries ", renderer.info.memory.geometries);
+        logger.Log("Textures ", renderer.info.memory.textures);
+        logger.Log("Calls ", renderer.info.render.calls);
+        logger.Log("Vertices ", renderer.info.render.vertices);
+        logger.Log("Deepest Level ", planet.deepestNode);
+        logger.Log("Total Nodes ", planet.totalNodes);
+        logger.Log("Total Leaf Nodes ", planet.leafNodes);
 
     }
 
@@ -75,9 +80,9 @@ var main = function () {
             pause = !pause;
             if (!pause) {
                 setTimeout(render, 100);
-            }else{
-							control.zoomSpeed = 1;
-						}
+            } else {
+                control.zoomSpeed = 1;
+            }
         }
     });
 

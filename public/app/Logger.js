@@ -15,6 +15,7 @@ var Logger = function () {
 
     this.domElement = document.createElement('div');
     this.domElement.style.fontSize = "xx-small";
+    this.domElement.style.color = "white";
 
     this.updated = false;
 

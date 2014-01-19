@@ -12,11 +12,15 @@ var QuadTreeSphere = function (options) {
 
     THREE.Object3D.call(this);
 
-		this.control = options.control;
+    this.control = options.control;
 
     this.camera = options.camera;
 
     this.radius = options.radius || 100;
+
+    this.deepestNode = 0;
+    this.totalNodes = 0;
+    this.leafNodes = 0;
 
     this.patchSize = options.patchSize || 32;
 
@@ -30,23 +34,17 @@ var QuadTreeSphere = function (options) {
 
     this.vs = Math.tan(this.fov / screen.width);
 
-    this.maxLevel = parseInt(Math.log(this.radius * 2), 10);
-    this.maxLevel -= parseInt(Math.log(Math.pow(this.patchSize, 2)), 10);
-    this.maxLevel = this.maxLevel < 0 ? 0 : this.maxLevel;
-this.maxLevel = 100;
-
     this.splitTable = [];
 
     this.updateMatrixWorld(true);
 
-
+    this.BuildSplitTable();
 
 };
 
 QuadTreeSphere.prototype = Object.create(THREE.Object3D.prototype);
 
 QuadTreeSphere.prototype.Init = function () {
-    this.BuildSplitTable();
     this.InitQuadTrees();
     return this;
 };
@@ -77,19 +75,21 @@ QuadTreeSphere.prototype.InitQuadTrees = function () {
 
 QuadTreeSphere.prototype.Update = function () {
 
+    this.deepestNode = 0;
 
     //Get local position of player
     this.localCameraPosition = this.worldToLocal(this.camera.position.clone());
     this.localCameraPlanetProjectionPosition = this.localCameraPosition.clone().normalize().multiplyScalar(this.radius);
     this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
 
-		this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
+    this.localCameraMaxAngle = Math.acos(this.radius / (this.cameraHeight + this.radius));
 
-		if(this.control){
-			this.control.zoomSpeed = this.cameraHeight / this.radius;
-			this.control.zoomSpeed = this.control.zoomSpeed > .001 ? this.control.zoomSpeed : .001;
-			this.control.zoomSpeed = this.control.zoomSpeed > 1 ? 1 : this.control.zoomSpeed;
-		}
+    this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
+
+    if (this.control) {
+        this.control.zoomSpeed = this.cameraHeight / this.radius;
+        this.control.zoomSpeed = this.control.zoomSpeed > 1 ? 1 : this.control.zoomSpeed;
+    }
 
     this.quadTrees[0].Update();
     this.quadTrees[1].Update();
@@ -101,6 +101,7 @@ QuadTreeSphere.prototype.Update = function () {
 
 
 QuadTreeSphere.prototype.AssignNeighbors = function () {
+
     var bottom = this.quadTrees[0];
     var front = this.quadTrees[1];
     var left = this.quadTrees[2];
@@ -117,11 +118,16 @@ QuadTreeSphere.prototype.AssignNeighbors = function () {
 };
 
 QuadTreeSphere.prototype.BuildSplitTable = function () {
-    var t, i = 0;
-    while (true) {
-        t = (Math.PI / 2) / Math.pow(2, i);
-        this.splitTable[i] = (t / this.patchSize) * this.radius / this.vs;
-        if (this.splitTable[i] < 0.1) {
+//size of screen pixel ≈ height · tan fov /pixels
+//minimum angle = s / r
+    var patchPixelWidth, i = 0, patchSize = this.patchSize / 1;
+    while (i < 200) {
+
+        patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 4);
+        this.splitTable[i] = patchPixelWidth / this.vs;
+        patchSize = patchSize * 2;
+        if (this.splitTable[i] < 3) {
+            this.maxLevel = i;
             break;
         }
         i++;
