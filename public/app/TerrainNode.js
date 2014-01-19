@@ -18,6 +18,7 @@ var TerrainNode = function (options) {
 
     this.width = this.tree.sphere.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
+    this.arcLength = (this.width / this.tree.sphere.radius) / 1.32 //divided by fudge factor;
 
     //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();
@@ -171,7 +172,7 @@ TerrainNode.prototype = {
     OccludedByHorizon: function () {
         var angleToCamera =  this.tree.sphere.localCameraPlanetProjectionPosition.angleTo(this.center);
 
-        angleToCamera = angleToCamera > Math.PI ? angleToCamera - Math.PI : angleToCamera;
+        angleToCamera -= this.arcLength;
 
         if(angleToCamera > this.tree.sphere.localCameraMaxAngle){
             return true;
