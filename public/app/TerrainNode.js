@@ -14,11 +14,13 @@ var TerrainNode = function (options) {
     this.parent = options.parent;
     this.tree = options.tree;
     this.position = options.position;
+
+    //console.log(this.position.x + " : " + this.position.y + " : " + this.position.z);
     this.name = options.name;
 
     this.width = this.tree.sphere.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
-    this.arcLength = (this.width / this.tree.sphere.radius) / 1.32 //divided by fudge factor;
+    this.arcLength = (this.width / this.tree.sphere.radius) / 1.43 //divided by fudge factor;
 
     //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();

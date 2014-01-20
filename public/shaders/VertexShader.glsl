@@ -1,4 +1,4 @@
-
+precision highp float;
 
 uniform float Width;
 uniform float Radius;

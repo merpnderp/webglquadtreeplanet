@@ -118,9 +118,10 @@ QuadTreeSphere.prototype.AssignNeighbors = function () {
 };
 
 QuadTreeSphere.prototype.BuildSplitTable = function () {
-//size of screen pixel ≈ height · tan fov /pixels
-//minimum angle = s / r
-    var patchPixelWidth, i = 0, patchSize = this.patchSize / 1;
+    //size of screen pixel ≈ height · tan fov /pixels
+    //minimum angle = s / r
+
+    var patchPixelWidth, i = 0, patchSize = this.patchSize;
     while (i < 200) {
 
         patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 4);
