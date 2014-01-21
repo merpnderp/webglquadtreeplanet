@@ -88,7 +88,11 @@ TerrainNode.prototype = {
             var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
             //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
-            this.mesh = new THREE.Mesh(this.tree.sphere.geometryProvider.GetStandardGeometry(), mat);
+            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
+            geo.computeBoundingSphere();
+            geo.boundingSphere.radius = 4000000;
+            geo.computeBoundingSphere();
+            this.mesh = new THREE.Mesh(geo, mat);
             this.mesh.material.uniforms.Width.value = this.width;
             this.mesh.material.uniforms.StartPosition.value = this.position;
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;

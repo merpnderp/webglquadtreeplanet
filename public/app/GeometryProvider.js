@@ -25,6 +25,7 @@ GeometryProvider.prototype = {
 
     CreateGeometries: function () {
         var geo = new THREE.Geometry();
+
         this.CreateGeometry(geo);
 
         this.geometries.push(geo);

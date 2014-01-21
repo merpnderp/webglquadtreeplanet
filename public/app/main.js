@@ -9,6 +9,7 @@ var OrbitControl = require('./OrbitControls');
 var Planet = require('./QuadTreeSphere.js');
 var Stats = require('../libs/stats.js');
 var Logger = require('./Logger.js');
+var FlyControl = require('./FlyControls');
 
 var main = function () {
 
@@ -30,8 +31,16 @@ var main = function () {
     //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-    var control = new OrbitControl(camera);
-    control.zoomSpeed = 1;
+//    var control = new OrbitControl(camera);
+//    control.zoomSpeed = 1;
+
+    var control = new FlyControl(camera);
+    var controlMaxSpeed = 1000000;
+    control.movementSpeed = controlMaxSpeed;
+    control.domElement = document.body;
+    control.rollSpeed = Math.PI / 24;
+    control.autoForward = false;
+    control.dragToLook = false;
 
 
     var scene = new THREE.Scene();
@@ -52,14 +61,24 @@ var main = function () {
 
     var logger = new Logger();
 
+    var clock = new THREE.Clock();
+    var delta;
+
     function render() {
+        delta = clock.getDelta();
         requestAnimationFrame(render);
         renderer.render(scene, camera);
-        control.update();
-        if (!pause) {
-            planet.Update();
-        }
+
+        control.update(delta);
+
+        planet.Update();
+
         stats.update();
+
+
+        control.movementSpeed = planet.cameraHeight;
+//        control.zoomSpeed = planet.control.zoomSpeed > 1 ? 1 : this.control.zoomSpeed;
+
 
         logger.Log("Geometries ", renderer.info.memory.geometries);
         logger.Log("Textures ", renderer.info.memory.textures);
@@ -68,6 +87,7 @@ var main = function () {
         logger.Log("Deepest Level ", planet.deepestNode);
         logger.Log("Total Nodes ", planet.totalNodes);
         logger.Log("Total Leaf Nodes ", planet.leafNodes);
+        logger.Log("CameraHeight ", planet.cameraHeight);
 
     }
 
@@ -76,14 +96,17 @@ var main = function () {
 //    setTimeout(function(){pause = !pause;}, 500);
 
     window.addEventListener("keypress", function (key) {
+        console.log(key);
         if (key.key === "Spacebar") {
             pause = !pause;
+            planet.Pause(pause);
             if (!pause) {
                 setTimeout(render, 100);
             } else {
                 control.zoomSpeed = 1;
             }
         }
+
     });
 
 

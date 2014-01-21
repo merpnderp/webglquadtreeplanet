@@ -12,6 +12,7 @@ var QuadTreeSphere = function (options) {
 
     THREE.Object3D.call(this);
 
+
     this.control = options.control;
 
     this.camera = options.camera;
@@ -35,6 +36,8 @@ var QuadTreeSphere = function (options) {
     this.vs = Math.tan(this.fov / screen.width);
 
     this.splitTable = [];
+
+    this.pause = false;
 
     this.updateMatrixWorld(true);
 
@@ -86,17 +89,19 @@ QuadTreeSphere.prototype.Update = function () {
 
     this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
 
-    if (this.control) {
-        this.control.zoomSpeed = this.cameraHeight / this.radius;
-        this.control.zoomSpeed = this.control.zoomSpeed > 1 ? 1 : this.control.zoomSpeed;
-    }
 
-    this.quadTrees[0].Update();
-    this.quadTrees[1].Update();
-    this.quadTrees[2].Update();
-    this.quadTrees[3].Update();
-    this.quadTrees[4].Update();
-    this.quadTrees[5].Update();
+   if (!this.pause) {
+        this.quadTrees[0].Update();
+        this.quadTrees[1].Update();
+        this.quadTrees[2].Update();
+        this.quadTrees[3].Update();
+        this.quadTrees[4].Update();
+        this.quadTrees[5].Update();
+    }
+};
+
+QuadTreeSphere.prototype.Pause = function(pause){
+    this.pause = pause;
 };
 
 
@@ -126,6 +131,7 @@ QuadTreeSphere.prototype.BuildSplitTable = function () {
 
         patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 4);
         this.splitTable[i] = patchPixelWidth / this.vs;
+        console.log(i + " : " + this.splitTable[i]);
         patchSize = patchSize * 2;
         if (this.splitTable[i] < 3) {
             this.maxLevel = i;
