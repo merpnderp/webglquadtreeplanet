@@ -40,9 +40,9 @@ TerrainNode.prototype = {
     Update: function () {
         if (this.OccludedByHorizon()) {
             this.isOccluded = true;
-            if(this.isSplit){
+            if (this.isSplit) {
                 this.UnSplit();
-            }else if(this.isDrawn){
+            } else if (this.isDrawn) {
                 this.UnDraw();
             }
         } else {
@@ -81,6 +81,7 @@ TerrainNode.prototype = {
         var frag = fs.readFileSync('shaders/FragmentShader.glsl');
 
         return function () {
+
             this.tree.sphere.leafNodes++;
 
             var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
@@ -88,10 +89,23 @@ TerrainNode.prototype = {
             var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
             //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
-            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
+            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
             geo.computeBoundingSphere();
             geo.boundingSphere.radius = 4000000;
             geo.computeBoundingSphere();
+
+            var vertices = geo.vertices;
+            for (var i = 0, l = vertices.length; i < l; i++) {
+                var temp = this.tree.widthDir.clone();
+                temp.multiplyScalar(vertices[i].x);
+                temp.add(this.tree.heightDir.clone().multiplyScalar(vertices[i].y));
+                temp.multiplyScalar(this.width);
+                temp.add(this.position);
+                vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius);
+            }
+            geo.vertices = vertices;
+            geo.verticesNeedUpdate = true;
+
             this.mesh = new THREE.Mesh(geo, mat);
             this.mesh.material.uniforms.Width.value = this.width;
             this.mesh.material.uniforms.StartPosition.value = this.position;
@@ -176,11 +190,11 @@ TerrainNode.prototype = {
     },
 
     OccludedByHorizon: function () {
-        var angleToCamera =  this.tree.sphere.localCameraPlanetProjectionPosition.angleTo(this.center);
+        var angleToCamera = this.tree.sphere.localCameraPlanetProjectionPosition.angleTo(this.center);
 
         angleToCamera -= this.arcLength;
 
-        if(angleToCamera > this.tree.sphere.localCameraMaxAngle){
+        if (angleToCamera > this.tree.sphere.localCameraMaxAngle) {
             return true;
         }
         return false;

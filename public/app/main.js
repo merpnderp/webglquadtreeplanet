@@ -96,7 +96,6 @@ var main = function () {
 //    setTimeout(function(){pause = !pause;}, 500);
 
     window.addEventListener("keypress", function (key) {
-        console.log(key);
         if (key.key === "Spacebar") {
             pause = !pause;
             planet.Pause(pause);

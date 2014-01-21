@@ -131,7 +131,7 @@ QuadTreeSphere.prototype.BuildSplitTable = function () {
 
         patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 4);
         this.splitTable[i] = patchPixelWidth / this.vs;
-        console.log(i + " : " + this.splitTable[i]);
+//        console.log(i + " : " + this.splitTable[i]);
         patchSize = patchSize * 2;
         if (this.splitTable[i] < 3) {
             this.maxLevel = i;
