@@ -52,10 +52,9 @@ var main = function () {
 
     var planet = new Planet({camera: camera, radius: 6371000, patchSize: 32, control: control, scene: scene });
     planet.Init();
+    scene.add(planet);
 
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
-
-    scene.add(planet);
 
     var pause = false;
 
@@ -90,21 +89,19 @@ var main = function () {
         logger.Log("Total Nodes ", planet.totalNodes);
         logger.Log("Total Leaf Nodes ", planet.leafNodes);
         logger.Log("CameraHeight ", Math.round(planet.cameraHeight));
-        logger.Log("CameraSpeed ", Math.round(control.movementSpeed));
         logger.Log("CameraPosition: ", camera.position);
         logger.Log("PlanetPosition: ", planet.position);
 
     }
 
     function UpdateToLocal() {
-        if (camera.position.length() > 100) {
+        if (camera.position.length() > 100000) {
             workClock.getDelta();
             origin = origin.subVectors(camera.position, origin);
-            /*            scene.children.forEach(function (child) {
-             child.position.sub(origin);
-             });
-             */
-            planet.position.sub(origin);
+            scene.children.forEach(function (child) {
+                child.position.sub(origin);
+            });
+            //planet.position.sub(origin);
             origin.x = 0;
             origin.y = 0;
             origin.z = 0;

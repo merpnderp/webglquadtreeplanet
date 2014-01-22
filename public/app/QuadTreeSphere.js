@@ -12,7 +12,7 @@ var QuadTreeSphere = function (options) {
 
     THREE.Object3D.call(this);
 
-//    this.scene = options.scene;
+    this.scene = options.scene;
 
     this.control = options.control;
 
@@ -56,8 +56,8 @@ QuadTreeSphere.prototype.Init = function () {
 QuadTreeSphere.prototype.InitQuadTrees = function () {
     var nearCorner = new THREE.Vector3(1, 1, 1).multiplyScalar(this.radius);
     var farCorner = nearCorner.clone().multiplyScalar(-1);
-    nearCorner.add(this.position);
-    farCorner.add(this.position);
+//    nearCorner.add(this.position);
+//    farCorner.add(this.position);
     var quadOptions;
 
     //Near quadtrees
