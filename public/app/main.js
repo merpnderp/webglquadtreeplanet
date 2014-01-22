@@ -26,7 +26,7 @@ var main = function () {
     logger.domElement.style.zIndex = 100;
     document.body.appendChild(logger.domElement);
 
-    var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 10000000);
+    var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 7000000);
     camera.position.z = 12000000;
     //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -50,7 +50,7 @@ var main = function () {
 //		renderer.setClearColor( 0xffffff, 1) 
     document.getElementById('viewport').appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: 6000000, patchSize: 32, control: control });
+    var planet = new Planet({camera: camera, radius: 6371000, patchSize: 32, control: control, scene: scene });
     planet.Init();
 
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
@@ -59,10 +59,10 @@ var main = function () {
 
     var pause = false;
 
-    var logger = new Logger();
-
     var clock = new THREE.Clock();
+    var workClock = new THREE.Clock();
     var delta;
+    var origin = new THREE.Vector3();
 
     function render() {
         delta = clock.getDelta();
@@ -73,10 +73,12 @@ var main = function () {
 
         planet.Update();
 
+        control.movementSpeed = planet.cameraHeight;
+
         stats.update();
 
+        UpdateToLocal();
 
-        control.movementSpeed = planet.cameraHeight;
 //        control.zoomSpeed = planet.control.zoomSpeed > 1 ? 1 : this.control.zoomSpeed;
 
 
@@ -87,10 +89,31 @@ var main = function () {
         logger.Log("Deepest Level ", planet.deepestNode);
         logger.Log("Total Nodes ", planet.totalNodes);
         logger.Log("Total Leaf Nodes ", planet.leafNodes);
-        logger.Log("CameraHeight ", planet.cameraHeight);
+        logger.Log("CameraHeight ", Math.round(planet.cameraHeight));
+        logger.Log("CameraSpeed ", Math.round(control.movementSpeed));
+        logger.Log("CameraPosition: ", camera.position);
+        logger.Log("PlanetPosition: ", planet.position);
 
     }
 
+    function UpdateToLocal() {
+        if (camera.position.length() > 100) {
+            workClock.getDelta();
+            origin = origin.subVectors(camera.position, origin);
+            /*            scene.children.forEach(function (child) {
+             child.position.sub(origin);
+             });
+             */
+            planet.position.sub(origin);
+            origin.x = 0;
+            origin.y = 0;
+            origin.z = 0;
+            camera.position.x = 0;
+            camera.position.y = 0;
+            camera.position.z = 0;
+            console.log(workClock.getDelta() + " update time");
+        }
+    }
 
     render();
 //    setTimeout(function(){pause = !pause;}, 500);

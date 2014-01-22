@@ -66,8 +66,9 @@ TerrainNode.prototype = {
                     this.Draw();
                 } else {
                     var d = this.tree.sphere.deepestNode;
-                    if (d < this.level)
+                    if (d < this.level) {
                         this.tree.sphere.deepestNode = this.level;
+                    }
                 }
             }
         }
@@ -89,23 +90,24 @@ TerrainNode.prototype = {
             var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
             //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
-            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
+            //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
+            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
             geo.computeBoundingSphere();
             geo.boundingSphere.radius = 4000000;
             geo.computeBoundingSphere();
-
-            var vertices = geo.vertices;
-            for (var i = 0, l = vertices.length; i < l; i++) {
-                var temp = this.tree.widthDir.clone();
-                temp.multiplyScalar(vertices[i].x);
-                temp.add(this.tree.heightDir.clone().multiplyScalar(vertices[i].y));
-                temp.multiplyScalar(this.width);
-                temp.add(this.position);
-                vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius);
-            }
-            geo.vertices = vertices;
-            geo.verticesNeedUpdate = true;
-
+            /*
+             var vertices = geo.vertices;
+             for (var i = 0, l = vertices.length; i < l; i++) {
+             var temp = this.tree.widthDir.clone();
+             temp.multiplyScalar(vertices[i].x);
+             temp.add(this.tree.heightDir.clone().multiplyScalar(vertices[i].y));
+             temp.multiplyScalar(this.width);
+             temp.add(this.position);
+             vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius);
+             }
+             geo.vertices = vertices;
+             geo.verticesNeedUpdate = true;
+             */
             this.mesh = new THREE.Mesh(geo, mat);
             this.mesh.material.uniforms.Width.value = this.width;
             this.mesh.material.uniforms.StartPosition.value = this.position;
@@ -130,6 +132,7 @@ TerrainNode.prototype = {
             }
 
 
+            //this.tree.sphere.scene.add(this.mesh);
             this.tree.sphere.add(this.mesh);
             this.isDrawn = true;
         };
@@ -141,8 +144,12 @@ TerrainNode.prototype = {
 
         this.tree.sphere.leafNodes--;
 
+        //this.tree.sphere.scene.remove(this.mesh);
         this.tree.sphere.remove(this.mesh);
+
+        delete this.mesh.geometry;
         delete this.mesh;
+
         this.isDrawn = false;
 
     },

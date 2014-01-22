@@ -30,7 +30,7 @@ Logger.prototype = {
         var valueText;
 
         if (value instanceof THREE.Vector3) {
-            valueText = value.x + ", " + value.y + ", " + value.z;
+            valueText = Math.round(value.x) + ", " + Math.round(value.y) + ", " + Math.round(value.z);
         } else {
             valueText = value;
         }

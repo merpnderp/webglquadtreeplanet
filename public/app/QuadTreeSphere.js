@@ -12,6 +12,7 @@ var QuadTreeSphere = function (options) {
 
     THREE.Object3D.call(this);
 
+//    this.scene = options.scene;
 
     this.control = options.control;
 
@@ -55,6 +56,8 @@ QuadTreeSphere.prototype.Init = function () {
 QuadTreeSphere.prototype.InitQuadTrees = function () {
     var nearCorner = new THREE.Vector3(1, 1, 1).multiplyScalar(this.radius);
     var farCorner = nearCorner.clone().multiplyScalar(-1);
+    nearCorner.add(this.position);
+    farCorner.add(this.position);
     var quadOptions;
 
     //Near quadtrees
@@ -83,7 +86,9 @@ QuadTreeSphere.prototype.Update = function () {
     //Get local position of player
     this.localCameraPosition = this.worldToLocal(this.camera.position.clone());
     this.localCameraPlanetProjectionPosition = this.localCameraPosition.clone().normalize().multiplyScalar(this.radius);
-    this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
+
+    //this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
+    this.cameraHeight = this.camera.position.distanceTo(this.position) - this.radius;
 
     this.localCameraMaxAngle = Math.acos(this.radius / (this.cameraHeight + this.radius));
 
