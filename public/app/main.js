@@ -26,10 +26,15 @@ var main = function () {
     logger.domElement.style.zIndex = 100;
     document.body.appendChild(logger.domElement);
 
-    //var planetRadius = 9.46e23;
-    var planetRadius = 6327000;
+    //var planetRadius = 9.46e23; // 100,000 light years
+    //var planetRadius = 6371000; // earth sized
+    var planetRadius = 1737000; // moon sized
+    //var planetRadius = 695500000; // sun sized
+    //var planetRadius = .1; // 4 inches
 
-    var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 7000000);
+    var fov = 30;
+
+    var camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 7000000);
     camera.position.z = planetRadius * 2;
     //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -91,7 +96,8 @@ var main = function () {
         logger.Log("Deepest Level ", planet.deepestNode);
         logger.Log("Total Nodes ", planet.totalNodes);
         logger.Log("Total Leaf Nodes ", planet.leafNodes);
-        logger.Log("CameraHeight ", Math.round(planet.cameraHeight));
+        logger.Log("CameraHeight (meters) ", Math.round(planet.cameraHeight));
+        logger.Log("CameraHeight (miles) ", Math.round(planet.cameraHeight * 0.000621371));
         logger.Log("CameraPosition: ", camera.position);
         logger.Log("PlanetPosition: ", planet.position);
 

@@ -36,6 +36,13 @@ var TerrainNode = function (options) {
 
 TerrainNode.prototype = {
 
+    SetViewMatrix: function () {
+        var localCamera = new THREE.Matrix4();
+        return function () {
+            localCamera.getInverse(this.tree.sphere.camera.matrixWorld);
+            this.mesh.material.uniforms.cpuModelViewMatrix.value = localCamera.multiply(this.tree.sphere.matrixWorld);
+        };
+    }(),
 
     Update: function () {
         if (this.OccludedByHorizon()) {
@@ -64,6 +71,8 @@ TerrainNode.prototype = {
                     this.UpdateChildren();
                 } else if (!this.isDrawn) {
                     this.Draw();
+                } else if (this.isDrawn) {
+                    this.SetViewMatrix();
                 } else {
                     var d = this.tree.sphere.deepestNode;
                     if (d < this.level) {
@@ -86,27 +95,31 @@ TerrainNode.prototype = {
             this.tree.sphere.leafNodes++;
 
             var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
-                StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'} };
+                StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'},
+                cpuModelViewMatrix: { type: 'm4'}
+            };
 
             var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
             //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
-            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
-            //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
+            //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
+            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
 
 
-            var vertices = geo.vertices;
-            for (var i = 0, l = vertices.length; i < l; i++) {
-                var temp = this.tree.widthDir.clone();
-                temp.multiplyScalar(vertices[i].x);
-                temp.add(this.tree.heightDir.clone().multiplyScalar(vertices[i].y));
-                temp.multiplyScalar(this.width);
-                temp.add(this.position);
-                vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius).add(this.tree.sphere.position);
-            }
+            /*
+             var vertices = geo.vertices;
+             for (var i = 0, l = vertices.length; i < l; i++) {
+             var temp = this.tree.widthDir.clone();
+             temp.multiplyScalar(vertices[i].x);
+             temp.add(this.tree.heightDir.clone().multiplyScalar(vertices[i].y));
+             temp.multiplyScalar(this.width);
+             temp.add(this.position);
+             vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius).add(this.tree.sphere.position);
+             }
 
-            geo.vertices = vertices;
-            geo.verticesNeedUpdate = true;
+             geo.vertices = vertices;
+             geo.verticesNeedUpdate = true;
+             */
 
             this.mesh = new THREE.Mesh(geo, mat);
 
@@ -118,6 +131,7 @@ TerrainNode.prototype = {
             this.mesh.material.uniforms.StartPosition.value = this.position;
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
             this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
+            this.SetViewMatrix();
 
             if (this.tree.name === 'Front' || true) {
                 var val = 1 / this.level + 1;
@@ -130,27 +144,28 @@ TerrainNode.prototype = {
                 } else if (this.name === 'BottomLeft') {
                     this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val / 2, val / 2, 0);
                 } else {
-                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(.5, .5, .5);
+                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0.5, 0.5, 0.5);
                 }
             } else {
-                this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, .5, 0.5);
+                this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, 0.5, 0.5);
             }
 
 
-            this.tree.sphere.scene.add(this.mesh);
-            //this.tree.sphere.add(this.mesh);
+            //this.tree.sphere.scene.add(this.mesh);
+            this.tree.sphere.add(this.mesh);
             this.isDrawn = true;
         };
 
-    }(),
+    }
+        (),
 
 
     UnDraw: function () {
 
         this.tree.sphere.leafNodes--;
 
-        this.tree.sphere.scene.remove(this.mesh);
-        //this.tree.sphere.remove(this.mesh);
+        //this.tree.sphere.scene.remove(this.mesh);
+        this.tree.sphere.remove(this.mesh);
 
         delete this.mesh.geometry;
         delete this.mesh;
@@ -177,7 +192,8 @@ TerrainNode.prototype = {
              */
             this.distance = this.tree.sphere.localCameraPosition.distanceTo(this.center);
         };
-    }(),
+    }
+        (),
 
 
     ShouldSplit: function () {
@@ -241,7 +257,8 @@ TerrainNode.prototype = {
 
         };
 
-    }(),
+    }
+        (),
 
 
     Die: function () {
@@ -298,10 +315,12 @@ TerrainNode.prototype = {
             z = z + wd.z * w + hd.z * w;
             return new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
         };
-    }()
+    }
+        ()
 
 
-};
+}
+;
 
 
 module.exports = TerrainNode;

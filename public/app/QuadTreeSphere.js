@@ -144,6 +144,8 @@ QuadTreeSphere.prototype.BuildSplitTable = function () {
         }
         i++;
     }
+
+    this.maxLevel = 21;
 };
 
 module.exports = QuadTreeSphere;
