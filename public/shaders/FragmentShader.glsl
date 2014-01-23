@@ -1,3 +1,5 @@
+precision highp float;
+
 uniform vec3 iColor;
 
 void main() {

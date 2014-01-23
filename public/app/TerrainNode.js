@@ -99,8 +99,8 @@ TerrainNode.prototype = {
                 cpuModelViewMatrix: { type: 'm4'}
             };
 
-            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
-            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
+            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
+            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
             //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
             var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();

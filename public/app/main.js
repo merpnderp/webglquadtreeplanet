@@ -28,7 +28,8 @@ var main = function () {
 
     //var planetRadius = 9.46e23; // 100,000 light years
     //var planetRadius = 6371000; // earth sized
-    var planetRadius = 1737000; // moon sized
+    //var planetRadius = 1737000; // moon sized
+    var planetRadius = 1000000; // moon sized
     //var planetRadius = 695500000; // sun sized
     //var planetRadius = .1; // 4 inches
 
@@ -80,7 +81,7 @@ var main = function () {
 
         planet.Update();
 
-        control.movementSpeed = planet.cameraHeight;
+        control.movementSpeed = planet.cameraHeight * 2;
 
         stats.update();
 
