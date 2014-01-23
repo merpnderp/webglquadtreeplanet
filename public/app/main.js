@@ -41,7 +41,7 @@ var main = function () {
     var controlMaxSpeed = 1000000;
     control.movementSpeed = controlMaxSpeed;
     control.domElement = document.body;
-    control.rollSpeed = Math.PI / 24;
+    control.rollSpeed = Math.PI / 12;
     control.autoForward = false;
     control.dragToLook = false;
 
@@ -75,7 +75,7 @@ var main = function () {
 
         planet.Update();
 
-        control.movementSpeed = planet.cameraHeight;
+        control.movementSpeed = planet.cameraHeight * 2;
 
         stats.update();
 
@@ -91,7 +91,8 @@ var main = function () {
         logger.Log("Deepest Level ", planet.deepestNode);
         logger.Log("Total Nodes ", planet.totalNodes);
         logger.Log("Total Leaf Nodes ", planet.leafNodes);
-        logger.Log("CameraHeight ", Math.round(planet.cameraHeight));
+        logger.Log("CameraHeight (meters) ", Math.round(planet.cameraHeight));
+        logger.Log("CameraHeight (miles) ", Math.round(planet.cameraHeight * 0.000621371));
         logger.Log("CameraPosition: ", camera.position);
         logger.Log("PlanetPosition: ", planet.position);
 

@@ -80,7 +80,8 @@ TerrainNode.prototype = {
 
         var vertex = fs.readFileSync('shaders/VertexShader.glsl');
         var frag = fs.readFileSync('shaders/FragmentShader.glsl');
-
+        var vertices;
+        var geo;
         return function () {
 
             this.tree.sphere.leafNodes++;
@@ -91,11 +92,11 @@ TerrainNode.prototype = {
             var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
             //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
-            var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
+            geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
             //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
 
 
-            var vertices = geo.vertices;
+            vertices = geo.vertices;
             for (var i = 0, l = vertices.length; i < l; i++) {
                 var temp = this.tree.widthDir.clone();
                 temp.multiplyScalar(vertices[i].x);
