@@ -26,8 +26,11 @@ var main = function () {
     logger.domElement.style.zIndex = 100;
     document.body.appendChild(logger.domElement);
 
+    //var planetRadius = 9.46e23;
+    var planetRadius = 6327000;
+
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 7000000);
-    camera.position.z = 12000000;
+    camera.position.z = planetRadius * 2;
     //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -50,7 +53,7 @@ var main = function () {
 //		renderer.setClearColor( 0xffffff, 1) 
     document.getElementById('viewport').appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: 6371000, patchSize: 32, control: control, scene: scene });
+    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 32, control: control, scene: scene });
     planet.Init();
     scene.add(planet);
 
@@ -95,7 +98,7 @@ var main = function () {
     }
 
     function UpdateToLocal() {
-        if (camera.position.length() > 100000) {
+        if (camera.position.length() > 100) {
             workClock.getDelta();
             origin = origin.subVectors(camera.position, origin);
             scene.children.forEach(function (child) {
