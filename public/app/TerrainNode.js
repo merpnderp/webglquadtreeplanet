@@ -97,13 +97,22 @@ TerrainNode.prototype = {
 
 
             vertices = geo.vertices;
+            var x, y, z, sx, sy, sz;
             for (var i = 0, l = vertices.length; i < l; i++) {
                 var temp = this.tree.widthDir.clone();
                 temp.multiplyScalar(vertices[i].x);
                 temp.add(this.tree.heightDir.clone().multiplyScalar(vertices[i].y));
                 temp.multiplyScalar(this.width);
                 temp.add(this.position);
-                vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius).add(this.tree.sphere.position);
+                temp.normalize();
+                x = temp.x;
+                y = temp.y;
+                z = temp.z;
+                sx = x * Math.sqrt( 1 - y * y * 0.5 - z * z * 0.5 + y * y * z * z / 3 );
+                sy = y * Math.sqrt( 1 - z * z * 0.5 - x * x * 0.5 + z * z * x * x / 3 );
+                sz = z * Math.sqrt( 1 - x * x * 0.5 - y * y * 0.5 + x * x * y * y / 3 );
+                vertices[i] = temp.multiplyScalar(this.tree.sphere.radius).add(this.tree.sphere.position);
+//                vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius).add(this.tree.sphere.position);
             }
 
             geo.vertices = vertices;
