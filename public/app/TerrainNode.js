@@ -8,6 +8,7 @@
 
 var THREE = require('../libs/three.js');
 var fs = require('fs');
+var BufferGeometryUtil = require('./BufferGeometryUtils.js');
 
 var TerrainNode = function (options) {
     this.level = options.level;
@@ -82,6 +83,8 @@ TerrainNode.prototype = {
         var frag = fs.readFileSync('shaders/FragmentShader.glsl');
         var vertices;
         var geo;
+        var buffGeo;
+        var buffUtil = THREE.BufferGeometryUtils;
         return function () {
 
             this.tree.sphere.leafNodes++;
@@ -116,9 +119,10 @@ TerrainNode.prototype = {
             }
 
             geo.vertices = vertices;
-            geo.verticesNeedUpdate = true;
 
-            this.mesh = new THREE.Mesh(geo, mat);
+            buffGeo = buffUtil.fromGeometry(geo);
+
+            this.mesh = new THREE.Mesh(buffGeo, mat);
 
             geo.computeBoundingSphere();
             geo.boundingSphere.radius = this.width * 3;
