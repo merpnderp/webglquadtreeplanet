@@ -27,16 +27,15 @@ var main = function () {
     document.body.appendChild(logger.domElement);
 
     //var planetRadius = 9.46e23; // 100,000 light years
-    //var planetRadius = 6371000; // earth sized
-    //var planetRadius = 1737000; // moon sized
-    var planetRadius = 1000000; // moon sized
     //var planetRadius = 695500000; // sun sized
+    var planetRadius = 6371000; // earth sized
+    //var planetRadius = 1737000; // moon sized
     //var planetRadius = .1; // 4 inches
 
     var fov = 30;
 
     var camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 7000000);
-    camera.position.z = planetRadius * 2;
+    camera.position.z = planetRadius * -4;
     //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
@@ -47,7 +46,7 @@ var main = function () {
     var controlMaxSpeed = 1000000;
     control.movementSpeed = controlMaxSpeed;
     control.domElement = document.body;
-    control.rollSpeed = Math.PI / 24;
+    control.rollSpeed = Math.PI / 6;
     control.autoForward = false;
     control.dragToLook = false;
 
@@ -69,17 +68,28 @@ var main = function () {
 
     var clock = new THREE.Clock();
     var workClock = new THREE.Clock();
+    var updateClock = new THREE.Clock();
     var delta;
     var origin = new THREE.Vector3();
-
+    var updateSpeedMax = 0, temp = 0, updateSpeedAvg = 0, count = 0, updateSpeedAvgShow = 0;
     function render() {
         delta = clock.getDelta();
         requestAnimationFrame(render);
         renderer.render(scene, camera);
 
         control.update(delta);
-
+        updateClock.getDelta();
         planet.Update();
+        temp = updateClock.getDelta();
+        if(temp > updateSpeedMax)updateSpeedMax = temp;
+
+        updateSpeedAvg += temp;
+        count++;
+        if(count > 60){
+           count = 0;
+            updateSpeedAvgShow = updateSpeedAvg/60;
+            updateSpeedAvg = 0;
+        }
 
         control.movementSpeed = planet.cameraHeight * 2;
 
@@ -100,7 +110,8 @@ var main = function () {
         logger.Log("CameraHeight (meters) ", Math.round(planet.cameraHeight));
         logger.Log("CameraHeight (miles) ", Math.round(planet.cameraHeight * 0.000621371));
         logger.Log("CameraPosition: ", camera.position);
-        logger.Log("PlanetPosition: ", planet.position);
+        logger.Log("Quad UpdateSpeed Max: ", updateSpeedMax.toFixed(3));
+        logger.Log("Quad UpdateSpeed Avg: ", updateSpeedAvgShow.toFixed(3));
 
     }
 
@@ -118,22 +129,15 @@ var main = function () {
             camera.position.x = 0;
             camera.position.y = 0;
             camera.position.z = 0;
-            console.log(workClock.getDelta() + " update time");
         }
     }
 
     render();
-//    setTimeout(function(){pause = !pause;}, 500);
 
     window.addEventListener("keypress", function (key) {
         if (key.key === "Spacebar") {
             pause = !pause;
             planet.Pause(pause);
-            if (!pause) {
-                setTimeout(render, 100);
-            } else {
-                control.zoomSpeed = 1;
-            }
         }
 
     });

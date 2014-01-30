@@ -99,8 +99,8 @@ TerrainNode.prototype = {
                 cpuModelViewMatrix: { type: 'm4'}
             };
 
-            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
-            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
+            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
+            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
 
             //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
             var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
@@ -122,10 +122,11 @@ TerrainNode.prototype = {
              */
 
             this.mesh = new THREE.Mesh(geo, mat);
+            this.mesh.frustumCulled = false;
+//            geo.computeBoundingSphere();
+//            geo.boundingSphere.radius = this.width * 10;
+//            geo.boundingSphere.position = this.center;
 
-            geo.computeBoundingSphere();
-            geo.boundingSphere.radius = this.width * 3;
-            geo.computeBoundingSphere();
 
             this.mesh.material.uniforms.Width.value = this.width;
             this.mesh.material.uniforms.StartPosition.value = this.position;
@@ -306,13 +307,19 @@ TerrainNode.prototype = {
             x = this.position.x;
             y = this.position.y;
             z = this.position.z;
+
+            console.log("position: " + x + " : " + y + " : " + z);
             wd = this.tree.widthDir;
+            console.log("weidthDir: " + wd.x + " : " + wd.y + " : " + wd.z);
             hd = this.tree.heightDir;
+            console.log("heightDir: " + hd.x + " : " + hd.y + " : " + hd.z);
             w = this.halfWidth;
 
             x = x + wd.x * w + hd.x * w;
             y = y + wd.y * w + hd.y * w;
             z = z + wd.z * w + hd.z * w;
+
+            console.log("center: " + x + " : " + y + " : " + z);
             return new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
         };
     }

@@ -16,6 +16,10 @@ void main(){
 
     //Sphere
     vec3 newPosition = vec3(normalize(StartPosition.xyz + (WidthDir * position.x + HeightDir * position.y) * Width) * Radius);
+//    vec3 newPosition = vec3(StartPosition.xyz + (WidthDir * position.x + HeightDir * position.y) * Width);
+//    vec3 diffPosition = newPosition - (normalize(newPosition) * Radius);
+//    newPosition = newPosition - diffPosition;
+
 
     gl_Position = projectionMatrix * cpuModelViewMatrix * vec4( newPosition, 1.0 );
 //    gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
