@@ -34,7 +34,7 @@ var TerrainNode = function (options) {
     this.isDrawn = false;
     this.isOccluded = false;
 
-    this.boundingSphere = new THREE.Sphere(this.center, this.width);
+    this.boundingBox = new THREE.Box3([this.center, this.position]);
 
     this.tree.sphere.totalNodes++;
 
@@ -179,7 +179,6 @@ TerrainNode.prototype = {
         //this.tree.sphere.scene.remove(this.mesh);
         this.tree.sphere.remove(this.mesh);
 
-        delete this.mesh.geometry;
         delete this.mesh;
 
         this.isDrawn = false;
@@ -224,8 +223,7 @@ TerrainNode.prototype = {
 
 
     InCameraFrustum: function () {
-        return true;
-        if(this.tree.sphere.cameraFrustum.intersectsSphere(this.boundingSphere)){
+        if(this.tree.sphere.cameraFrustum.intersectsBox(this.boundingBox)){
             return true;
         }
 
