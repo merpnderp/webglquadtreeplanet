@@ -74,10 +74,15 @@ var main = function () {
     var updateSpeedMax = 0, temp = 0, updateSpeedAvg = 0, count = 0, updateSpeedAvgShow = 0;
     function render() {
         delta = clock.getDelta();
+
         requestAnimationFrame(render);
+
         renderer.render(scene, camera);
 
         control.update(delta);
+        UpdateToLocal();
+
+
         updateClock.getDelta();
         planet.Update();
         temp = updateClock.getDelta();
@@ -95,7 +100,6 @@ var main = function () {
 
         stats.update();
 
-        UpdateToLocal();
 
 //        control.zoomSpeed = planet.control.zoomSpeed > 1 ? 1 : this.control.zoomSpeed;
 

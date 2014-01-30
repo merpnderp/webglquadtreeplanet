@@ -44,6 +44,8 @@ var QuadTreeSphere = function (options) {
 
     this.BuildSplitTable();
 
+    this.cameraFrustum = new THREE.Frustum();
+
 };
 
 QuadTreeSphere.prototype = Object.create(THREE.Object3D.prototype);
@@ -78,7 +80,7 @@ QuadTreeSphere.prototype.InitQuadTrees = function () {
 
 };
 
-
+var tempMatrix = new THREE.Matrix4();
 QuadTreeSphere.prototype.Update = function () {
 
     this.deepestNode = 0;
@@ -93,6 +95,8 @@ QuadTreeSphere.prototype.Update = function () {
     this.localCameraMaxAngle = Math.acos(this.radius / (this.cameraHeight + this.radius));
 
     this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
+
+    this.cameraFrustum.setFromMatrix( tempMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse ) );
 
 
    if (!this.pause) {

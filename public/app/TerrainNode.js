@@ -25,9 +25,16 @@ var TerrainNode = function (options) {
     //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();
 
+
+//    this.test = new THREE.Mesh(new THREE.SphereGeometry(1000, 10, 10));
+//    this.test.position = this.center;
+//    this.tree.sphere.add(this.test);
+
     this.isSplit = false;
     this.isDrawn = false;
     this.isOccluded = false;
+
+    this.boundingSphere = new THREE.Sphere(this.center, this.width);
 
     this.tree.sphere.totalNodes++;
 
@@ -78,6 +85,10 @@ TerrainNode.prototype = {
                     if (d < this.level) {
                         this.tree.sphere.deepestNode = this.level;
                     }
+                }
+            }else{
+                if(this.isDrawn){
+                    this.UnDraw();
                 }
             }
         }
@@ -213,8 +224,12 @@ TerrainNode.prototype = {
 
 
     InCameraFrustum: function () {
-
         return true;
+        if(this.tree.sphere.cameraFrustum.intersectsSphere(this.boundingSphere)){
+            return true;
+        }
+
+        return false;
 
     },
 
@@ -301,26 +316,27 @@ TerrainNode.prototype = {
 
     FindCenter: function () {
 
-        var x, y, z, w, wd, hd;
+        var x, y, z, w, wd, hd, vec;
 
         return function () {
             x = this.position.x;
             y = this.position.y;
             z = this.position.z;
 
-            console.log("position: " + x + " : " + y + " : " + z);
+            //console.log("position: " + x + " : " + y + " : " + z);
             wd = this.tree.widthDir;
-            console.log("weidthDir: " + wd.x + " : " + wd.y + " : " + wd.z);
+            //console.log("weidthDir: " + wd.x + " : " + wd.y + " : " + wd.z);
             hd = this.tree.heightDir;
-            console.log("heightDir: " + hd.x + " : " + hd.y + " : " + hd.z);
+            //console.log("heightDir: " + hd.x + " : " + hd.y + " : " + hd.z);
             w = this.halfWidth;
 
             x = x + wd.x * w + hd.x * w;
             y = y + wd.y * w + hd.y * w;
             z = z + wd.z * w + hd.z * w;
 
-            console.log("center: " + x + " : " + y + " : " + z);
-            return new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
+            //console.log("center: " + x + " : " + y + " : " + z);
+            vec = new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
+            return vec;
         };
     }
         ()
