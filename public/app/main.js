@@ -62,26 +62,45 @@ var main = function () {
     var pause = false;
 
     var clock = new THREE.Clock();
-    var workClock = new THREE.Clock();
+    var clockTest = new THREE.Clock();
+    var updateClock = new THREE.Clock();
     var delta;
     var origin = new THREE.Vector3();
 
+    var planetUpdate = 0, del = 0, renderUpdate = 0, updateUpdate = 0;
+
     function render() {
+        updateClock.getDelta();
         delta = clock.getDelta();
+
         requestAnimationFrame(render);
-        renderer.render(scene, camera);
 
         control.update(delta);
 
+        clockTest.getDelta();
+        renderer.render(scene, camera);
+        del = clockTest.getDelta();
+        if (del > renderUpdate) {
+            renderUpdate = del;
+        }
+
         planet.Update();
+
+        del = clockTest.getDelta();
+        if (del > planetUpdate) {
+            planetUpdate = del;
+        }
 
         control.movementSpeed = planet.cameraHeight * 2;
 
         stats.update();
 
+        clockTest.getDelta();
         UpdateToLocal();
-
-//        control.zoomSpeed = planet.control.zoomSpeed > 1 ? 1 : this.control.zoomSpeed;
+        del = clockTest.getDelta();
+        if (del > summaryAverage) {
+            summaryAverage = del;
+        }
 
 
         logger.Log("Geometries ", renderer.info.memory.geometries);
@@ -95,12 +114,21 @@ var main = function () {
         logger.Log("CameraHeight (miles) ", Math.round(planet.cameraHeight * 0.000621371));
         logger.Log("CameraPosition: ", camera.position);
         logger.Log("PlanetPosition: ", planet.position);
+        logger.Log("Slowest Planet Move time ", (summaryAverage).toFixed(3));
+        logger.Log("Slowest Planet Update ", (planetUpdate).toFixed(3));
+        logger.Log("Slowest Render Update ", (renderUpdate).toFixed(3));
+        logger.Log("Slowest Update Update ", (updateUpdate).toFixed(3));
+        del = updateClock.getDelta();
+        if (del > updateUpdate) {
+            updateUpdate = del;
+        }
 
     }
 
+    var summaryAverage = 0;
+
     function UpdateToLocal() {
-        if (camera.position.length() > 100) {
-            workClock.getDelta();
+        if (camera.position.length() > 1) {
             origin = origin.subVectors(camera.position, origin);
             scene.children.forEach(function (child) {
                 child.position.sub(origin);
@@ -112,7 +140,6 @@ var main = function () {
             camera.position.x = 0;
             camera.position.y = 0;
             camera.position.z = 0;
-            console.log(workClock.getDelta() + " update time");
         }
     }
 
@@ -123,11 +150,11 @@ var main = function () {
         if (key.key === "Spacebar") {
             pause = !pause;
             planet.Pause(pause);
-            if (!pause) {
-                setTimeout(render, 100);
-            } else {
-                control.zoomSpeed = 1;
-            }
+            /*            if (!pause) {
+             setTimeout(render, 100);
+             } else {
+             control.zoomSpeed = 1;
+             }*/
         }
 
     });

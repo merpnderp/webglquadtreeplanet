@@ -119,14 +119,12 @@ TerrainNode.prototype = {
             }
 
             geo.vertices = vertices;
-
+            geo.computeFaceNormals();
+            geo.computeVertexNormals();
+            geo.mergeVertices();
             buffGeo = buffUtil.fromGeometry(geo);
 
             this.mesh = new THREE.Mesh(buffGeo, mat);
-
-            geo.computeBoundingSphere();
-            geo.boundingSphere.radius = this.width * 3;
-            geo.computeBoundingSphere();
 
             this.mesh.material.uniforms.Width.value = this.width;
             this.mesh.material.uniforms.StartPosition.value = this.position;
