@@ -39,10 +39,10 @@ void main(){
 //    newPosition = rotateVector(hQuat, newPosition);
 
     //Square
-    vec3 newPosition = vec3(StartPosition.xyz + (WidthDir * position.x + HeightDir * position.y) * Width);
+//    vec3 newPosition = vec3(StartPosition.xyz + (WidthDir * position.x + HeightDir * position.y) * Width);
 
     //Sphere
-//    vec3 newPosition = vec3(normalize(StartPosition.xyz + (WidthDir * position.x + HeightDir * position.y) * Width) * Radius);
+    vec3 newPosition = vec3(normalize(StartPosition.xyz + (WidthDir * position.x + HeightDir * position.y) * Width) * Radius);
 //    vec3 newPosition = vec3(StartPosition.xyz + (WidthDir * position.x + HeightDir * position.y) * Width);
 //    vec3 diffPosition = newPosition - (normalize(newPosition) * Radius);
 //    newPosition = newPosition - diffPosition;
