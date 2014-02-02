@@ -21,9 +21,10 @@ var TerrainNode = function (options) {
     this.width = this.tree.sphere.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
     this.arcLength = (this.width / this.tree.sphere.radius) / 1.43 //divided by fudge factor;
-
+this.realArcLength = 2 * Math.PI * this.tree.sphere.radius / 4 / Math.pow(2, this.level);
     //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();
+
 
 
 //    this.test = new THREE.Mesh(new THREE.SphereGeometry(1000, 10, 10));
@@ -46,6 +47,8 @@ TerrainNode.prototype = {
     SetViewMatrix: function () {
         var localCamera = new THREE.Matrix4();
         return function () {
+
+            //Move to sphere
             localCamera.getInverse(this.tree.sphere.camera.matrixWorld);
             this.mesh.material.uniforms.cpuModelViewMatrix.value = localCamera.multiply(this.tree.sphere.matrixWorld);
         };
@@ -107,7 +110,8 @@ TerrainNode.prototype = {
 
             var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
                 StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'},
-                cpuModelViewMatrix: { type: 'm4'}
+                cpuModelViewMatrix: { type: 'm4'},
+                arcLength: {type: 'f'}
             };
 
             var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
@@ -141,9 +145,12 @@ TerrainNode.prototype = {
 
             this.mesh.material.uniforms.Width.value = this.width;
             this.mesh.material.uniforms.StartPosition.value = this.position;
+            //this.mesh.material.uniforms.StartPosition.value = this.center;
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
             this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
+            this.mesh.material.uniforms.arcLength.value = this.realArcLength;
             this.SetViewMatrix();
+
 
             if (this.tree.name === 'Front' || true) {
                 var val = 1 / this.level + 1;
