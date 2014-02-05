@@ -52,7 +52,10 @@ TerrainNode.prototype = {
 
             //Move to sphere
 //            localCamera.getInverse(this.tree.sphere.camera.matrixWorld);
-//            this.mesh.material.uniforms.cpuModelViewMatrix.value = localCamera.multiply(this.tree.sphere.matrixWorld);
+            if(this.level > this.tree.sphere.PlaneLevel){
+                this.mesh.material.uniforms.StartPosition.value = this.center.clone().applyMatrix4(this.tree.sphere.matrixWorld);
+            }
+
         };
     }(),
 
@@ -89,7 +92,7 @@ TerrainNode.prototype = {
                 } else if (!this.isDrawn) {
                     this.Draw();
                 } else if (this.isDrawn) {
-//                    this.SetViewMatrix();
+                    this.SetViewMatrix();
                 } else {
                     var d = this.tree.sphere.deepestNode;
                     if (d < this.level) {
@@ -121,16 +124,17 @@ TerrainNode.prototype = {
             };
 
             var mat, center;
-            console.log("creating level + " + this.level);
-            if(this.level > 5){
+            if(this.level > this.tree.sphere.PlaneLevel){
                 mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: plane, fragmentShader: frag, wireframe: true});
-                center = this.center;
+                center = this.center.clone().applyMatrix4(this.tree.sphere.matrixWorld);
             } else{
                 mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
                 center = this.position;
             }
 
             var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
+
+
 
 
 

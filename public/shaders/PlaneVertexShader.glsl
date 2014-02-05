@@ -21,7 +21,8 @@ void main(){
     vec3 newPosition = StartPosition.xyz + (cWidthDir * (position.x - .5 ) + cHeightDir * (position.y - .5 )) * Width;
 
     //gl_Position = projectionMatrix * cpuModelViewMatrix * vec4( newPosition, 1.0 );
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+    //gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
+    gl_Position = projectionMatrix * viewMatrix * vec4( newPosition, 1.0 );
 //    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
 }
