@@ -21,9 +21,11 @@ var TerrainNode = function (options) {
     this.width = this.tree.sphere.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
     this.arcLength = (this.width / this.tree.sphere.radius) / 1.43 //divided by fudge factor;
-this.realArcLength = 2 * Math.PI * this.tree.sphere.radius / 4 / Math.pow(2, this.level);
+//this.realArcLength = 2 * Math.PI * this.tree.sphere.radius / 4 / Math.pow(2, this.level);
     //This is the node's center location after the point is projected onto the sphere.
-    this.center = this.FindCenter();
+
+    this.center = undefined;
+    this.FindCenter();
 
 
 
@@ -49,12 +51,17 @@ TerrainNode.prototype = {
         return function () {
 
             //Move to sphere
-            localCamera.getInverse(this.tree.sphere.camera.matrixWorld);
-            this.mesh.material.uniforms.cpuModelViewMatrix.value = localCamera.multiply(this.tree.sphere.matrixWorld);
+//            localCamera.getInverse(this.tree.sphere.camera.matrixWorld);
+//            this.mesh.material.uniforms.cpuModelViewMatrix.value = localCamera.multiply(this.tree.sphere.matrixWorld);
         };
     }(),
 
+
     Update: function () {
+
+        if(this.tree.sphere.pause){
+            return;
+        }
         if (this.OccludedByHorizon()) {
             this.isOccluded = true;
             if (this.isSplit) {
@@ -82,7 +89,7 @@ TerrainNode.prototype = {
                 } else if (!this.isDrawn) {
                     this.Draw();
                 } else if (this.isDrawn) {
-                    this.SetViewMatrix();
+//                    this.SetViewMatrix();
                 } else {
                     var d = this.tree.sphere.deepestNode;
                     if (d < this.level) {
@@ -102,6 +109,7 @@ TerrainNode.prototype = {
 
 
         var vertex = fs.readFileSync('shaders/VertexShader.glsl');
+        var plane = fs.readFileSync('shaders/PlaneVertexShader.glsl');
         var frag = fs.readFileSync('shaders/FragmentShader.glsl');
 
         return function () {
@@ -109,32 +117,25 @@ TerrainNode.prototype = {
             this.tree.sphere.leafNodes++;
 
             var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
-                StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'},
-                cpuModelViewMatrix: { type: 'm4'},
-                arcLength: {type: 'f'}
+                StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'}
             };
 
-            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
-            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
+            var mat, center;
+            console.log("creating level + " + this.level);
+            if(this.level > 5){
+                mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: plane, fragmentShader: frag, wireframe: true});
+                center = this.center;
+            } else{
+                mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
+                center = this.position;
+            }
 
-            //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry().clone();
             var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
 
 
-            /*
-             var vertices = geo.vertices;
-             for (var i = 0, l = vertices.length; i < l; i++) {
-             var temp = this.tree.widthDir.clone();
-             temp.multiplyScalar(vertices[i].x);
-             temp.add(this.tree.heightDir.clone().multiplyScalar(vertices[i].y));
-             temp.multiplyScalar(this.width);
-             temp.add(this.position);
-             vertices[i] = temp.normalize().multiplyScalar(this.tree.sphere.radius).add(this.tree.sphere.position);
-             }
 
-             geo.vertices = vertices;
-             geo.verticesNeedUpdate = true;
-             */
+
+
 
             this.mesh = new THREE.Mesh(geo, mat);
             this.mesh.frustumCulled = false;
@@ -144,12 +145,10 @@ TerrainNode.prototype = {
 
 
             this.mesh.material.uniforms.Width.value = this.width;
-            this.mesh.material.uniforms.StartPosition.value = this.position;
-            //this.mesh.material.uniforms.StartPosition.value = this.center;
+            this.mesh.material.uniforms.StartPosition.value = center;
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
             this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
-            this.mesh.material.uniforms.arcLength.value = this.realArcLength;
-            this.SetViewMatrix();
+//            this.SetViewMatrix();
 
 
             if (this.tree.name === 'Front' || true) {
@@ -338,10 +337,8 @@ TerrainNode.prototype = {
             x = x + wd.x * w + hd.x * w;
             y = y + wd.y * w + hd.y * w;
             z = z + wd.z * w + hd.z * w;
-
             //console.log("center: " + x + " : " + y + " : " + z);
-            vec = new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
-            return vec;
+            this.center = new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
         };
     }
         ()

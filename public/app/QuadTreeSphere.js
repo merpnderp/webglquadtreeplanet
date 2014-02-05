@@ -98,20 +98,18 @@ QuadTreeSphere.prototype.Update = function () {
 
     this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
 
-    this.cameraFrustum.setFromMatrix( tempMatrix.multiplyMatrices( this.camera.projectionMatrix, this.camera.matrixWorldInverse ) );
+    this.cameraFrustum.setFromMatrix(tempMatrix.multiplyMatrices(this.camera.projectionMatrix, this.camera.matrixWorldInverse));
 
 
-   if (!this.pause) {
-        this.quadTrees[0].Update();
-        this.quadTrees[1].Update();
-        this.quadTrees[2].Update();
-        this.quadTrees[3].Update();
-        this.quadTrees[4].Update();
-        this.quadTrees[5].Update();
-    }
+    this.quadTrees[0].Update();
+    this.quadTrees[1].Update();
+    this.quadTrees[2].Update();
+    this.quadTrees[3].Update();
+    this.quadTrees[4].Update();
+    this.quadTrees[5].Update();
 };
 
-QuadTreeSphere.prototype.Pause = function(pause){
+QuadTreeSphere.prototype.Pause = function (pause) {
     this.pause = pause;
 };
 

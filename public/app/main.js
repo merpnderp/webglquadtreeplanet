@@ -28,11 +28,11 @@ var main = function () {
 
     //var planetRadius = 9.46e23; // 100,000 light years
     //var planetRadius = 695500000; // sun sized
-    var planetRadius = 6371000; // earth sized
+    var planetRadius = 6376136; // earth sized
     //var planetRadius = 1737000; // moon sized
     //var planetRadius = .1; // 4 inches
 
-    var fov = 30;
+    var fov = 60;
 
     var camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 7000000);
     camera.position.z = planetRadius * -4;
