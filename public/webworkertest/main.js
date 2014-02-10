@@ -1,5 +1,7 @@
+
 var MathSeed = require('./MathSeedRandom');
 var SimplexNoise_octave = require('./SimplexNoise.js');
+
 var SimplexNoise = function (largestFeature, persistence, seed) {
     this.octaves = [];
 
