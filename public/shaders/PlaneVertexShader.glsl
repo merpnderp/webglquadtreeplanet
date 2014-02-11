@@ -4,14 +4,16 @@ precision highp float;
 uniform float Width;
 uniform float Radius;
 uniform vec3 StartPosition;
+uniform vec3 PlanetCenter;
 uniform vec3 HeightDir;
 uniform vec3 WidthDir;
 
 
 void main(){
 
-    vec3 nStart = normalize(StartPosition);
-   // vec3 cHeightDir = cross(HeightDir, StartPosition);
+    vec3 nStart = normalize(StartPosition - PlanetCenter);
+    //vec3 nStart = normalize(StartPosition);
+    //vec3 cHeightDir = cross(HeightDir, StartPosition);
     //vec3 cWidthDir = cross(WidthDir, StartPosition);
     vec3 cHeightDir = cross(nStart, HeightDir);
     vec3 cWidthDir = cross(nStart, WidthDir);

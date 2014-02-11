@@ -28,7 +28,6 @@ var TerrainNode = function (options) {
     this.FindCenter();
 
 
-
 //    this.test = new THREE.Mesh(new THREE.SphereGeometry(1000, 10, 10));
 //    this.test.position = this.center;
 //    this.tree.sphere.add(this.test);
@@ -46,23 +45,11 @@ var TerrainNode = function (options) {
 
 TerrainNode.prototype = {
 
-    SetViewMatrix: function () {
-        var localCamera = new THREE.Matrix4();
-        return function () {
-
-            //Move to sphere
-//            localCamera.getInverse(this.tree.sphere.camera.matrixWorld);
-            if(this.level > this.tree.sphere.PlaneLevel){
-                this.mesh.material.uniforms.StartPosition.value = this.center.clone().applyMatrix4(this.tree.sphere.matrixWorld);
-            }
-
-        };
-    }(),
 
 
     Update: function () {
 
-        if(this.tree.sphere.pause){
+        if (this.tree.sphere.pause) {
             return;
         }
         if (this.OccludedByHorizon()) {
@@ -92,24 +79,39 @@ TerrainNode.prototype = {
                 } else if (!this.isDrawn) {
                     this.Draw();
                 } else if (this.isDrawn) {
-                    this.SetViewMatrix();
+                    this.UpdateView();
                 } else {
                     var d = this.tree.sphere.deepestNode;
                     if (d < this.level) {
                         this.tree.sphere.deepestNode = this.level;
                     }
                 }
-            }else{
-                if(this.isDrawn){
+            } else {
+                if (this.isDrawn) {
                     this.UnDraw();
                 }
             }
         }
     },
 
+    SetViewMatrix: function () {
+        if (this.level > this.tree.sphere.PlaneLevel) {
+            this.mesh.material.uniforms.StartPosition.value = this.center.clone().applyMatrix4(this.tree.sphere.matrixWorld);
+        }
+
+    },
+
+
+    UpdateView: function () {
+
+        this.SetViewMatrix();
+        if (this.isPlane) {
+            this.mesh.material.uniforms.PlanetCenter.value = this.tree.sphere.position;
+        }
+    },
+
 
     Draw: function () {
-
 
         var vertex = fs.readFileSync('shaders/VertexShader.glsl');
         var plane = fs.readFileSync('shaders/PlaneVertexShader.glsl');
@@ -124,21 +126,18 @@ TerrainNode.prototype = {
             };
 
             var mat, center;
-            if(this.level > this.tree.sphere.PlaneLevel){
+            if (this.level > this.tree.sphere.PlaneLevel) {
+                this.isPlane = true;
+                uniforms.PlanetCenter = {type: 'v3'};
                 mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: plane, fragmentShader: frag, wireframe: true});
                 center = this.center.clone().applyMatrix4(this.tree.sphere.matrixWorld);
-            } else{
+            } else {
+                this.isPlane = false;
                 mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
                 center = this.position;
             }
 
             var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
-
-
-
-
-
-
 
 
             this.mesh = new THREE.Mesh(geo, mat);
@@ -153,6 +152,9 @@ TerrainNode.prototype = {
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
             this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
 //            this.SetViewMatrix();
+            if(this.level > this.tree.sphere.PlaneLevel){
+                this.mesh.material.uniforms.PlanetCenter.value = this.tree.sphere.position;
+            }
 
 
             if (this.tree.name === 'Front' || true) {
@@ -233,7 +235,7 @@ TerrainNode.prototype = {
 
 
     InCameraFrustum: function () {
-        if(this.tree.sphere.cameraFrustum.intersectsBox(this.boundingBox)){
+        if (this.tree.sphere.cameraFrustum.intersectsBox(this.boundingBox)) {
             return true;
         }
 

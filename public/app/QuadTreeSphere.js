@@ -30,7 +30,7 @@ var QuadTreeSphere = function (options) {
 
     this.quadTrees = [];
 
-    this.PlaneLevel = 10;
+    this.PlaneLevel = 15;
 
     this.localCameraPosition = new THREE.Vector3();
 
@@ -58,12 +58,8 @@ QuadTreeSphere.prototype.Init = function () {
 };
 
 QuadTreeSphere.prototype.InitQuadTrees = function () {
-    var hypot = Math.sqrt(Math.pow(this.radius, 2) * 2);
-//    var nearCorner = new THREE.Vector3(1, 1, 1).multiplyScalar(hypot);
     var nearCorner = new THREE.Vector3(1, 1, 1).multiplyScalar(this.radius);
     var farCorner = nearCorner.clone().multiplyScalar(-1);
-//    nearCorner.add(this.position);
-//    farCorner.add(this.position);
     var quadOptions;
 
     //Near quadtrees
