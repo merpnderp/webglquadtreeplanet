@@ -11,7 +11,7 @@ uniform vec3 WidthDir;
 void main(){
 
     //Square
-//    vec3 newPosition = vec3(StartPosition.xyz + (WidthDir * (position.x - .5) + HeightDir * (position.y - .5)) * Width);
+//    vec3 newPosition = vec3(StartPosition.xyz + (WidthDir * (position.x) + HeightDir * (position.y)) * Width);
 
     //Sphere
     vec3 newPosition = vec3(normalize(StartPosition.xyz + (WidthDir * (position.x ) + HeightDir * (position.y )) * Width) * Radius);

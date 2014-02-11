@@ -40,6 +40,10 @@ var TerrainNode = function (options) {
 
     this.tree.sphere.totalNodes++;
 
+    if(this.level > this.tree.sphere.deepestNode){
+        this.tree.sphere.deepestNode = this.level;
+    }
+
 };
 
 
@@ -50,6 +54,7 @@ TerrainNode.prototype = {
     Update: function () {
 
         if (this.tree.sphere.pause) {
+            this.UpdateView();
             return;
         }
         if (this.OccludedByHorizon()) {
@@ -80,11 +85,6 @@ TerrainNode.prototype = {
                     this.Draw();
                 } else if (this.isDrawn) {
                     this.UpdateView();
-                } else {
-                    var d = this.tree.sphere.deepestNode;
-                    if (d < this.level) {
-                        this.tree.sphere.deepestNode = this.level;
-                    }
                 }
             } else {
                 if (this.isDrawn) {
@@ -94,7 +94,7 @@ TerrainNode.prototype = {
         }
     },
 
-    SetViewMatrix: function () {
+    SetWorldPosition: function () {
         if (this.level > this.tree.sphere.PlaneLevel) {
             this.mesh.material.uniforms.StartPosition.value = this.center.clone().applyMatrix4(this.tree.sphere.matrixWorld);
         }
@@ -104,9 +104,10 @@ TerrainNode.prototype = {
 
     UpdateView: function () {
 
-        this.SetViewMatrix();
+        this.SetWorldPosition();
+
         if (this.isPlane) {
-            this.mesh.material.uniforms.PlanetCenter.value = this.tree.sphere.position;
+            this.mesh.material.uniforms.PlanetCenter.value = this.tree.sphere.position.clone();
         }
     },
 
@@ -129,7 +130,7 @@ TerrainNode.prototype = {
             if (this.level > this.tree.sphere.PlaneLevel) {
                 this.isPlane = true;
                 uniforms.PlanetCenter = {type: 'v3'};
-                mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: plane, fragmentShader: frag, wireframe: true});
+                mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: plane, fragmentShader: frag, wireframe: false});
                 center = this.center.clone().applyMatrix4(this.tree.sphere.matrixWorld);
             } else {
                 this.isPlane = false;
@@ -151,9 +152,9 @@ TerrainNode.prototype = {
             this.mesh.material.uniforms.StartPosition.value = center;
             this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
             this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
-//            this.SetViewMatrix();
+//            this.SetWorldPosition();
             if(this.level > this.tree.sphere.PlaneLevel){
-                this.mesh.material.uniforms.PlanetCenter.value = this.tree.sphere.position;
+                this.UpdateView();
             }
 
 

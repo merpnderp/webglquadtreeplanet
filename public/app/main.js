@@ -27,9 +27,10 @@ var main = function () {
     document.body.appendChild(logger.domElement);
 
     //var planetRadius = 9.46e23; // 100,000 light years
-    var planetRadius = 695500000; // sun sized
-    //var planetRadius = 6376136; // earth sized
+    //var planetRadius = 695500000; // sun sized
+    var planetRadius = 6376136; // earth sized
     //var planetRadius = 1737000; // moon sized
+    //var planetRadius = 370; // 624 Hektor Asteroid
     //var planetRadius = .1; // 4 inches
 
     var fov = 60;
@@ -114,13 +115,13 @@ var main = function () {
         logger.Log("CameraHeight (meters) ", Math.round(planet.cameraHeight));
         logger.Log("CameraHeight (miles) ", Math.round(planet.cameraHeight * 0.000621371));
         logger.Log("CameraPosition: ", camera.position);
-        logger.Log("Quad UpdateSpeed Max: ", updateSpeedMax.toFixed(3));
-        logger.Log("Quad UpdateSpeed Avg: ", updateSpeedAvgShow.toFixed(3));
+        logger.Log("Quad UpdateSpeed Max: ", updateSpeedMax.toFixed(6));
+        logger.Log("Quad UpdateSpeed Avg: ", updateSpeedAvgShow.toFixed(6));
 
     }
 
     function UpdateToLocal() {
-        if (camera.position.length() > 100) {
+        if (camera.position.length() > 100000) {
             workClock.getDelta();
             origin = origin.subVectors(camera.position, origin);
             scene.children.forEach(function (child) {

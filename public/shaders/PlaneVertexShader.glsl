@@ -11,7 +11,8 @@ uniform vec3 WidthDir;
 
 void main(){
 
-    vec3 nStart = normalize(StartPosition - PlanetCenter);
+    //vec3 nStart = normalize(StartPosition - PlanetCenter);
+    vec3 nStart = normalize(PlanetCenter - StartPosition);
     //vec3 nStart = normalize(StartPosition);
     //vec3 cHeightDir = cross(HeightDir, StartPosition);
     //vec3 cWidthDir = cross(WidthDir, StartPosition);

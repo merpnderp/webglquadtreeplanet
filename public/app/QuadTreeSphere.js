@@ -30,7 +30,7 @@ var QuadTreeSphere = function (options) {
 
     this.quadTrees = [];
 
-    this.PlaneLevel = 15;
+    this.PlaneLevel = 10;
 
     this.localCameraPosition = new THREE.Vector3();
 
@@ -82,8 +82,6 @@ QuadTreeSphere.prototype.InitQuadTrees = function () {
 
 var tempMatrix = new THREE.Matrix4();
 QuadTreeSphere.prototype.Update = function () {
-
-    this.deepestNode = 0;
 
     //Get local position of player
     this.localCameraPosition = this.worldToLocal(this.camera.position.clone());
