@@ -20,6 +20,7 @@ QuadBuilder.prototype = {
         return function (geo, position, uv, buildTriangles, vertsPerRow, swapOrder) {
 
             geo.vertices.push(position);
+            geo.faceVertexUvs.push(uv);
 
 //            geo.faceVertexUvs[0].push([]);
 

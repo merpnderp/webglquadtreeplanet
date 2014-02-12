@@ -122,9 +122,10 @@ TerrainNode.prototype = {
             geo.computeFaceNormals();
             geo.computeVertexNormals();
             geo.mergeVertices();
-            buffGeo = buffUtil.fromGeometry(geo);
+//            buffGeo = buffUtil.fromGeometry(geo);
 
-            this.mesh = new THREE.Mesh(buffGeo, mat);
+//            this.mesh = new THREE.Mesh(buffGeo, mat);
+            this.mesh = new THREE.Mesh(geo, mat);
 
             this.mesh.material.uniforms.Width.value = this.width;
             this.mesh.material.uniforms.StartPosition.value = this.position;

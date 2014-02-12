@@ -26,8 +26,12 @@ var main = function () {
     logger.domElement.style.zIndex = 100;
     document.body.appendChild(logger.domElement);
 
-    //var planetRadius = 9.46e23;
-    var planetRadius = 6327000;
+    //var planetRadius = 9.46e23; // 100,000 light years
+    //var planetRadius = 695500000; // sun sized
+    var planetRadius = 6376136; // earth sized
+    //var planetRadius = 1737000; // moon sized
+    //var planetRadius = 370; // 624 Hektor Asteroid
+    //var planetRadius = .1; // 4 inches
 
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 7000000);
     camera.position.z = planetRadius * 2;
@@ -67,7 +71,9 @@ var main = function () {
     var delta;
     var origin = new THREE.Vector3();
 
-    var planetUpdate = 0, del = 0, renderUpdate = 0, updateUpdate = 0;
+    var planetUpdate = 0, del = 0, renderUpdate = 0, updateUpdate = 0, count = 0;
+
+    var renderAverage = 0, planetAverage = 0, updateAverage = 0;
 
     function render() {
         updateClock.getDelta();
@@ -80,6 +86,7 @@ var main = function () {
         clockTest.getDelta();
         renderer.render(scene, camera);
         del = clockTest.getDelta();
+        renderAverage += del;
         if (del > renderUpdate) {
             renderUpdate = del;
         }
@@ -87,6 +94,7 @@ var main = function () {
         planet.Update();
 
         del = clockTest.getDelta();
+        planetAverage += del;
         if (del > planetUpdate) {
             planetUpdate = del;
         }
@@ -97,31 +105,40 @@ var main = function () {
 
         clockTest.getDelta();
         UpdateToLocal();
+
         del = clockTest.getDelta();
+        updateAverage += del;
         if (del > summaryAverage) {
             summaryAverage = del;
         }
+        if (count % 30 === 0) {
 
 
-        logger.Log("Geometries ", renderer.info.memory.geometries);
-        logger.Log("Textures ", renderer.info.memory.textures);
-        logger.Log("Calls ", renderer.info.render.calls);
-        logger.Log("Vertices ", renderer.info.render.vertices);
-        logger.Log("Deepest Level ", planet.deepestNode);
-        logger.Log("Total Nodes ", planet.totalNodes);
-        logger.Log("Total Leaf Nodes ", planet.leafNodes);
-        logger.Log("CameraHeight (meters) ", Math.round(planet.cameraHeight));
-        logger.Log("CameraHeight (miles) ", Math.round(planet.cameraHeight * 0.000621371));
-        logger.Log("CameraPosition: ", camera.position);
-        logger.Log("PlanetPosition: ", planet.position);
-        logger.Log("Slowest Planet Move time ", (summaryAverage).toFixed(3));
-        logger.Log("Slowest Planet Update ", (planetUpdate).toFixed(3));
-        logger.Log("Slowest Render Update ", (renderUpdate).toFixed(3));
-        logger.Log("Slowest Update Update ", (updateUpdate).toFixed(3));
-        del = updateClock.getDelta();
-        if (del > updateUpdate) {
-            updateUpdate = del;
+            logger.Log("Geometries ", renderer.info.memory.geometries);
+            logger.Log("Textures ", renderer.info.memory.textures);
+            logger.Log("Calls ", renderer.info.render.calls);
+            logger.Log("Vertices ", renderer.info.render.vertices);
+            logger.Log("Deepest Level ", planet.deepestNode);
+            logger.Log("Total Nodes ", planet.totalNodes);
+            logger.Log("Total Leaf Nodes ", planet.leafNodes);
+            logger.Log("CameraHeight (meters) ", Math.round(planet.cameraHeight));
+            logger.Log("CameraHeight (miles) ", Math.round(planet.cameraHeight * 0.000621371));
+            logger.Log("CameraPosition: ", camera.position);
+            logger.Log("PlanetPosition: ", planet.position);
+            logger.Log("Slowest Planet Move time ", (summaryAverage).toFixed(3));
+            logger.Log("Slowest Planet Update ", (planetUpdate).toFixed(3));
+            logger.Log("Slowest Render Update ", (renderUpdate).toFixed(3));
+            logger.Log("Slowest Update Update ", (updateUpdate).toFixed(3));
+            logger.Log("Average render: ", (renderAverage/count).toFixed(6));
+            logger.Log("Average planet ", (planetAverage/count).toFixed(6));
+            logger.Log("Average position ", (updateAverage/count).toFixed(6));
+            del = updateClock.getDelta();
+            if (del > updateUpdate) {
+                updateUpdate = del;
+            }
         }
+
+        count++;
 
     }
 

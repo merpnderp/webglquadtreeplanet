@@ -24,7 +24,7 @@ var GeometryProvider = function (patchSize) {
 GeometryProvider.prototype = {
 
     CreateGeometries: function () {
-        var geo = new THREE.Geometry();
+        var geo = new THREE.BufferGeometry();
 
         this.CreateGeometry(geo);
 
@@ -49,6 +49,7 @@ GeometryProvider.prototype = {
                 var buildTriangles = x > 0 && y > 0;
 
                 var swapOrder = x % 2 === y % 2;
+                swapOrder = true;
 
                 this.quadBuilder.BuildQuadForGrid(geo, offset, uv, buildTriangles, this.patchSize + 1, swapOrder);
 
