@@ -24,7 +24,7 @@ var GeometryProvider = function (patchSize) {
 GeometryProvider.prototype = {
 
     CreateGeometries: function () {
-        var geo = new THREE.BufferGeometry();
+        var geo = new THREE.Geometry();
 
         this.CreateGeometry(geo);
 
