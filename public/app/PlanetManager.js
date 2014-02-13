@@ -14,7 +14,7 @@ PlanetManager.prototype.CreatePlanet = function(options){
 
 };
 
-PlanetManager.prototype.RemovePlanet = function(planet){
+PlanetManager.prototype.RemovePlanet = function(planetId){
 
 };
 
