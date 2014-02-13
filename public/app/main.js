@@ -76,6 +76,7 @@ var main = function () {
     var renderAverage = 0, planetAverage = 0, updateAverage = 0;
 
     function render() {
+        count++;
         updateClock.getDelta();
         delta = clock.getDelta();
 
@@ -87,7 +88,7 @@ var main = function () {
         renderer.render(scene, camera);
         del = clockTest.getDelta();
         renderAverage += del;
-        if (del > renderUpdate) {
+        if (del > renderUpdate && count > 15) {
             renderUpdate = del;
         }
 
@@ -95,7 +96,7 @@ var main = function () {
 
         del = clockTest.getDelta();
         planetAverage += del;
-        if (del > planetUpdate) {
+        if (del > planetUpdate && count > 15) {
             planetUpdate = del;
         }
 
@@ -108,7 +109,7 @@ var main = function () {
 
         del = clockTest.getDelta();
         updateAverage += del;
-        if (del > summaryAverage) {
+        if (del > summaryAverage && count > 15) {
             summaryAverage = del;
         }
         if (count % 30 === 0) {
@@ -132,13 +133,14 @@ var main = function () {
             logger.Log("Average render: ", (renderAverage/count).toFixed(6));
             logger.Log("Average planet ", (planetAverage/count).toFixed(6));
             logger.Log("Average position ", (updateAverage/count).toFixed(6));
+            updateAverage = 0, planetAverage = 0, renderAverage = 0;
+            count =0
             del = updateClock.getDelta();
             if (del > updateUpdate) {
                 updateUpdate = del;
             }
         }
 
-        count++;
 
     }
 
