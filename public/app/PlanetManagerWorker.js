@@ -4,8 +4,10 @@
 
 
 
+
 var PlanetManagerWorker = function(){
 
+    this.planets = [];
 
 };
 
@@ -17,7 +19,6 @@ PlanetManagerWorker.prototype.Initialize = function(options){
 
 
 PlanetManagerWorker.prototype.CreatePlanet = function(options){
-
 };
 
 
