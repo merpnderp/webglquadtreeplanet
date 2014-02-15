@@ -30,7 +30,7 @@ var QuadTreeSphere = function (options) {
 
     this.quadTrees = [];
 
-    this.PlaneLevel = 10;
+    this.PlaneLevel = 30;
 
     this.localCameraPosition = new THREE.Vector3();
 

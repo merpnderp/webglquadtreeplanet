@@ -28,8 +28,9 @@ var main = function () {
 
     //var planetRadius = 9.46e23; // 100,000 light years
     //var planetRadius = 695500000; // sun sized
-    var planetRadius = 6376136; // earth sized
+    //var planetRadius = 6376136; // earth sized
     //var planetRadius = 1737000; // moon sized
+    var planetRadius = 7000; // half moon sized
     //var planetRadius = 370; // 624 Hektor Asteroid
     //var planetRadius = .1; // 4 inches
 
