@@ -112,7 +112,7 @@ worker.addEventListener('message', function (e) {
     }
 
     if (!pause) {
-        worker.postMessage({largestFeature: largestFeature, persistence: persistence});
+//        worker.postMessage({largestFeature: largestFeature, persistence: persistence});
     }
 }, false);
 
@@ -131,7 +131,7 @@ function updateLogs() {
     "SPACEBAR PAUSES"+ "<br/>";
 
 }
-var largestFeature = 100;
+var largestFeature = 80;
 var persistence = 100;
 worker.postMessage({largestFeature: largestFeature, persistence: persistence});
 var max = -1000000, min = -max;

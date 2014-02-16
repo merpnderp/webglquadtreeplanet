@@ -21,8 +21,8 @@ var SimplexNoise = function (largestFeature, persistence, seed) {
     var mathSeed = new MathSeed(10);
 
     for (var i = 0; i < numberOfOctaves; i++) {
-//        this.octaves[i] = new SimplexNoise_octave(mathSeed.seededRandom);
-        this.octaves[i] = new SimplexNoise_octave(Math.random);
+        this.octaves[i] = new SimplexNoise_octave(mathSeed.seededRandom);
+//        this.octaves[i] = new SimplexNoise_octave(Math.random);
 
         this.frequencys[i] = Math.pow(2, i);
         this.amplitudes[i] = Math.pow(persistence, this.octaves.length - i);

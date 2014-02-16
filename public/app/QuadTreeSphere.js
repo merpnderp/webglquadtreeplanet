@@ -12,10 +12,6 @@ var QuadTreeSphere = function (options) {
 
     THREE.Object3D.call(this);
 
-    this.scene = options.scene;
-
-    this.control = options.control;
-
     this.camera = options.camera;
 
     this.radius = options.radius || 100;
@@ -39,8 +35,6 @@ var QuadTreeSphere = function (options) {
     this.splitTable = [];
 
     this.pause = false;
-
-    this.updateMatrixWorld(true);
 
     this.BuildSplitTable();
 

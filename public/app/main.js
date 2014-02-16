@@ -57,7 +57,7 @@ var main = function () {
 //		renderer.setClearColor( 0xffffff, 1) 
     document.getElementById('viewport').appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 32, control: control, scene: scene });
+    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 35, control: control, scene: scene });
     planet.Init();
     scene.add(planet);
 
