@@ -137,8 +137,8 @@ TerrainNode.prototype = {
         var temp;
         return function(u,v, patchSize){
             temp = this.tree.widthDir.clone();
-            temp.multiplyScalar(u/patchSize);
-            temp.add(this.tree.heightDir.clone().multiplyScalar(v/patchSize));
+            temp.multiplyScalar(u);
+            temp.add(this.tree.heightDir.clone().multiplyScalar(v));
             temp.multiplyScalar(this.width);
             temp.add(this.position);
             temp.normalize();
