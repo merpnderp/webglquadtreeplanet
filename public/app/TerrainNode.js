@@ -80,47 +80,47 @@ TerrainNode.prototype = {
 
             var patchSize = this.tree.planet.patchSize;
 
-            for(var u = 0; u < patchSize; u++){
-                for(var v = 0; v < patchSize; v++){
-                    position = this.SolvePoint(u/patchSize, v/patchSize, patchSize);
+            for (var u = 0; u < patchSize; u++) {
+                for (var v = 0; v < patchSize; v++) {
+                    position = this.SolvePoint(u / patchSize, v / patchSize);
                     positions[positionCount++] = position.x;
                     positions[positionCount++] = position.y;
                     positions[positionCount++] = position.z;
-                    uvs[uvsCount++] = u/patchSize;
-                    uvs[uvsCount++] = v/patchSize;
+                    uvs[uvsCount++] = u / patchSize;
+                    uvs[uvsCount++] = v / patchSize;
 
-                    position = this.SolvePoint((u+1)/patchSize, (v)/patchSize, patchSize);
+                    position = this.SolvePoint((u + 1) / patchSize, (v) / patchSize);
                     positions[positionCount++] = position.x;
                     positions[positionCount++] = position.y;
                     positions[positionCount++] = position.z;
-                    uvs[uvsCount++] = (u+1)/patchSize;
-                    uvs[uvsCount++] = v/patchSize;
+                    uvs[uvsCount++] = (u + 1) / patchSize;
+                    uvs[uvsCount++] = v / patchSize;
 
-                    position = this.SolvePoint((u)/patchSize, (v+1)/patchSize, patchSize);
+                    position = this.SolvePoint((u) / patchSize, (v + 1) / patchSize);
                     positions[positionCount++] = position.x;
                     positions[positionCount++] = position.y;
                     positions[positionCount++] = position.z;
-                    uvs[uvsCount++] = (u)/patchSize;
-                    uvs[uvsCount++] = (v+1)/patchSize;
+                    uvs[uvsCount++] = (u) / patchSize;
+                    uvs[uvsCount++] = (v + 1) / patchSize;
 
                     positions[positionCount++] = positions[positionCount - 7];
                     positions[positionCount++] = positions[positionCount - 7];
                     positions[positionCount++] = positions[positionCount - 7];
-                    uvs[uvsCount++] = (u)/patchSize;
-                    uvs[uvsCount++] = (v+1)/patchSize;
+                    uvs[uvsCount++] = (u) / patchSize;
+                    uvs[uvsCount++] = (v + 1) / patchSize;
 
                     positions[positionCount++] = positions[positionCount - 7];
                     positions[positionCount++] = positions[positionCount - 7];
                     positions[positionCount++] = positions[positionCount - 7];
-                    uvs[uvsCount++] = (u+1)/patchSize;
-                    uvs[uvsCount++] = (v)/patchSize;
+                    uvs[uvsCount++] = (u + 1) / patchSize;
+                    uvs[uvsCount++] = (v) / patchSize;
 
-                    position = this.SolvePoint((u+1)/patchSize, (v+1)/patchSize, patchSize);
+                    position = this.SolvePoint((u + 1) / patchSize, (v + 1) / patchSize);
                     positions[positionCount++] = position.x;
                     positions[positionCount++] = position.y;
                     positions[positionCount++] = position.z;
-                    uvs[uvsCount++] = (u+1)/patchSize;
-                    uvs[uvsCount++] = (v+1)/patchSize;
+                    uvs[uvsCount++] = (u + 1) / patchSize;
+                    uvs[uvsCount++] = (v + 1) / patchSize;
                 }
             }
 
@@ -133,17 +133,32 @@ TerrainNode.prototype = {
 
     }(),
 
-    SolvePoint: function(){
-        var temp;
-        return function(u,v, patchSize){
-            temp = this.tree.widthDir.clone();
-            temp.multiplyScalar(u);
-            temp.add(this.tree.heightDir.clone().multiplyScalar(v));
-            temp.multiplyScalar(this.width);
-            temp.add(this.position);
-            temp.normalize();
-            temp.multiplyScalar(this.tree.planet.radius);
-            return temp;
+    SolvePoint: function () {
+        var temp, x, y, z, length, radius;
+        return function (u, v) {
+//            temp = this.tree.widthDir.clone();
+//            temp.multiplyScalar(u);
+//            temp.add(this.tree.heightDir.clone().multiplyScalar(v));
+//            temp.multiplyScalar(this.width);
+//            temp.add(this.position);
+//            temp.normalize();
+//            temp.multiplyScalar(this.tree.planet.radius);
+//            return temp;
+
+            x = ((this.tree.widthDir.x * u + this.tree.heightDir.x * v) * this.width) + this.position.x;
+            y = ((this.tree.widthDir.y * u + this.tree.heightDir.y * v) * this.width) + this.position.y;
+            z = ((this.tree.widthDir.z * u + this.tree.heightDir.z * v) * this.width) + this.position.z;
+
+            length = Math.sqrt( x * x + y * y + z * z );
+
+            radius = this.radius;
+
+            x = (x / length) * radius;
+            y = (y / length) * radius;
+            z = (z / length) * radius;
+
+            return {x:x,y:y,z:z};
+
         }
     }(),
 
