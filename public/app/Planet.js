@@ -27,6 +27,7 @@ Planet.prototype = Object.create(THREE.Object3D.prototype);
 
 Planet.prototype.WorkerMessage = function(event){
     console.log(Date.now() - event.data.started);
+    console.log(event.data.finished);
     console.log(event.data);
 }
 

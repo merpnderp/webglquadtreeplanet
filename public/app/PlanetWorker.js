@@ -30,7 +30,7 @@ PlanetWorker.prototype.Update = function (data, cb) {
         tree.Update();
     });
 
-
+    this.returnObject['finished'] = Date.now() - this.returnObject.started;
     cb(this.returnObject, this.meshesToAdd);
 
 };
