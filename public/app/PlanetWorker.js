@@ -12,12 +12,11 @@ var PlanetWorker = function () {
 var worker = new PlanetWorker();
 
 PlanetWorker.prototype.Update = function (data, cb) {
-    this.returnObject = {started: Date().now()};
-    this.meshesToDelete = [];
-    this.meshsesToAdd = [];
-
+    self.postMessage("Worker says Update called");
+    this.returnObject = {started: Date.now(), newMeshes: [], deletedMeshes: []};
+    this.meshesToAdd = [];
     //Get local position of player
-    this.localCameraPosition = data.localCameraPosition;
+    this.localCameraPosition = new THREE.Vector3(data.localCameraPosition.x, data.localCameraPosition.y, data.localCameraPosition.z);
     this.localCameraPlanetProjectionPosition = this.localCameraPosition.clone().normalize().multiplyScalar(this.radius);
 
     //this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
@@ -31,16 +30,18 @@ PlanetWorker.prototype.Update = function (data, cb) {
         tree.Update();
     });
 
-    cb(returnObject, this.meshesToAdd);
+
+    cb(this.returnObject, this.meshesToAdd);
 
 };
 
 self.onmessage = function (event) {
-    if (event.data.Update) worker.Update(event.data, self.postMessage);
-    if (event.data.Init) worker.Init(event.data);
+    if (event.data.Update) worker.Update(event.data.Update, self.postMessage);
+    if (event.data.Init) worker.Init(event.data.Init);
 };
 
 PlanetWorker.prototype.Init = function (data) {
+    self.postMessage("Worker says Init called");
     this.radius = data.radius;
     this.patchSize = data.patchSize;
     this.fov = data.fov;

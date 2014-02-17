@@ -5,9 +5,7 @@
 
 "use strict";
 
-
 var THREE = require('../libs/three.js');
-var fs = require('fs');
 
 var TerrainNode = function (options) {
     this.level = options.level;
@@ -70,13 +68,12 @@ TerrainNode.prototype = {
 
     Draw: function () {
 
+        var position;
 
         return function () {
 
             var positions = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 3);
             var uvs = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 2);
-
-            var step = 1/this.tree.planet.patchSize;
 
             var positionCount = 0;
             var uvsCount = 0;
@@ -85,7 +82,7 @@ TerrainNode.prototype = {
 
             for(var u = 0; u < patchSize; u++){
                 for(var v = 0; v < patchSize; v++){
-                    var position = this.SolvePoint(u/patchSize, v/patchSize, patchSize);
+                    position = this.SolvePoint(u/patchSize, v/patchSize, patchSize);
                     positions[positionCount++] = position.x;
                     positions[positionCount++] = position.y;
                     positions[positionCount++] = position.z;
@@ -127,51 +124,40 @@ TerrainNode.prototype = {
                 }
             }
 
+            this.tree.planet.meshesToAdd.push(positions.buffer);
+            this.tree.planet.meshesToAdd.push(uvs.buffer);
+            this.tree.planet.returnObject.newMeshes.push({name: this.name, center: this.center, positions: positions, uvs: uvs});
+
             this.isDrawn = true;
         };
 
     }(),
 
-    SolvePoint: function(u,v, patchSize){
-        var temp = this.tree.widthDir.clone();
-        temp.multiplyScalar(u/patchSize);
-        temp.add(this.tree.heightDir.clone().multiplyScalar(v/patchSize));
-        temp.multiplyScalar(this.width);
-        temp.add(this.position);
-        temp.normalize();
-        temp.multiplyScalar(this.tree.planet.radius);
-        return temp;
-    },
+    SolvePoint: function(){
+        var temp;
+        return function(u,v, patchSize){
+            temp = this.tree.widthDir.clone();
+            temp.multiplyScalar(u/patchSize);
+            temp.add(this.tree.heightDir.clone().multiplyScalar(v/patchSize));
+            temp.multiplyScalar(this.width);
+            temp.add(this.position);
+            temp.normalize();
+            temp.multiplyScalar(this.tree.planet.radius);
+            return temp;
+        }
+    }(),
 
 
     UnDraw: function () {
 
-        this.tree.planet.scene.remove(this.mesh);
-        //this.tree.sphere.remove(this.mesh);
-
-        delete this.mesh.geometry;
-        delete this.mesh;
-
+        this.tree.planet.deletedMeshes.add(this.name);
         this.isDrawn = false;
 
     },
 
 
     GetDistanceFromCamera: function () {
-//        var center, temp, cameraProjection;
         return function () {
-//            center = this.center.clone().normalize();
-//            temp = this.center.clone().normalize();
-//            cameraProjection = this.tree.sphere.localCameraPlanetProjectionPosition.clone().normalize();
-
-//            console.log("Camera: " + this.tree.sphere.localCameraPosition.toArray().join(","));
-//            console.log("Camera Portected: " + this.tree.sphere.localCameraPlanetProjectionPosition.toArray().join(","));
-            /*
-             this.distance = Math.atan2(temp.cross(cameraProjection).length(), center.dot(cameraProjection));
-             this.distance *= this.tree.sphere.radius;
-             this.distance -= this.width/2;
-             this.distance += this.tree.sphere.cameraHeight;
-             */
             this.distance = this.tree.planet.localCameraPosition.distanceTo(this.center);
         };
     }(),

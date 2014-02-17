@@ -6,7 +6,8 @@
 
 var THREE = require('../libs/three.js');
 var OrbitControl = require('./OrbitControls');
-var Planet = require('./QuadTreeSphere.js');
+//var Planet = require('./QuadTreeSphere.js');
+var Planet = require('./Planet.js');
 var Stats = require('../libs/stats.js');
 var Logger = require('./Logger.js');
 var FlyControl = require('./FlyControls');
@@ -35,11 +36,7 @@ var main = function () {
 
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 7000000);
     camera.position.z = planetRadius * 2;
-    //   camera.position.x = 200;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-//    var control = new OrbitControl(camera);
-//    control.zoomSpeed = 1;
 
     var control = new FlyControl(camera);
     var controlMaxSpeed = 1000000;
@@ -57,10 +54,12 @@ var main = function () {
 //		renderer.setClearColor( 0xffffff, 1) 
     document.getElementById('viewport').appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 35, control: control, scene: scene });
-    planet.Init();
+    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 35, scene: scene });
+//    planet.Init();
     scene.add(planet);
 
+    planet.Update();
+    return;
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
 
     var pause = false;
