@@ -8,7 +8,6 @@
 
 var THREE = require('../libs/three.js');
 var fs = require('fs');
-var BufferGeometryUtil = require('./BufferGeometryUtils.js');
 
 var TerrainNode = function (options) {
     this.level = options.level;
@@ -17,20 +16,18 @@ var TerrainNode = function (options) {
     this.position = options.position;
 
     //console.log(this.position.x + " : " + this.position.y + " : " + this.position.z);
-    this.name = options.name;
 
-    this.width = this.tree.sphere.radius * 2 / Math.pow(2, this.level);
+    this.width = this.tree.planet.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
-    this.arcLength = (this.width / this.tree.sphere.radius) / 1.43 //divided by fudge factor;
+    this.arcLength = (this.width / this.tree.planet.radius) / 1.43 //divided by fudge factor;
 
     //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();
+    this.name = this.center.x + ":" + this.center.y + ":" + this.center.z;
 
     this.isSplit = false;
     this.isDrawn = false;
     this.isOccluded = false;
-
-    this.tree.sphere.totalNodes++;
 
 };
 
@@ -65,11 +62,6 @@ TerrainNode.prototype = {
                     this.UpdateChildren();
                 } else if (!this.isDrawn) {
                     this.Draw();
-                } else {
-                    var d = this.tree.sphere.deepestNode;
-                    if (d < this.level) {
-                        this.tree.sphere.deepestNode = this.level;
-                    }
                 }
             }
         }
@@ -79,98 +71,82 @@ TerrainNode.prototype = {
     Draw: function () {
 
 
-        var vertex = fs.readFileSync('shaders/VertexShader.glsl');
-        var frag = fs.readFileSync('shaders/FragmentShader.glsl');
-        var vertices;
-        var geo;
-        var step;
-        var buffGeo;
-        var buffUtil = THREE.BufferGeometryUtils;
         return function () {
 
-            this.tree.sphere.leafNodes++;
+            var positions = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 3);
+            var uvs = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 2);
 
-            var uniforms = {Width: { type: 'f'}, Radius: { type: 'f', value: this.tree.sphere.radius},
-                StartPosition: { type: 'v3'}, HeightDir: { type: 'v3'}, WidthDir: { type: 'v3'}, iColor: { type: 'v3'} };
+            var step = 1/this.tree.planet.patchSize;
 
-            var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: true});
-            //var mat = new THREE.ShaderMaterial({uniforms: uniforms, vertexShader: vertex, fragmentShader: frag, wireframe: false});
-
-            geo = new THREE.BufferGeometry();
-            geo.addAttribute("position", Float32Array, this.tree.sphere.patchSize * this.tree.sphere.patchSize * 3, 3);
-            geo.addAttribute("uvs", Float32Array, this.tree.sphere.patchSize * this.tree.sphere.patchSize * 2, 2);
-            step = 1/this.tree.sphere.patchSize;
-
-            var positions = geo.attributes.position.array;
             var positionCount = 0;
             var uvsCount = 0;
-            var uvs = geo.attributes.uvs.array;
 
-            var x, y, z, sx, sy, sz;
+            var patchSize = this.tree.planet.patchSize;
 
-            for(var u = 0; u <= 1; u+=step){
-                for(var v = 0; v <= 1; v+=step){
-                    var temp = this.tree.widthDir.clone();
-                    temp.multiplyScalar(u);
-                    temp.add(this.tree.heightDir.clone().multiplyScalar(v));
-                    temp.multiplyScalar(this.width);
-                    temp.add(this.position);
-                    temp.normalize();
-                    x = temp.x;
-                    y = temp.y;
-                    z = temp.z;
-                    sx = x * Math.sqrt( 1 - y * y * 0.5 - z * z * 0.5 + y * y * z * z / 3 );
-                    sy = y * Math.sqrt( 1 - z * z * 0.5 - x * x * 0.5 + z * z * x * x / 3 );
-                    sz = z * Math.sqrt( 1 - x * x * 0.5 - y * y * 0.5 + x * x * y * y / 3 );
-                    temp.multiplyScalar(this.tree.sphere.radius).add(this.tree.sphere.position);
-                    positions[positionCount++] = temp.x;
-                    positions[positionCount++] = temp.y;
-                    positions[positionCount++] = temp.z;
-                    uvs[uvsCount++] = u;
-                    uvs[uvsCount++] = v;
+            for(var u = 0; u < patchSize; u++){
+                for(var v = 0; v < patchSize; v++){
+                    var position = this.SolvePoint(u/patchSize, v/patchSize, patchSize);
+                    positions[positionCount++] = position.x;
+                    positions[positionCount++] = position.y;
+                    positions[positionCount++] = position.z;
+                    uvs[uvsCount++] = u/patchSize;
+                    uvs[uvsCount++] = v/patchSize;
+
+                    position = this.SolvePoint((u+1)/patchSize, (v)/patchSize, patchSize);
+                    positions[positionCount++] = position.x;
+                    positions[positionCount++] = position.y;
+                    positions[positionCount++] = position.z;
+                    uvs[uvsCount++] = (u+1)/patchSize;
+                    uvs[uvsCount++] = v/patchSize;
+
+                    position = this.SolvePoint((u)/patchSize, (v+1)/patchSize, patchSize);
+                    positions[positionCount++] = position.x;
+                    positions[positionCount++] = position.y;
+                    positions[positionCount++] = position.z;
+                    uvs[uvsCount++] = (u)/patchSize;
+                    uvs[uvsCount++] = (v+1)/patchSize;
+
+                    positions[positionCount++] = positions[positionCount - 7];
+                    positions[positionCount++] = positions[positionCount - 7];
+                    positions[positionCount++] = positions[positionCount - 7];
+                    uvs[uvsCount++] = (u)/patchSize;
+                    uvs[uvsCount++] = (v+1)/patchSize;
+
+                    positions[positionCount++] = positions[positionCount - 7];
+                    positions[positionCount++] = positions[positionCount - 7];
+                    positions[positionCount++] = positions[positionCount - 7];
+                    uvs[uvsCount++] = (u+1)/patchSize;
+                    uvs[uvsCount++] = (v)/patchSize;
+
+                    position = this.SolvePoint((u+1)/patchSize, (v+1)/patchSize, patchSize);
+                    positions[positionCount++] = position.x;
+                    positions[positionCount++] = position.y;
+                    positions[positionCount++] = position.z;
+                    uvs[uvsCount++] = (u+1)/patchSize;
+                    uvs[uvsCount++] = (v+1)/patchSize;
                 }
             }
-            //var geo = this.tree.sphere.geometryProvider.GetStandardGeometry();
 
-
-            this.mesh = new THREE.Mesh(geo, mat);
-
-            this.mesh.material.uniforms.Width.value = this.width;
-            this.mesh.material.uniforms.StartPosition.value = this.position;
-            this.mesh.material.uniforms.HeightDir.value = this.tree.heightDir;
-            this.mesh.material.uniforms.WidthDir.value = this.tree.widthDir;
-
-            if (this.tree.name === 'Front' || true) {
-                var val = 1 / this.level + 1;
-                if (this.name === 'TopLeft') {
-                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val, 0, 0);
-                } else if (this.name === 'TopRight') {
-                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, val, 0);
-                } else if (this.name === 'BottomRight') {
-                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, 0, val);
-                } else if (this.name === 'BottomLeft') {
-                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(val / 2, val / 2, 0);
-                } else {
-                    this.mesh.material.uniforms.iColor.value = new THREE.Vector3(.5, .5, .5);
-                }
-            } else {
-                this.mesh.material.uniforms.iColor.value = new THREE.Vector3(0, .5, 0.5);
-            }
-
-
-            this.tree.sphere.scene.add(this.mesh);
-            //this.tree.sphere.add(this.mesh);
             this.isDrawn = true;
         };
 
     }(),
 
+    SolvePoint: function(u,v, patchSize){
+        var temp = this.tree.widthDir.clone();
+        temp.multiplyScalar(u/patchSize);
+        temp.add(this.tree.heightDir.clone().multiplyScalar(v/patchSize));
+        temp.multiplyScalar(this.width);
+        temp.add(this.position);
+        temp.normalize();
+        temp.multiplyScalar(this.tree.planet.radius);
+        return temp;
+    },
+
 
     UnDraw: function () {
 
-        this.tree.sphere.leafNodes--;
-
-        this.tree.sphere.scene.remove(this.mesh);
+        this.tree.planet.scene.remove(this.mesh);
         //this.tree.sphere.remove(this.mesh);
 
         delete this.mesh.geometry;
@@ -196,14 +172,14 @@ TerrainNode.prototype = {
              this.distance -= this.width/2;
              this.distance += this.tree.sphere.cameraHeight;
              */
-            this.distance = this.tree.sphere.localCameraPosition.distanceTo(this.center);
+            this.distance = this.tree.planet.localCameraPosition.distanceTo(this.center);
         };
     }(),
 
 
     ShouldSplit: function () {
         //console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
-        return this.level < this.tree.sphere.maxLevel && this.tree.sphere.splitTable[this.level] >= this.distance;
+        return this.level < this.tree.planet.maxLevel && this.tree.planet.splitTable[this.level] >= this.distance;
 
     },
 
@@ -211,7 +187,7 @@ TerrainNode.prototype = {
     ShouldUnSplit: function () {
 
         //console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
-        return this.level >= 0 && this.tree.sphere.splitTable[this.level] < this.distance;
+        return this.level >= 0 && this.tree.planet.splitTable[this.level] < this.distance;
 
     },
 
@@ -223,11 +199,11 @@ TerrainNode.prototype = {
     },
 
     OccludedByHorizon: function () {
-        var angleToCamera = this.tree.sphere.localCameraPlanetProjectionPosition.angleTo(this.center);
+        var angleToCamera = this.tree.planet.localCameraPlanetProjectionPosition.angleTo(this.center);
 
         angleToCamera -= this.arcLength;
 
-        if (angleToCamera > this.tree.sphere.localCameraMaxAngle) {
+        if (angleToCamera > this.tree.planet.localCameraMaxAngle) {
             return true;
         }
         return false;
@@ -242,20 +218,16 @@ TerrainNode.prototype = {
             options = {level: this.level + 1, parent: this, tree: this.tree};
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
-            options.name = "TopLeft";
             this.topLeftChild = new TerrainNode(options);
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
             options.position.add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
-            options.name = "TopRight";
             this.topRightChild = new TerrainNode(options);
 
             options.position = this.position.clone();
-            options.name = "BottomLeft";
             this.bottomLeftChild = new TerrainNode(options);
 
             options.position = this.position.clone().add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
-            options.name = "BottomRight";
             this.bottomRightChild = new TerrainNode(options);
 
             this.isSplit = true;
@@ -266,7 +238,7 @@ TerrainNode.prototype = {
 
 
     Die: function () {
-        this.tree.sphere.totalNodes--;
+        this.tree.planet.totalNodes--;
         if (this.isDrawn) {
             this.UnDraw();
         } else if (this.isSplit) {
@@ -317,7 +289,7 @@ TerrainNode.prototype = {
             x = x + wd.x * w + hd.x * w;
             y = y + wd.y * w + hd.y * w;
             z = z + wd.z * w + hd.z * w;
-            return new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.sphere.radius);
+            return new THREE.Vector3(x, y, z).normalize().multiplyScalar(this.tree.planet.radius);
         };
     }()
 
