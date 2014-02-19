@@ -35,7 +35,7 @@ var main = function () {
     //var planetRadius = .1; // 4 inches
 
     var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 7000000);
-    camera.position.z = planetRadius * 2;
+    camera.position.z = planetRadius * 4;
     camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     var control = new FlyControl(camera);
@@ -54,12 +54,11 @@ var main = function () {
 //		renderer.setClearColor( 0xffffff, 1) 
     document.getElementById('viewport').appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 35, scene: scene });
+    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 32, scene: scene });
 //    planet.Init();
     scene.add(planet);
-
-    planet.Update();
-    return;
+planet.Update();
+//    return;
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
 
     var pause = false;
@@ -73,6 +72,7 @@ var main = function () {
     var planetUpdate = 0, del = 0, renderUpdate = 0, updateUpdate = 0, count = 0;
 
     var renderAverage = 0, planetAverage = 0, updateAverage = 0;
+
 
     function render() {
         count++;
@@ -99,12 +99,12 @@ var main = function () {
             planetUpdate = del;
         }
 
-        control.movementSpeed = planet.cameraHeight * 2;
+        //control.movementSpeed = planet.cameraHeight * 2;
 
         stats.update();
 
         clockTest.getDelta();
-        UpdateToLocal();
+//        UpdateToLocal();
 
         del = clockTest.getDelta();
         updateAverage += del;

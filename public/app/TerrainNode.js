@@ -71,7 +71,7 @@ TerrainNode.prototype = {
         var position;
 
         return function () {
-
+            "use strict";
             var positions = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 3);
             var uvs = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 2);
 
@@ -134,28 +134,37 @@ TerrainNode.prototype = {
     }(),
 
     SolvePoint: function () {
-        var temp, x, y, z, length, radius;
+        var x, y, z, length;
         return function (u, v) {
-//            temp = this.tree.widthDir.clone();
-//            temp.multiplyScalar(u);
-//            temp.add(this.tree.heightDir.clone().multiplyScalar(v));
-//            temp.multiplyScalar(this.width);
-//            temp.add(this.position);
-//            temp.normalize();
-//            temp.multiplyScalar(this.tree.planet.radius);
-//            return temp;
-
+            "use strict";
+            /*
+            var temp = this.tree.widthDir.clone();
+            temp.multiplyScalar(u);
+            temp.add(this.tree.heightDir.clone().multiplyScalar(v));
+            temp.multiplyScalar(this.width);
+            temp.add(this.position);
+            temp.normalize();
+            temp.multiplyScalar(this.tree.planet.radius);
+            return temp;
+            */
+            /*
+            width = this.width;
+            wx = this.tree.widthDir.x;
+            wy = this.tree.widthDir.y;
+            wz = this.tree.widthDir.z;
+            hx = this.tree.heightDir.x;
+            hy = this.tree.heightDir.y;
+            hz = this.tree.heightDir.z;
+*/
             x = ((this.tree.widthDir.x * u + this.tree.heightDir.x * v) * this.width) + this.position.x;
             y = ((this.tree.widthDir.y * u + this.tree.heightDir.y * v) * this.width) + this.position.y;
             z = ((this.tree.widthDir.z * u + this.tree.heightDir.z * v) * this.width) + this.position.z;
 
             length = Math.sqrt( x * x + y * y + z * z );
 
-            radius = this.radius;
-
-            x = (x / length) * radius;
-            y = (y / length) * radius;
-            z = (z / length) * radius;
+            x = (x / length) * this.tree.planet.radius;
+            y = (y / length) * this.tree.planet.radius;
+            z = (z / length) * this.tree.planet.radius;
 
             return {x:x,y:y,z:z};
 
@@ -165,7 +174,7 @@ TerrainNode.prototype = {
 
     UnDraw: function () {
 
-        this.tree.planet.deletedMeshes.add(this.name);
+        this.tree.planet.deletedMeshes.push(this.name);
         this.isDrawn = false;
 
     },
