@@ -89,6 +89,7 @@ TerrainNode.prototype = {
                     uvs[uvsCount++] = u / patchSize;
                     uvs[uvsCount++] = v / patchSize;
 
+
                     position = this.SolvePoint((u + 1) / patchSize, (v) / patchSize);
                     positions[positionCount++] = position.x;
                     positions[positionCount++] = position.y;
@@ -103,15 +104,15 @@ TerrainNode.prototype = {
                     uvs[uvsCount++] = (u) / patchSize;
                     uvs[uvsCount++] = (v + 1) / patchSize;
 
-                    positions[positionCount++] = positions[positionCount - 7];
-                    positions[positionCount++] = positions[positionCount - 7];
-                    positions[positionCount++] = positions[positionCount - 7];
+                    positions[positionCount++] = positions[positionCount - 4];
+                    positions[positionCount++] = positions[positionCount - 4];
+                    positions[positionCount++] = positions[positionCount - 4];
                     uvs[uvsCount++] = (u) / patchSize;
                     uvs[uvsCount++] = (v + 1) / patchSize;
 
-                    positions[positionCount++] = positions[positionCount - 7];
-                    positions[positionCount++] = positions[positionCount - 7];
-                    positions[positionCount++] = positions[positionCount - 7];
+                    positions[positionCount++] = positions[positionCount - 10];
+                    positions[positionCount++] = positions[positionCount - 10];
+                    positions[positionCount++] = positions[positionCount - 10];
                     uvs[uvsCount++] = (u + 1) / patchSize;
                     uvs[uvsCount++] = (v) / patchSize;
 
@@ -162,9 +163,9 @@ TerrainNode.prototype = {
 
             length = Math.sqrt( x * x + y * y + z * z );
 
-            x = (x / length) * this.tree.planet.radius;
-            y = (y / length) * this.tree.planet.radius;
-            z = (z / length) * this.tree.planet.radius;
+            x = (x / length) * this.tree.planet.radius - this.center.x;
+            y = (y / length) * this.tree.planet.radius - this.center.y;
+            z = (z / length) * this.tree.planet.radius - this.center.z;
 
             return {x:x,y:y,z:z};
 
