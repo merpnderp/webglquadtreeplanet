@@ -31,7 +31,7 @@ Planet.prototype = Object.create(THREE.Object3D.prototype);
 Planet.prototype.Update = function () {
     var localCameraPosition;
     return function () {
-        if(!this.inited){
+        if (!this.inited) {
             return;
         }
         localCameraPosition = this.worldToLocal(this.camera.position.clone());
@@ -40,74 +40,65 @@ Planet.prototype.Update = function () {
     }
 }();
 
-Planet.prototype.WorkerMessage = function (event) {
-    var me = this;
+Planet.prototype.WorkerMessage = function () {
+    return function (event) {
 
-    if(event.data.inited){
-        this.inited = true;
-        return;
-    }
-    if(event.data.log){
+        var me = this;
+
+        if (event.data.inited) {
+            this.inited = true;
+            return;
+        }
+        if (event.data.log) {
 //        console.log(event.data.log);
-        return;
-    }
+            return;
+        }
 
-    if (event.data.deletedMeshes) {
-        event.data.deletedMeshes.forEach(function (name) {
-            me.scene.remove(me.meshes[name]);
-            delete me.meshes[name];
-            console.log("Deleting: " + name);
-        });
-    }
+        if (event.data.deletedMeshes) {
+            event.data.deletedMeshes.forEach(function (name) {
+                me.scene.remove(me.meshes[name]);
+                delete me.meshes[name];
+                //console.log("Deleting: " + name);
+            });
+        }
 
-    if (event.data.newMeshes) {
-        event.data.newMeshes.forEach(function (mesh) {
-            var buff = new THREE.BufferGeometry();
-         var bytes = mesh.positions.buffer.byteLength + mesh.uvs.buffer.byteLength;
-//         console.log("This mesh cost: " + bytes + " bytes");
-            buff.attributes.position = {};
-            buff.attributes.position.array = mesh.positions;
-            buff.attributes.position.itemSize = 3;
-/*
-            buff.attributes.normal = {};
-            buff.attributes.normal.array = mesh.normals;
-            buff.attributes.normal.itemSize = 3;
-*/
-            buff.attributes.uv = {};
-            buff.attributes.uv.array = mesh.uvs;
-            buff.attributes.uv.itemSize = 2;
+        if (event.data.newMeshes) {
+            event.data.newMeshes.forEach(function (mesh) {
+                var buff = new THREE.BufferGeometry();
+                buff.attributes.position = {};
+                buff.attributes.position.array = mesh.positions;
+                buff.attributes.position.itemSize = 3;
+                /*
+                 buff.attributes.normal = {};
+                 buff.attributes.normal.array = mesh.normals;
+                 buff.attributes.normal.itemSize = 3;
+                 */
+                buff.attributes.uv = {};
+                buff.attributes.uv.array = mesh.uvs;
+                buff.attributes.uv.itemSize = 2;
 
-            //var material = new THREE.ShaderMaterial({uniforms: {}, vertexShader: me.vertex, fragmentShader: me.frag, wireframe: true});
-            var color = new THREE.Color();
-            color.r = Math.random();
-            color.g = Math.random();
-            color.b = Math.random();
-            var material = new THREE.MeshBasicMaterial({wireframe: true, color: color});
-            var m = new THREE.Mesh(buff, material);
-            m.position.x = mesh.center.x;
-            m.position.y = mesh.center.y;
-            m.position.z = mesh.center.z;
-            m.position.add(me.position);
-//            m = this.localToWorld(m);
-            me.scene.add(m);
-            me.meshes[mesh.name] = m;
-            /*
-            console.log(me.camera.position.x);
-            console.log(me.camera.position.y);
-            console.log(me.camera.position.z);
-            console.log(mesh.center.x);
-            console.log(mesh.center.y);
-            console.log(mesh.center.z);
-            */
-            //console.log("Adding spheres");
-        });
+                //var material = new THREE.ShaderMaterial({uniforms: {}, vertexShader: me.vertex, fragmentShader: me.frag, wireframe: true});
+                var color = new THREE.Color();
+                color.r = Math.random();
+                color.g = Math.random();
+                color.b = Math.random();
+                var material = new THREE.MeshBasicMaterial({wireframe: true, color: color});
+                var m = new THREE.Mesh(buff, material);
+                m.position.x = mesh.center.x;
+                m.position.y = mesh.center.y;
+                m.position.z = mesh.center.z;
+                m.position.add(me.position);
+                me.scene.add(m);
+                me.meshes[mesh.name] = m;
+            });
+        }
+        /*
+         console.log(Date.now() - event.data.started);
+         console.log(event.data.finished);
+         console.log(event.data);
+         */
     }
-/*
-    console.log(Date.now() - event.data.started);
-    console.log(event.data.finished);
-    console.log(event.data);
-    */
-}
+}();
 
 
 module.exports = Planet;

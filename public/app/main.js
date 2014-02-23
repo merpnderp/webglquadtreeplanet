@@ -142,12 +142,12 @@ var main = function () {
     var summaryAverage = 0;
 
     function UpdateToLocal() {
-        if (camera.position.length() > 50000) {
+        if (camera.position.length() > 10000) {
             origin = origin.subVectors(camera.position, origin);
             scene.children.forEach(function (child) {
-                console.log("Moving " + child.position.x + " : " + child.position.y + " : " + child.position.z);
+                //console.log("Moving " + child.position.x + " : " + child.position.y + " : " + child.position.z);
                 child.position.sub(origin);
-                console.log("To " + child.position.x + " : " + child.position.y + " : " + child.position.z);
+                //console.log("To " + child.position.x + " : " + child.position.y + " : " + child.position.z);
             });
             //planet.position.sub(origin);
             origin.x = 0;
