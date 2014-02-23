@@ -73,6 +73,7 @@ TerrainNode.prototype = {
         return function () {
             "use strict";
             var positions = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 3);
+            var normals = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 3);
             var uvs = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 2);
 
             var positionCount = 0;
@@ -84,49 +85,69 @@ TerrainNode.prototype = {
                 for (var v = 0; v < patchSize; v++) {
                     position = this.SolvePoint(u / patchSize, v / patchSize);
                     positions[positionCount++] = position.x;
+                    normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.y;
+                    normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.z;
+                    normals[positionCount-1] = positions[positionCount-1];
                     uvs[uvsCount++] = u / patchSize;
                     uvs[uvsCount++] = v / patchSize;
 
 
                     position = this.SolvePoint((u + 1) / patchSize, (v) / patchSize);
                     positions[positionCount++] = position.x;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.y;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.z;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     uvs[uvsCount++] = (u + 1) / patchSize;
                     uvs[uvsCount++] = v / patchSize;
 
                     position = this.SolvePoint((u) / patchSize, (v + 1) / patchSize);
                     positions[positionCount++] = position.x;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.y;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.z;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     uvs[uvsCount++] = (u) / patchSize;
                     uvs[uvsCount++] = (v + 1) / patchSize;
 
                     positions[positionCount++] = positions[positionCount - 4];
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = positions[positionCount - 4];
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = positions[positionCount - 4];
+                    //normals[positionCount-1] = positions[positionCount-1];
                     uvs[uvsCount++] = (u) / patchSize;
                     uvs[uvsCount++] = (v + 1) / patchSize;
 
                     positions[positionCount++] = positions[positionCount - 10];
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = positions[positionCount - 10];
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = positions[positionCount - 10];
+                    //normals[positionCount-1] = positions[positionCount-1];
                     uvs[uvsCount++] = (u + 1) / patchSize;
                     uvs[uvsCount++] = (v) / patchSize;
 
                     position = this.SolvePoint((u + 1) / patchSize, (v + 1) / patchSize);
                     positions[positionCount++] = position.x;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.y;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.z;
+                    //normals[positionCount-1] = positions[positionCount-1];
                     uvs[uvsCount++] = (u + 1) / patchSize;
                     uvs[uvsCount++] = (v + 1) / patchSize;
                 }
             }
 
             this.tree.planet.meshesToAdd.push(positions.buffer);
+            this.tree.planet.meshesToAdd.push(normals.buffer);
             this.tree.planet.meshesToAdd.push(uvs.buffer);
+            //this.tree.planet.returnObject.newMeshes.push({name: this.name, center: this.center, positions: positions, uvs: uvs, normals: normals});
             this.tree.planet.returnObject.newMeshes.push({name: this.name, center: this.center, positions: positions, uvs: uvs});
 
             this.isDrawn = true;
@@ -175,7 +196,7 @@ TerrainNode.prototype = {
 
     UnDraw: function () {
 
-        this.tree.planet.deletedMeshes.push(this.name);
+        this.tree.planet.returnObject.deletedMeshes.push(this.name);
         this.isDrawn = false;
 
     },
@@ -190,6 +211,7 @@ TerrainNode.prototype = {
 
     ShouldSplit: function () {
         //console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
+        this.tree.planet.log(this.level + " < " + this.tree.planet.maxLevel);
         return this.level < this.tree.planet.maxLevel && this.tree.planet.splitTable[this.level] >= this.distance;
 
     },

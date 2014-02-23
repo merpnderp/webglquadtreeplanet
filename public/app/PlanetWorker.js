@@ -11,38 +11,34 @@ var PlanetWorker = function () {
 
 var worker = new PlanetWorker();
 
-PlanetWorker.prototype.Update = function (data, cb) {
-    self.postMessage("Worker says Update called");
+PlanetWorker.prototype.Update = function (data) {
+    self.postMessage({log: "Worker says Update called"});
     this.returnObject = {started: Date.now(), newMeshes: [], deletedMeshes: []};
     this.meshesToAdd = [];
     //Get local position of player
     this.localCameraPosition = new THREE.Vector3(data.localCameraPosition.x, data.localCameraPosition.y, data.localCameraPosition.z);
     this.localCameraPlanetProjectionPosition = this.localCameraPosition.clone().normalize().multiplyScalar(this.radius);
-
     //this.cameraHeight = this.localCameraPosition.distanceTo(this.position) - this.radius;
     this.cameraHeight = this.localCameraPosition.length() - this.radius;
 
     this.localCameraMaxAngle = Math.acos(this.radius / (this.cameraHeight + this.radius));
 
     this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
-
-    this.quadTrees.forEach(function(tree){
+    this.log = function (text) {
+        self.postMessage({log: text});
+    };
+    this.quadTrees.forEach(function (tree) {
         tree.Update();
     });
 
     this.returnObject['finished'] = Date.now() - this.returnObject.started;
-
-    cb(this.returnObject, this.meshesToAdd);
+    self.postMessage(this.returnObject, this.meshesToAdd);
 
 };
 
-self.onmessage = function (event) {
-    if (event.data.Update) worker.Update(event.data.Update, self.postMessage);
-    if (event.data.Init) worker.Init(event.data.Init);
-};
 
 PlanetWorker.prototype.Init = function (data) {
-    self.postMessage("Worker says Init called");
+    self.postMessage({log: "Worker says Init called"});
     this.radius = data.radius;
     this.patchSize = data.patchSize;
     this.fov = data.fov;
@@ -52,13 +48,25 @@ PlanetWorker.prototype.Init = function (data) {
     this.splitTable = [];
     this.BuildSplitTable();
     this.InitQuadTrees();
+    self.postMessage({inited: true});
+};
+
+self.onmessage = function (event) {
+    if (event.data.Init) {
+        worker.Init(event.data.Init);
+    }
+    if (event.data.Update) {
+        worker.Update(event.data.Update);
+    }
 };
 
 PlanetWorker.prototype.BuildSplitTable = function () {
     var patchPixelWidth, i = 0, patchSize = this.patchSize;
+    self.postMessage({log: 'Starting buildsplittable: ' + this.vs.toString() + "\n"});
     while (i < 200) {
         patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 6);
         this.splitTable[i] = patchPixelWidth / this.vs;
+        self.postMessage({log: "building splitTable:" + this.splitTable[i]});
         patchSize = patchSize * 2;
         if (this.splitTable[i] < 3) {
             this.maxLevel = i;
@@ -66,6 +74,7 @@ PlanetWorker.prototype.BuildSplitTable = function () {
         }
         i++;
     }
+    self.postMessage({log: "building splitTable" + this.maxLevel});
 };
 
 PlanetWorker.prototype.InitQuadTrees = function () {

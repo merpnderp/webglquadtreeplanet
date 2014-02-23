@@ -54,10 +54,8 @@ var main = function () {
 //		renderer.setClearColor( 0xffffff, 1) 
     document.getElementById('viewport').appendChild(renderer.domElement);
 
-    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 32, scene: scene });
-//    planet.Init();
+    var planet = new Planet({camera: camera, radius: planetRadius, patchSize: 32, scene: scene, fov: 30 });
     scene.add(planet);
-planet.Update();
 //    return;
 //planet.add(new THREE.Mesh(new THREE.CubeGeometry(10, 10, 10)));
 
@@ -99,12 +97,12 @@ planet.Update();
             planetUpdate = del;
         }
 
-        //control.movementSpeed = planet.cameraHeight * 2;
+        control.movementSpeed = planet.cameraHeight * 2;
 
         stats.update();
 
         clockTest.getDelta();
-//        UpdateToLocal();
+        UpdateToLocal();
 
         del = clockTest.getDelta();
         updateAverage += del;
@@ -112,8 +110,6 @@ planet.Update();
             summaryAverage = del;
         }
         if (count % 30 === 0) {
-
-
             logger.Log("Geometries ", renderer.info.memory.geometries);
             logger.Log("Textures ", renderer.info.memory.textures);
             logger.Log("Calls ", renderer.info.render.calls);
@@ -146,10 +142,12 @@ planet.Update();
     var summaryAverage = 0;
 
     function UpdateToLocal() {
-        if (camera.position.length() > 1) {
+        if (camera.position.length() > 50000) {
             origin = origin.subVectors(camera.position, origin);
             scene.children.forEach(function (child) {
+                console.log("Moving " + child.position.x + " : " + child.position.y + " : " + child.position.z);
                 child.position.sub(origin);
+                console.log("To " + child.position.x + " : " + child.position.y + " : " + child.position.z);
             });
             //planet.position.sub(origin);
             origin.x = 0;
