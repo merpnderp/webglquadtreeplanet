@@ -77,6 +77,8 @@ Planet.prototype.WorkerMessage = function () {
                 buff.attributes.uv.array = mesh.uvs;
                 buff.attributes.uv.itemSize = 2;
 
+                buff.computeBoundingSphere();
+
                 //var material = new THREE.ShaderMaterial({uniforms: {}, vertexShader: me.vertex, fragmentShader: me.frag, wireframe: true});
                 var color = new THREE.Color();
                 color.r = Math.random();

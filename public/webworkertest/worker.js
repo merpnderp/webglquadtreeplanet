@@ -1,4 +1,8 @@
-
+var rseed = 10;
+function smallrandom() {
+    var x = Math.sin(rseed++) * 10000;
+    return x - Math.floor(x);
+}
 
 
 /**
@@ -13,7 +17,7 @@ var SimplexNoise = function (largestFeature, persistence, seed) {
 
     //recieves a number (eg 128) and calculates what power of 2 it is (eg 2^7)
     var numberOfOctaves = Math.ceil(Math.log(largestFeature) / Math.log(2));
-
+numberOfOctaves = 1;
     this.octaves = [];
     this.frequencys = [];
     this.amplitudes = [];
@@ -21,7 +25,8 @@ var SimplexNoise = function (largestFeature, persistence, seed) {
     var mathSeed = new MathSeed(10);
 
     for (var i = 0; i < numberOfOctaves; i++) {
-        this.octaves[i] = new SimplexNoise_octave(mathSeed.seededRandom);
+        this.octaves[i] = new SimplexNoise_octave(smallrandom);
+//        this.octaves[i] = new SimplexNoise_octave(mathSeed.seededRandom);
 //        this.octaves[i] = new SimplexNoise_octave(Math.random);
 
         this.frequencys[i] = Math.pow(2, i);
@@ -52,7 +57,7 @@ var t = 0;
 self.addEventListener('message', function (e) {
 //    var buffer = new ArrayBuffer(8 * 1024 * 1024);
     start = new Date().getTime();
-    var size = 512;
+    var size = 32 * 12;
     var data = new Uint8Array(size * size * 4); // 64MB
 
     var simplex = new SimplexNoise(e.data.largestFeature, e.data.persistence, 1);
