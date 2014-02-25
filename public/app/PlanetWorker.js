@@ -14,7 +14,10 @@ var worker = new PlanetWorker();
 PlanetWorker.prototype.Update = function (data) {
     self.postMessage({log: "Worker says Update called"});
     this.returnObject = {started: Date.now(), newMeshes: [], deletedMeshes: []};
+    this.meshesMightAdd = [];
     this.meshesToAdd = [];
+
+
     //Get local position of player
     this.localCameraPosition = new THREE.Vector3(data.localCameraPosition.x, data.localCameraPosition.y, data.localCameraPosition.z);
     this.localCameraPlanetProjectionPosition = this.localCameraPosition.clone().normalize().multiplyScalar(this.radius);
@@ -29,6 +32,10 @@ PlanetWorker.prototype.Update = function (data) {
     };
     this.quadTrees.forEach(function (tree) {
         tree.Update();
+    });
+
+    this.meshesMightAdd.forEach(function(mesh){
+        mesh.draw();
     });
 
     this.returnObject['finished'] = Date.now() - this.returnObject.started;
