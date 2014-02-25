@@ -11,6 +11,8 @@ var Planet = function (options) {
 
     this.vertex = fs.readFileSync('shaders/VertexShader.glsl');
     this.frag = fs.readFileSync('shaders/FragmentShader.glsl');
+    this.wfvertex = fs.readFileSync('shaders/WireframeVertexShader.glsl');
+    this.wffragment = fs.readFileSync('shaders/WireframeFragmentShader.glsl');
 
     this.camera = options.camera;
     this.cameraHeight = 0;
@@ -80,6 +82,8 @@ Planet.prototype.WorkerMessage = function () {
                 buff.computeBoundingSphere();
 
                 //var material = new THREE.ShaderMaterial({uniforms: {}, vertexShader: me.vertex, fragmentShader: me.frag, wireframe: true});
+                //var material = new THREE.ShaderMaterial({uniforms: {width: {type:"f", value: mesh.width}, center: {type:"v3", value:mesh.center}},
+                //    vertexShader: me.wfvertex, fragmentShader: me.wffragment, transparent: true});
                 var color = new THREE.Color();
                 color.r = Math.random();
                 color.g = Math.random();

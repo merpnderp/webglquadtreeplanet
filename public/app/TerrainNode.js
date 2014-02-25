@@ -148,7 +148,7 @@ TerrainNode.prototype = {
             this.tree.planet.meshesToAdd.push(normals.buffer);
             this.tree.planet.meshesToAdd.push(uvs.buffer);
             //this.tree.planet.returnObject.newMeshes.push({name: this.name, center: this.center, positions: positions, uvs: uvs, normals: normals});
-            this.tree.planet.returnObject.newMeshes.push({name: this.name, center: this.center, positions: positions, uvs: uvs});
+            this.tree.planet.returnObject.newMeshes.push({name: this.name, width: this.width, center: this.center, positions: positions, uvs: uvs});
 
             this.isDrawn = true;
         };

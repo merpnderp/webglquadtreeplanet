@@ -29,6 +29,9 @@ var canvas = document.getElementById('c'),
     var delta = new Date().getTime() - 2000;
 
 worker.addEventListener('message', function (e) {
+    if (!pause) {
+        worker.postMessage({largestFeature: largestFeature, persistence: persistence});
+    }
     var time = new Date().getTime();
     returnTime = time - e.data.time;
 
@@ -68,9 +71,6 @@ worker.addEventListener('message', function (e) {
         delta = new Date().getTime();
     }
 
-    if (!pause) {
-        worker.postMessage({largestFeature: largestFeature, persistence: persistence});
-    }
 }, false);
 
 function updateLogs() {
