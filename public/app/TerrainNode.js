@@ -61,17 +61,17 @@ TerrainNode.prototype = {
     },
 
     CheckNeighbors: function () {
-        if (this.level < 2) {
-            return;
-        }
 
         if (this.isSplit) {
-            this.parent.SplitNeighbors(this.level - 1);
-            this.AssignNeighbors();
+            if(this.level > 0){
+                this.parent.SplitNeighbors(this.level);
+                this.AssignNeighbors();
+            }
+            this.CheckChildrenNeighbors();
             return;
         }
 
-        if(this.isDrawn){
+        if(this.shouldDraw && this.level > 0){
             this.parent.EnsureNeighborsAreDrawnOrSplit();
         }
 
@@ -79,16 +79,16 @@ TerrainNode.prototype = {
     },
 
     EnsureNeighborsAreDrawnOrSplit: function(){
-        if(!this.topNeighbor.isSplit || !this.topNeighbor.isDrawn){
+        if(!this.topNeighbor.isSplit && !this.topNeighbor.shouldDraw){
             this.topNeighbor.ShouldDraw();
         }
-        if(!this.rightNeighbor.isSplit || !this.rightNeighbor.isDrawn){
+        if(!this.rightNeighbor.isSplit && !this.rightNeighbor.shouldDraw){
             this.rightNeighbor.ShouldDraw();
         }
-        if(!this.bottomNeighbor.isSplit || !this.bottomNeighbor.isDrawn){
+        if(!this.bottomNeighbor.isSplit && !this.bottomNeighbor.shouldDraw){
             this.bottomNeighbor.ShouldDraw();
         }
-        if(!this.leftNeighbor.isSplit || !this.leftNeighbor.isDrawn){
+        if(!this.leftNeighbor.isSplit && !this.leftNeighbor.shouldDraw){
             this.leftNeighbor.ShouldDraw();
         }
     },
@@ -366,6 +366,15 @@ TerrainNode.prototype = {
         this.topRightChild.Update();
         this.bottomLeftChild.Update();
         this.bottomRightChild.Update();
+
+    },
+
+    CheckChildrenNeighbors: function () {
+
+        this.topLeftChild.CheckNeighbors();
+        this.topRightChild.CheckNeighbors();
+        this.bottomLeftChild.CheckNeighbors();
+        this.bottomRightChild.CheckNeighbors();
 
     },
 
