@@ -12,7 +12,6 @@ var PlanetWorker = function () {
 var worker = new PlanetWorker();
 
 PlanetWorker.prototype.Update = function (data) {
-    self.postMessage({log: "Worker says Update called"});
     this.returnObject = {started: Date.now(), newMeshes: [], deletedMeshes: []};
     this.meshesMightAdd = [];
     this.meshesToAdd = [];
@@ -27,25 +26,36 @@ PlanetWorker.prototype.Update = function (data) {
     this.localCameraMaxAngle = Math.acos(this.radius / (this.cameraHeight + this.radius));
 
     this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
-    this.log = function (text) {
-        self.postMessage({log: text});
-    };
+
     this.quadTrees.forEach(function (tree) {
         tree.Update();
     });
 
-    this.meshesMightAdd.forEach(function(mesh){
+    this.quadTrees.forEach(function (tree) {
+        tree.CheckNeighbors();
+    });
+
+    this.meshesMightAdd.forEach(function (mesh) {
         mesh.draw();
     });
 
     this.returnObject['finished'] = Date.now() - this.returnObject.started;
+
     self.postMessage(this.returnObject, this.meshesToAdd);
 
 };
 
+PlanetWorker.prototype.RemoveFromMeshesMightAdd = function (name) {
+    for (var i = 0, length = this.meshesMightAdd.length; i < length; i++) {
+        if (this.meshesMightAdd[i] = name) {
+            this.meshesMightAdd.splice(i, 1);
+            return;
+        }
+    }
+}
+
 
 PlanetWorker.prototype.Init = function (data) {
-    self.postMessage({log: "Worker says Init called"});
     this.radius = data.radius;
     this.patchSize = data.patchSize;
     this.fov = data.fov;
@@ -55,6 +65,7 @@ PlanetWorker.prototype.Init = function (data) {
     this.splitTable = [];
     this.BuildSplitTable();
     this.InitQuadTrees();
+    this.AssignNeighbors();
     self.postMessage({inited: true});
 };
 
@@ -69,11 +80,9 @@ self.onmessage = function (event) {
 
 PlanetWorker.prototype.BuildSplitTable = function () {
     var patchPixelWidth, i = 0, patchSize = this.patchSize;
-    self.postMessage({log: 'Starting buildsplittable: ' + this.vs.toString() + "\n"});
     while (i < 200) {
         patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 6);
         this.splitTable[i] = patchPixelWidth / this.vs;
-        self.postMessage({log: "building splitTable:" + this.splitTable[i]});
         patchSize = patchSize * 2;
         if (this.splitTable[i] < 3) {
             this.maxLevel = i;
@@ -81,7 +90,6 @@ PlanetWorker.prototype.BuildSplitTable = function () {
         }
         i++;
     }
-    self.postMessage({log: "building splitTable" + this.maxLevel});
 };
 
 PlanetWorker.prototype.InitQuadTrees = function () {

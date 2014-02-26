@@ -26,6 +26,8 @@ var Planet = function (options) {
     this.worker.postMessage({Init: {radius: this.radius, patchSize: this.patchSize, fov: this.fov, screenWidth: screen.width}});
     this.inited = false;
     this.meshes = {};
+
+    this.averageMeshCreationTime = 0;
 };
 
 Planet.prototype = Object.create(THREE.Object3D.prototype);
@@ -43,6 +45,7 @@ Planet.prototype.Update = function () {
 }();
 
 Planet.prototype.WorkerMessage = function () {
+    var returns = 0, average = 0;
     return function (event) {
 
         var me = this;
@@ -66,6 +69,12 @@ Planet.prototype.WorkerMessage = function () {
 
         if (event.data.newMeshes) {
             event.data.newMeshes.forEach(function (mesh) {
+                if(returns > 4){
+                    average += event.data.finished;
+                    me.averageMeshCreationTime = average / (returns - 3);
+                }
+                returns++;
+
                 var buff = new THREE.BufferGeometry();
                 buff.attributes.position = {};
                 buff.attributes.position.array = mesh.positions;

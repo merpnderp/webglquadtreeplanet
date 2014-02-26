@@ -22,6 +22,10 @@ QuadTree.prototype.Update = function () {
     this.rootNode.Update();
 };
 
+QuadTree.prototype.CheckNeighbors = function(){
+    this.rootNode.CheckNeighbors();
+};
+
 QuadTree.prototype.AssignNeighbors = function (left, top, right, bottom) {
     this.rootNode.leftNeighbor = left;
     this.rootNode.topNeighbor = top;
