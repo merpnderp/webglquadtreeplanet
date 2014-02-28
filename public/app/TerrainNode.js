@@ -47,7 +47,8 @@ TerrainNode.prototype = {
                     if (this.ShouldUnSplit()) {
                         this.UnSplit();
                         this.Update();
-                    } else {
+                    }
+                    else {
                         this.UpdateChildren();
                     }
                 } else if (this.ShouldSplit()) {
@@ -65,7 +66,7 @@ TerrainNode.prototype = {
         if (this.isSplit) {
             if(this.level > 0){
                 this.parent.SplitNeighbors(this.level);
-                this.AssignNeighbors();
+                this.parent.AssignNeighbors();
             }
             this.CheckChildrenNeighbors();
             return;
@@ -80,6 +81,7 @@ TerrainNode.prototype = {
 
     EnsureNeighborsAreDrawnOrSplit: function(){
         if(!this.topNeighbor.isSplit && !this.topNeighbor.shouldDraw){
+//            this.tree.planet.console(this.name + " : " + this.level + " : " + this.topNeighbor.shouldDraw);
             this.topNeighbor.ShouldDraw();
         }
         if(!this.rightNeighbor.isSplit && !this.rightNeighbor.shouldDraw){
@@ -95,6 +97,7 @@ TerrainNode.prototype = {
 
     SplitNeighbors: function (splitLevel) {
         if (this.topNeighbor.level < splitLevel) {
+            this.tree.planet.console("Neighbor splitting " + this.name);
             this.topNeighbor.Split();
         }
         if (this.rightNeighbor.level < splitLevel) {
@@ -311,7 +314,26 @@ TerrainNode.prototype = {
     }(),
 
     AssignNeighbors: function () {
+        this.topLeftChild.topNeighbor = this.topNeighbor.bottomLeftChild;
+        this.topLeftChild.rightNeighbor = this.topRightChild;
+        this.topLeftChild.bottomNeighbor = this.bottomLeftChild;
+        this.topLeftChild.leftNeighbor = this.leftNeighbor.topRightChild;
 
+        this.topRightChild.topNeighbor = this.topNeighbor.bottomRightChild;
+        this.topRightChild.rightNeighbor = this.rightNeighbor.topLeftChild;
+        this.topRightChild.bottomNeighbor = this.bottomRightChild;
+        this.topRightChild.leftNeighbor = this.topLeftChild;
+
+        this.bottomLeftChild.topNeighbor = this.topLeftChild;
+        this.bottomLeftChild.rightNeighbor = this.bottomRightChild;
+        this.bottomLeftChild.bottomNeighbor = this.bottomNeighbor.topLeftChild;
+        this.bottomLeftChild.leftNeighbor = this.leftNeighbor.bottomRightChild;
+
+        this.bottomRightChild.topNeighbor = this.topRightChild;
+        this.bottomRightChild.rightNeighbor = this.rightNeighbor.bottomLeftChild;
+        this.bottomRightChild.bottomNeighbor = this.bottomNeighbor.topRightChild;
+        this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
+/*
         this.topLeftChild.topNeighbor = this.parent.topNeighbor.bottomLeftChild;
         this.topLeftChild.rightNeighbor = this.topRightChild;
         this.topLeftChild.bottomNeighbor = this.bottomLeftChild;
@@ -331,7 +353,7 @@ TerrainNode.prototype = {
         this.bottomRightChild.rightNeighbor = this.parent.rightNeighbor.bottomLeftChild;
         this.bottomRightChild.bottomNeighbor = this.parent.bottomNeighbor.topRightChild;
         this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
-
+        */
     },
 
 

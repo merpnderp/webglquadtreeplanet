@@ -50,6 +50,10 @@ Planet.prototype.WorkerMessage = function () {
 
         var me = this;
 
+        if(event.data.console){
+            console.log(event.data.console);
+        }
+
         if (event.data.inited) {
             this.inited = true;
             return;

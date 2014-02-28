@@ -41,6 +41,8 @@ PlanetWorker.prototype.Update = function (data) {
 
     this.returnObject['finished'] = Date.now() - this.returnObject.started;
 
+    this.console = function(text){self.postMessage({console: text});};
+
     self.postMessage(this.returnObject, this.meshesToAdd);
 
 };
@@ -108,12 +110,12 @@ PlanetWorker.prototype.InitQuadTrees = function () {
 
 
 PlanetWorker.prototype.AssignNeighbors = function () {
-    var bottom = this.quadTrees[0];
-    var front = this.quadTrees[1];
-    var left = this.quadTrees[2];
-    var top = this.quadTrees[3];
-    var back = this.quadTrees[4];
-    var right = this.quadTrees[5];
+    var bottom = this.quadTrees[0].rootNode;
+    var front = this.quadTrees[1].rootNode;
+    var left = this.quadTrees[2].rootNode;
+    var top = this.quadTrees[3].rootNode;
+    var back = this.quadTrees[4].rootNode;
+    var right = this.quadTrees[5].rootNode;
 
     this.quadTrees[0].AssignNeighbors(left, back, right, front);
     this.quadTrees[1].AssignNeighbors(left, top, right, bottom);
