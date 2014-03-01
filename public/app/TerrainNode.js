@@ -67,53 +67,279 @@ TerrainNode.prototype = {
 	
 	
     checkNeighbors: function(){
+
+		// T;BL;BR; If the top neighbor is split and either the bottem left or bottom right child is split
         if(this.topNeighbor && this.topNeighbor.isSplit && (this.topNeighbor.bottomLeftChild.isSplit || this.topNeighbor.bottomRightChild.isSplit)){
+
             this.Split();
+
         }
+
+		// R;TL;BL; If the right neighbor is split and either the top left or bottom left child is split
         if(this.rightNeighbor &&this.rightNeighbor.isSplit && (this.rightNeighbor.bottomLeftChild.isSplit || this.rightNeighbor.topLeftChild.isSplit)){
+
             this.Split();
+
         }
+
+		// B;TL;TR If the bottom neighbor is split and either the top left or top right child is split
         if(this.bottomNeighbor && this.bottomNeighbor.isSplit && (this.bottomNeighbor.topLeftChild.isSplit || this.bottomNeighbor.topRightChild.isSplit)){
+
             this.Split();
+
         }
+
+		// L;TR;BR If the top neighbor is split and either the top right or bottom right child is split
         if(this.leftNeighbor && this.leftNeighbor.isSplit && (this.leftNeighbor.topRightChild.isSplit || this.leftNeighbor.bottomRightChild.isSplit)){
+
             this.Split();
+
         }
+		
+		
         if(this.isSplit){
+			
             if(this.topNeighbor && this.topNeighbor.isSplit){
-                this.topLeftChild.topNeighbor = this.topNeighbor.bottomLeftChild;
+				
+				// -----------------     -----------------
+				// |   | x |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | o | • |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | • | • |   |     |   | o | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   | x |   |   |
+				// -----------------     -----------------
+			    this.topLeftChild.topNeighbor = this.topNeighbor.bottomLeftChild;
+				
+				// -----------------     -----------------
+				// |   |   | x |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | o |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | • | • |   |     |   | • | o |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   | x |   |
+				// -----------------     -----------------
                 this.topRightChild.topNeighbor = this.topNeighbor.bottomRightChild;
-            }
+            
+			}
+			
             if(this.rightNeighbor && this.rightNeighbor.isSplit){
-                this.topRightChild.rightNeighbor = this.rightNeighbor.topLeftChild;
+            
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | o | x |     | x | o | • |   |
+				// -----------------  =  -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+			    this.topRightChild.rightNeighbor = this.rightNeighbor.topLeftChild;
+
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | • | o | x |     | x | o | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
                 this.bottomRightChild.rightNeighbor = this.rightNeighbor.bottomLeftChild;
-            }
+            
+			}
+			
             if(this.bottomNeighbor && this.bottomNeighbor.isSplit){
-                this.bottomLeftChild.bottomNeighbor = this.bottomNeighbor.topLeftChild;
+            
+				// -----------------     -----------------
+				// |   |   |   |   |     |   | x |   |   |
+				// -----------------     -----------------
+				// |   | • | • |   |     |   | o | • |   |
+				// -----------------  =  -----------------
+				// |   | o | • |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   | x |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+			    this.bottomLeftChild.bottomNeighbor = this.bottomNeighbor.topLeftChild;
+				
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   | x |   |
+				// -----------------     -----------------
+				// |   | • | • |   |     |   | • | o |   |
+				// -----------------  =  -----------------
+				// |   | • | o |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   |   | x |   |     |   |   |   |   |
+				// -----------------     -----------------
                 this.bottomRightChild.bottomNeighbor = this.bottomNeighbor.topRightChild;
-            }
+            
+			}
+			
             if(this.leftNeighbor && this.leftNeighbor.isSplit){
-                this.topLeftChild.leftNeighbor = this.leftNeighbor.topRightChild;
+            
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// | x | o | • |   |     |   | • | o | x |
+				// -----------------  =  -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+			    this.topLeftChild.leftNeighbor = this.leftNeighbor.topRightChild;
+				
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// | x | o | • |   |     |   | • | o | x |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
                 this.bottomLeftChild.leftNeighbor = this.leftNeighbor.bottomRightChild;
-            }
+            
+			}
+			else
+			{
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | o | x |   |     |   | • | x |   |
+				// -----------------  =  -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.topLeftChild.rightNeighbor = this.topRightChild;
+			
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | o | • |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | x | • |   |     |   | x | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.topLeftChild.bottomNeighbor = this.bottomLeftChild;
 
-            this.topLeftChild.rightNeighbor = this.topRightChild;
-            this.topLeftChild.bottomNeighbor = this.bottomLeftChild;
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | o |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | • | x |   |     |   | • | x |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.topRightChild.bottomNeighbor = this.bottomRightChild;
 
-            this.topRightChild.bottomNeighbor = this.bottomRightChild;
-            this.topRightChild.leftNeighbor = this.topLeftChild;
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.topRightChild.leftNeighbor = this.topLeftChild;
 
-            this.bottomLeftChild.topNeighbor = this.topLeftChild;
-            this.bottomLeftChild.rightNeighbor = this.bottomRightChild;
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | x | • |   |     |   | x | • |   |
+				// -----------------  =  -----------------
+				// |   | o | • |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.bottomLeftChild.topNeighbor = this.topLeftChild;
+			
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | o | x |   |     |   | • | x |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.bottomLeftChild.rightNeighbor = this.bottomRightChild;
 
-            this.bottomRightChild.topNeighbor = this.topRightChild;
-            this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | x |   |     |   | • | x |   |
+				// -----------------  =  -----------------
+				// |   | • | o |   |     |   | • | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.bottomRightChild.topNeighbor = this.topRightChild;
+			
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+				// |   | • | • |   |     |   | • | • |   |
+				// -----------------  =  -----------------
+				// |   | x | o |   |     |   | x | • |   |
+				// -----------------     -----------------
+				// |   |   |   |   |     |   |   |   |   |
+				// -----------------     -----------------
+	            this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
 
-            this.topLeftChild.checkNeighbors();
-            this.topRightChild.checkNeighbors();
-            this.bottomLeftChild.checkNeighbors();
-            this.bottomRightChild.checkNeighbors();
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+				// |   | x | • |   |
+				// -----------------
+				// |   | • | • |   |
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+	            this.topLeftChild.checkNeighbors();
+			
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+				// |   | • | x |   |
+				// -----------------
+				// |   | • | • |   |
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+	            this.topRightChild.checkNeighbors();
+			
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+				// |   | • | • |   |
+				// -----------------
+				// |   | x | • |   |
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+	            this.bottomLeftChild.checkNeighbors();
+			
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+				// |   | • | • |   |
+				// -----------------
+				// |   | • | x |   |
+				// -----------------
+				// |   |   |   |   |
+				// -----------------
+	            this.bottomRightChild.checkNeighbors();				
+			}
+
+			
         }
+		
     },
 
 
@@ -306,7 +532,11 @@ TerrainNode.prototype = {
             if(this.isSplit){
                 return;
             }
-            options = {level: this.level + 1, parent: this, tree: this.tree};
+            options = {
+				level: this.level + 1,
+				parent: this,
+				tree: this.tree
+			};
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
             this.topLeftChild = new TerrainNode(options);
@@ -331,7 +561,8 @@ TerrainNode.prototype = {
     Die: function () {
         if (this.isDrawn) {
             this.UnDraw();
-        } else if (this.isSplit) {
+        }
+		else if (this.isSplit) {
             this.UnSplit();
         }
 
@@ -341,6 +572,7 @@ TerrainNode.prototype = {
     UnSplit: function () {
 
         if (this.isSplit) {
+			
             this.topLeftChild.Die();
             this.topRightChild.Die();
             this.bottomLeftChild.Die();
@@ -349,8 +581,11 @@ TerrainNode.prototype = {
             delete this.topRightChild;
             delete this.bottomLeftChild;
             delete this.bottomRightChild;
+			
         }
+		
         this.isSplit = false;
+		
     },
 
 
