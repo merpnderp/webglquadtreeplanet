@@ -469,7 +469,11 @@ TerrainNode.prototype = {
             y = (y / length) * this.tree.planet.radius - this.center.y;
             z = (z / length) * this.tree.planet.radius - this.center.z;
 
-            return {x:x,y:y,z:z};
+            return {
+				x: x,
+				y: y,
+				z: z
+			};
 
         }
     }(),
