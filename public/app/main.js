@@ -164,7 +164,7 @@ demo.addInitializationStage({
 	    this.planet = new Planet({
 			camera: this.camera,
 			radius: this.planetRadius,
-			patchSize: 16,
+			patchSize: 8,
 			scene: this.scene,
 			fov: 30
 		});
