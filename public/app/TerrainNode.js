@@ -34,7 +34,7 @@ var TerrainNode = function (options) {
 TerrainNode.prototype = {
 
 
-    Update: function () {
+    update: function () {
         if (this.OccludedByHorizon()) {
             if (this.isDrawn) {
                 this.isOccluded = true;
@@ -47,16 +47,16 @@ TerrainNode.prototype = {
                 if (this.isSplit) {
                     if (this.ShouldUnSplit()) {
                         this.UnSplit();
-                        this.Update();
+                        this.update();
                     } else {
-                        this.UpdateChildren();
+                        this.updateChildren();
                     }
                 } else if (this.ShouldSplit()) {
                     if (this.isDrawn) {
                         this.UnDraw();
                     }
                     this.Split();
-                    this.UpdateChildren();
+                    this.updateChildren();
                 }
                 /*else if (!this.isDrawn) {
                     this.ShouldDraw();
@@ -354,12 +354,12 @@ TerrainNode.prototype = {
     },
 
 
-    UpdateChildren: function () {
+    updateChildren: function () {
 
-        this.topLeftChild.Update();
-        this.topRightChild.Update();
-        this.bottomLeftChild.Update();
-        this.bottomRightChild.Update();
+        this.topLeftChild.update();
+        this.topRightChild.update();
+        this.bottomLeftChild.update();
+        this.bottomRightChild.update();
 
     },
 

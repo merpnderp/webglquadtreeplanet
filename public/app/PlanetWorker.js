@@ -11,8 +11,8 @@ var PlanetWorker = function () {
 
 var worker = new PlanetWorker();
 
-PlanetWorker.prototype.Update = function (data) {
-    self.postMessage({log: "Worker says Update called"});
+PlanetWorker.prototype.update = function (data) {
+    self.postMessage({log: "Worker says update called"});
     this.returnObject = {started: data.started, newMeshes: [], deletedMeshes: []};
     this.meshesToAdd = [];
 
@@ -30,7 +30,7 @@ PlanetWorker.prototype.Update = function (data) {
         self.postMessage({log: text});
     };
     this.quadTrees.forEach(function (tree) {
-        tree.rootNode.Update();
+        tree.rootNode.update();
     });
     this.quadTrees.forEach(function (tree) {
         tree.rootNode.checkNeighbors();
@@ -66,15 +66,15 @@ PlanetWorker.prototype.Init = function (data) {
     this.BuildSplitTable();
     this.InitQuadTrees();
     this.AssignNeighbors();
-    self.postMessage({inited: true});
+    self.postMessage({isInitialized: true});
 };
 
 self.onmessage = function (event) {
     if (event.data.Init) {
         worker.Init(event.data.Init);
     }
-    if (event.data.Update) {
-        worker.Update(event.data.Update);
+    if (event.data.update) {
+        worker.update(event.data.update);
     }
 };
 

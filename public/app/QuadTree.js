@@ -18,8 +18,8 @@ var QuadTree = function (options) {
     this.rootNode = new TerrainNode({ parent: undefined, level: 0, tree: this, position: this.position });
 };
 
-QuadTree.prototype.Update = function () {
-    this.rootNode.Update();
+QuadTree.prototype.update = function () {
+    this.rootNode.update();
 };
 
 QuadTree.prototype.AssignNeighbors = function (left, top, right, bottom) {
