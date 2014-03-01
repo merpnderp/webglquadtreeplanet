@@ -12,8 +12,8 @@ var PlanetWorker = function () {
 var worker = new PlanetWorker();
 
 PlanetWorker.prototype.Update = function (data) {
-    this.returnObject = {started: Date.now(), newMeshes: [], deletedMeshes: []};
-    this.meshesMightAdd = [];
+    self.postMessage({log: "Worker says Update called"});
+    this.returnObject = {started: data.started, newMeshes: [], deletedMeshes: []};
     this.meshesToAdd = [];
 
 
@@ -26,38 +26,33 @@ PlanetWorker.prototype.Update = function (data) {
     this.localCameraMaxAngle = Math.acos(this.radius / (this.cameraHeight + this.radius));
 
     this.cameraHeight = this.cameraHeight > 0 ? this.cameraHeight : this.radius + 1;
-
+    this.log = function (text) {
+        self.postMessage({log: text});
+    };
     this.quadTrees.forEach(function (tree) {
-        tree.Update();
+        tree.rootNode.Update();
     });
-
     this.quadTrees.forEach(function (tree) {
-        tree.CheckNeighbors();
+        tree.rootNode.Draw();
     });
 
-    this.meshesMightAdd.forEach(function (mesh) {
-        mesh.draw();
-    });
 
     this.returnObject['finished'] = Date.now() - this.returnObject.started;
-
-    this.console = function(text){self.postMessage({console: text});};
-
     self.postMessage(this.returnObject, this.meshesToAdd);
 
 };
 
-PlanetWorker.prototype.RemoveFromMeshesMightAdd = function (name) {
-    for (var i = 0, length = this.meshesMightAdd.length; i < length; i++) {
-        if (this.meshesMightAdd[i] = name) {
-            this.meshesMightAdd.splice(i, 1);
+PlanetWorker.prototype.RemoveFromDeletedMeshes = function (name) {
+    for (var i = 0, length = this.returnObject.deletedMeshes; i < length; i++) {
+        if (this.returnObject.deletedMeshes[i] == name) {
+            this.returnObject.deletedMeshes.splice(i, 1);
             return;
         }
     }
-}
-
+};
 
 PlanetWorker.prototype.Init = function (data) {
+    self.postMessage({log: "Worker says Init called"});
     this.radius = data.radius;
     this.patchSize = data.patchSize;
     this.fov = data.fov;
@@ -67,7 +62,6 @@ PlanetWorker.prototype.Init = function (data) {
     this.splitTable = [];
     this.BuildSplitTable();
     this.InitQuadTrees();
-    this.AssignNeighbors();
     self.postMessage({inited: true});
 };
 
@@ -82,9 +76,11 @@ self.onmessage = function (event) {
 
 PlanetWorker.prototype.BuildSplitTable = function () {
     var patchPixelWidth, i = 0, patchSize = this.patchSize;
+    self.postMessage({log: 'Starting buildsplittable: ' + this.vs.toString() + "\n"});
     while (i < 200) {
         patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 6);
         this.splitTable[i] = patchPixelWidth / this.vs;
+        self.postMessage({log: "building splitTable:" + this.splitTable[i]});
         patchSize = patchSize * 2;
         if (this.splitTable[i] < 3) {
             this.maxLevel = i;
@@ -92,6 +88,7 @@ PlanetWorker.prototype.BuildSplitTable = function () {
         }
         i++;
     }
+    self.postMessage({log: "building splitTable" + this.maxLevel});
 };
 
 PlanetWorker.prototype.InitQuadTrees = function () {
@@ -110,12 +107,12 @@ PlanetWorker.prototype.InitQuadTrees = function () {
 
 
 PlanetWorker.prototype.AssignNeighbors = function () {
-    var bottom = this.quadTrees[0].rootNode;
-    var front = this.quadTrees[1].rootNode;
-    var left = this.quadTrees[2].rootNode;
-    var top = this.quadTrees[3].rootNode;
-    var back = this.quadTrees[4].rootNode;
-    var right = this.quadTrees[5].rootNode;
+    var bottom = this.quadTrees[0];
+    var front = this.quadTrees[1];
+    var left = this.quadTrees[2];
+    var top = this.quadTrees[3];
+    var back = this.quadTrees[4];
+    var right = this.quadTrees[5];
 
     this.quadTrees[0].AssignNeighbors(left, back, right, front);
     this.quadTrees[1].AssignNeighbors(left, top, right, bottom);

@@ -13,6 +13,8 @@ var TerrainNode = function (options) {
     this.tree = options.tree;
     this.position = options.position;
 
+    //console.log(this.position.x + " : " + this.position.y + " : " + this.position.z);
+
     this.width = this.tree.planet.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
     this.arcLength = (this.width / this.tree.planet.radius) / 1.43 //divided by fudge factor;
@@ -28,17 +30,13 @@ var TerrainNode = function (options) {
 };
 
 
-
-
 TerrainNode.prototype = {
 
 
     Update: function () {
         if (this.OccludedByHorizon()) {
-            this.isOccluded = true;
-            if (this.isSplit) {
-                this.UnSplit();
-            } else if (this.isDrawn) {
+            if (this.isDrawn) {
+                this.isOccluded = true;
                 this.UnDraw();
             }
         } else {
@@ -49,76 +47,25 @@ TerrainNode.prototype = {
                     if (this.ShouldUnSplit()) {
                         this.UnSplit();
                         this.Update();
-                    }
-                    else {
+                    } else {
                         this.UpdateChildren();
                     }
                 } else if (this.ShouldSplit()) {
+                    if (this.isDrawn) {
+                        this.UnDraw();
+                    }
                     this.Split();
                     this.UpdateChildren();
-                } else if (!this.isDrawn) {
-                    this.ShouldDraw();
                 }
+                /*else if (!this.isDrawn) {
+                    this.ShouldDraw();
+                }*/
             }
         }
     },
 
-    CheckNeighbors: function () {
-
-        if (this.isSplit) {
-            if(this.level > 0){
-                this.parent.SplitNeighbors(this.level);
-                this.parent.AssignNeighbors();
-            }
-            this.CheckChildrenNeighbors();
-            return;
-        }
-
-        if(this.shouldDraw && this.level > 0){
-            this.parent.EnsureNeighborsAreDrawnOrSplit();
-        }
-
-
-    },
-
-    EnsureNeighborsAreDrawnOrSplit: function(){
-        if(!this.topNeighbor.isSplit && !this.topNeighbor.shouldDraw){
-//            this.tree.planet.console(this.name + " : " + this.level + " : " + this.topNeighbor.shouldDraw);
-            this.topNeighbor.ShouldDraw();
-        }
-        if(!this.rightNeighbor.isSplit && !this.rightNeighbor.shouldDraw){
-            this.rightNeighbor.ShouldDraw();
-        }
-        if(!this.bottomNeighbor.isSplit && !this.bottomNeighbor.shouldDraw){
-            this.bottomNeighbor.ShouldDraw();
-        }
-        if(!this.leftNeighbor.isSplit && !this.leftNeighbor.shouldDraw){
-            this.leftNeighbor.ShouldDraw();
-        }
-    },
-
-    SplitNeighbors: function (splitLevel) {
-        if (this.topNeighbor.level < splitLevel) {
-            this.tree.planet.console("Neighbor splitting " + this.name);
-            this.topNeighbor.Split();
-        }
-        if (this.rightNeighbor.level < splitLevel) {
-            this.rightNeighbor.Split();
-        }
-        if (this.bottomNeighbor.level < splitLevel) {
-            this.bottomNeighbor.Split();
-        }
-        if (this.leftNeighbor.level < splitLevel) {
-            this.leftNeighbor.Split();
-        }
-    },
-
-    ShouldDraw: function () {
-        if(this.shouldDraw === true){
-            return;
-        }
+    ShouldDraw: function(){
         this.tree.planet.meshesMightAdd.push({name: this.name, draw: this.Draw.bind(this)});
-        this.shouldDraw = true;
     },
 
     Draw: function () {
@@ -127,6 +74,21 @@ TerrainNode.prototype = {
 
         return function () {
             "use strict";
+
+            if(this.isSplit){
+                this.topLeftChild.Draw();
+                this.topRightChild.Draw();
+                this.bottomLeftChild.Draw();
+                this.bottomRightChild.Draw();
+                return;
+            }
+
+            if(this.isDrawn || this.isOccluded){
+                return;
+            }
+
+            this.tree.planet.RemoveFromDeletedMeshes(this.name);
+
             var positions = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 3);
             var normals = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 3);
             var uvs = new Float32Array(this.tree.planet.patchSize * this.tree.planet.patchSize * 6 * 2);
@@ -140,11 +102,11 @@ TerrainNode.prototype = {
                 for (var v = 0; v < patchSize; v++) {
                     position = this.SolvePoint(u / patchSize, v / patchSize);
                     positions[positionCount++] = position.x;
-                    normals[positionCount - 1] = positions[positionCount - 1];
+                    normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.y;
-                    normals[positionCount - 1] = positions[positionCount - 1];
+                    normals[positionCount-1] = positions[positionCount-1];
                     positions[positionCount++] = position.z;
-                    normals[positionCount - 1] = positions[positionCount - 1];
+                    normals[positionCount-1] = positions[positionCount-1];
                     uvs[uvsCount++] = u / patchSize;
                     uvs[uvsCount++] = v / patchSize;
 
@@ -200,43 +162,41 @@ TerrainNode.prototype = {
         return function (u, v) {
             "use strict";
             /*
-             var temp = this.tree.widthDir.clone();
-             temp.multiplyScalar(u);
-             temp.add(this.tree.heightDir.clone().multiplyScalar(v));
-             temp.multiplyScalar(this.width);
-             temp.add(this.position);
-             temp.normalize();
-             temp.multiplyScalar(this.tree.planet.radius);
-             return temp;
-             */
+            var temp = this.tree.widthDir.clone();
+            temp.multiplyScalar(u);
+            temp.add(this.tree.heightDir.clone().multiplyScalar(v));
+            temp.multiplyScalar(this.width);
+            temp.add(this.position);
+            temp.normalize();
+            temp.multiplyScalar(this.tree.planet.radius);
+            return temp;
+            */
             /*
-             width = this.width;
-             wx = this.tree.widthDir.x;
-             wy = this.tree.widthDir.y;
-             wz = this.tree.widthDir.z;
-             hx = this.tree.heightDir.x;
-             hy = this.tree.heightDir.y;
-             hz = this.tree.heightDir.z;
-             */
+            width = this.width;
+            wx = this.tree.widthDir.x;
+            wy = this.tree.widthDir.y;
+            wz = this.tree.widthDir.z;
+            hx = this.tree.heightDir.x;
+            hy = this.tree.heightDir.y;
+            hz = this.tree.heightDir.z;
+*/
             x = ((this.tree.widthDir.x * u + this.tree.heightDir.x * v) * this.width) + this.position.x;
             y = ((this.tree.widthDir.y * u + this.tree.heightDir.y * v) * this.width) + this.position.y;
             z = ((this.tree.widthDir.z * u + this.tree.heightDir.z * v) * this.width) + this.position.z;
 
-            length = Math.sqrt(x * x + y * y + z * z);
+            length = Math.sqrt( x * x + y * y + z * z );
 
             x = (x / length) * this.tree.planet.radius - this.center.x;
             y = (y / length) * this.tree.planet.radius - this.center.y;
             z = (z / length) * this.tree.planet.radius - this.center.z;
 
-            return {x: x, y: y, z: z};
+            return {x:x,y:y,z:z};
 
         }
     }(),
 
 
     UnDraw: function () {
-        this.tree.planet.RemoveFromMeshesMightAdd(this.name);
-        this.shouldDraw = false;
 
         this.tree.planet.returnObject.deletedMeshes.push(this.name);
         this.isDrawn = false;
@@ -252,6 +212,8 @@ TerrainNode.prototype = {
 
 
     ShouldSplit: function () {
+        //console.log("\tShould " + this.level + " Split if: " + this.tree.sphere.splitTable[this.level] + " >= " + this.distance);
+        this.tree.planet.log(this.level + " < " + this.tree.planet.maxLevel);
         return this.level < this.tree.planet.maxLevel && this.tree.planet.splitTable[this.level] >= this.distance;
 
     },
@@ -259,6 +221,7 @@ TerrainNode.prototype = {
 
     ShouldUnSplit: function () {
 
+        //console.log("\tShould " + this.level + " UnSplit if: " + this.tree.sphere.splitTable[this.level-1] + " < " + this.distance);
         return this.level >= 0 && this.tree.planet.splitTable[this.level] < this.distance;
 
     },
@@ -283,17 +246,10 @@ TerrainNode.prototype = {
 
 
     Split: function () {
+
         var options;
 
         return function () {
-            if (this.isSplit) {
-                return;
-            }
-
-            if (this.isDrawn) {
-                this.UnDraw();
-            }
-
             options = {level: this.level + 1, parent: this, tree: this.tree};
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
@@ -315,56 +271,15 @@ TerrainNode.prototype = {
 
     }(),
 
-    AssignNeighbors: function () {
-        this.topLeftChild.topNeighbor = this.topNeighbor.bottomLeftChild;
-        this.topLeftChild.rightNeighbor = this.topRightChild;
-        this.topLeftChild.bottomNeighbor = this.bottomLeftChild;
-        this.topLeftChild.leftNeighbor = this.leftNeighbor.topRightChild;
-
-        this.topRightChild.topNeighbor = this.topNeighbor.bottomRightChild;
-        this.topRightChild.rightNeighbor = this.rightNeighbor.topLeftChild;
-        this.topRightChild.bottomNeighbor = this.bottomRightChild;
-        this.topRightChild.leftNeighbor = this.topLeftChild;
-
-        this.bottomLeftChild.topNeighbor = this.topLeftChild;
-        this.bottomLeftChild.rightNeighbor = this.bottomRightChild;
-        this.bottomLeftChild.bottomNeighbor = this.bottomNeighbor.topLeftChild;
-        this.bottomLeftChild.leftNeighbor = this.leftNeighbor.bottomRightChild;
-
-        this.bottomRightChild.topNeighbor = this.topRightChild;
-        this.bottomRightChild.rightNeighbor = this.rightNeighbor.bottomLeftChild;
-        this.bottomRightChild.bottomNeighbor = this.bottomNeighbor.topRightChild;
-        this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
-/*
-        this.topLeftChild.topNeighbor = this.parent.topNeighbor.bottomLeftChild;
-        this.topLeftChild.rightNeighbor = this.topRightChild;
-        this.topLeftChild.bottomNeighbor = this.bottomLeftChild;
-        this.topLeftChild.leftNeighbor = this.parent.leftNeighbor.topRightChild;
-
-        this.topRightChild.topNeighbor = this.parent.topNeighbor.bottomRightChild;
-        this.topRightChild.rightNeighbor = this.parent.rightNeighbor.topLeftChild;
-        this.topRightChild.bottomNeighbor = this.bottomRightChild;
-        this.topRightChild.leftNeighbor = this.topLeftChild;
-
-        this.bottomLeftChild.topNeighbor = this.topLeftChild;
-        this.bottomLeftChild.rightNeighbor = this.bottomRightChild;
-        this.bottomLeftChild.bottomNeighbor = this.parent.bottomNeighbor.topLeftChild;
-        this.bottomLeftChild.leftNeighbor = this.parent.leftNeighbor.bottomRightChild;
-
-        this.bottomRightChild.topNeighbor = this.topRightChild;
-        this.bottomRightChild.rightNeighbor = this.parent.rightNeighbor.bottomLeftChild;
-        this.bottomRightChild.bottomNeighbor = this.parent.bottomNeighbor.topRightChild;
-        this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
-        */
-    },
-
 
     Die: function () {
+        this.tree.planet.totalNodes--;
         if (this.isDrawn) {
             this.UnDraw();
         } else if (this.isSplit) {
             this.UnSplit();
         }
+
     },
 
 
@@ -390,15 +305,6 @@ TerrainNode.prototype = {
         this.topRightChild.Update();
         this.bottomLeftChild.Update();
         this.bottomRightChild.Update();
-
-    },
-
-    CheckChildrenNeighbors: function () {
-
-        this.topLeftChild.CheckNeighbors();
-        this.topRightChild.CheckNeighbors();
-        this.bottomLeftChild.CheckNeighbors();
-        this.bottomRightChild.CheckNeighbors();
 
     },
 

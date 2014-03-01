@@ -26,8 +26,8 @@ var Planet = function (options) {
     this.worker.postMessage({Init: {radius: this.radius, patchSize: this.patchSize, fov: this.fov, screenWidth: screen.width}});
     this.inited = false;
     this.meshes = {};
-
-    this.averageMeshCreationTime = 0;
+    this.meshBuildTimeAvg = 0;
+    this.pause = false;
 };
 
 Planet.prototype = Object.create(THREE.Object3D.prototype);
@@ -40,19 +40,19 @@ Planet.prototype.Update = function () {
         }
         localCameraPosition = this.worldToLocal(this.camera.position.clone());
         this.cameraHeight = localCameraPosition.length() - this.radius;
-        this.worker.postMessage({Update: {localCameraPosition: localCameraPosition}});
+        if (this.pause) {
+            return;
+        }
+        this.worker.postMessage({Update: {localCameraPosition: localCameraPosition, started: performance.now()}});
     }
 }();
 
+
+var updates = 0, avg = 0;
 Planet.prototype.WorkerMessage = function () {
-    var returns = 0, average = 0;
     return function (event) {
 
         var me = this;
-
-        if(event.data.console){
-            console.log(event.data.console);
-        }
 
         if (event.data.inited) {
             this.inited = true;
@@ -72,13 +72,16 @@ Planet.prototype.WorkerMessage = function () {
         }
 
         if (event.data.newMeshes) {
-            event.data.newMeshes.forEach(function (mesh) {
-                if(returns > 4){
-                    average += event.data.finished;
-                    me.averageMeshCreationTime = average / (returns - 3);
-                }
-                returns++;
+            if (event.data.newMeshes.length > 0) {
 
+                updates++;
+                avg += (performance.now() - event.data.started);
+                this.meshBuildTimeAvg = avg / (updates);
+                if(updates % 10 == 0){
+                    avg = 0; updates= 0;
+                }
+            }
+            event.data.newMeshes.forEach(function (mesh) {
                 var buff = new THREE.BufferGeometry();
                 buff.attributes.position = {};
                 buff.attributes.position.array = mesh.positions;
@@ -94,12 +97,14 @@ Planet.prototype.WorkerMessage = function () {
 
                 buff.computeBoundingSphere();
 
+
                 //var material = new THREE.ShaderMaterial({uniforms: {}, vertexShader: me.vertex, fragmentShader: me.frag, wireframe: true});
                 //var material = new THREE.ShaderMaterial({uniforms: {width: {type:"f", value: mesh.width}, center: {type:"v3", value:mesh.center}},
                 //    vertexShader: me.wfvertex, fragmentShader: me.wffragment, transparent: true});
                 var color = new THREE.Color();
-                color.r = Math.random();
-                color.g = Math.random();
+                color.r = Math.random() + .5;
+
+                color.g = Math.random() + .5;
                 color.b = Math.random();
                 var material = new THREE.MeshBasicMaterial({wireframe: true, color: color});
                 var m = new THREE.Mesh(buff, material);

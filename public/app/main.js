@@ -126,7 +126,7 @@ var main = function () {
             logger.Log("Slowest Render Update ", (renderUpdate).toFixed(3));
             logger.Log("Slowest Update Update ", (updateUpdate).toFixed(3));
             logger.Log("Average render: ", (renderAverage/count).toFixed(6));
-            logger.Log("Average planet ", planet.averageMeshCreationTime.toFixed(6));
+            logger.Log("Average planet ", planet.meshBuildTimeAvg.toFixed(6));
             logger.Log("Average position ", (updateAverage/count).toFixed(6));
             updateAverage = 0, planetAverage = 0, renderAverage = 0;
             count =0
@@ -142,7 +142,7 @@ var main = function () {
     var summaryAverage = 0;
 
     function UpdateToLocal() {
-        if (camera.position.length() > 5000) {
+        if (camera.position.length() > 10000) {
             origin = origin.subVectors(camera.position, origin);
             scene.children.forEach(function (child) {
                 //console.log("Moving " + child.position.x + " : " + child.position.y + " : " + child.position.z);
@@ -165,7 +165,7 @@ var main = function () {
     window.addEventListener("keypress", function (key) {
         if (key.key === "Spacebar") {
             pause = !pause;
-            planet.Pause(pause);
+            planet.pause=pause;
             /*            if (!pause) {
              setTimeout(render, 100);
              } else {
