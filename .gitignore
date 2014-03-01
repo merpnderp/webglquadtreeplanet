@@ -5,6 +5,7 @@ node_modules/
 public/pw.js
 
 public/app.js
-
+app.js
+public/libs.js
 
 public/.app.js
