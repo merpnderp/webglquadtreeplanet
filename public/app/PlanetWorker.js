@@ -33,7 +33,7 @@ PlanetWorker.prototype.Update = function (data) {
         tree.rootNode.Update();
     });
     this.quadTrees.forEach(function (tree) {
-        tree.rootNode.CheckNeighbors();
+        tree.rootNode.checkNeighbors();
     });
 
     this.quadTrees.forEach(function (tree) {

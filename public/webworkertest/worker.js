@@ -17,7 +17,8 @@ var SimplexNoise = function (largestFeature, persistence, seed) {
 
     //recieves a number (eg 128) and calculates what power of 2 it is (eg 2^7)
     var numberOfOctaves = Math.ceil(Math.log(largestFeature) / Math.log(2));
-numberOfOctaves = 1;
+	numberOfOctaves = 1;
+	
     this.octaves = [];
     this.frequencys = [];
     this.amplitudes = [];

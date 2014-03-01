@@ -64,8 +64,9 @@ TerrainNode.prototype = {
             }
         }
     },
-
-    CheckNeighbors: function(){
+	
+	
+    checkNeighbors: function(){
         if(this.topNeighbor && this.topNeighbor.isSplit && (this.topNeighbor.bottomLeftChild.isSplit || this.topNeighbor.bottomRightChild.isSplit)){
             this.Split();
         }
@@ -108,10 +109,10 @@ TerrainNode.prototype = {
             this.bottomRightChild.topNeighbor = this.topRightChild;
             this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
 
-            this.topLeftChild.CheckNeighbors();
-            this.topRightChild.CheckNeighbors();
-            this.bottomLeftChild.CheckNeighbors();
-            this.bottomRightChild.CheckNeighbors();
+            this.topLeftChild.checkNeighbors();
+            this.topRightChild.checkNeighbors();
+            this.bottomLeftChild.checkNeighbors();
+            this.bottomRightChild.checkNeighbors();
         }
     },
 
