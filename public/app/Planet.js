@@ -16,6 +16,31 @@ var Planet = function (options) {
 	
 	this.loadShaders();
 	
+	this.depthTexture = THREE.ImageUtils.loadTexture("./earth_low.png", undefined, function () {
+		console.log(arguments)
+	});
+	this.texture = THREE.ImageUtils.loadTexture("./earth.jpg");
+	
+	this.material = new THREE.ShaderMaterial({
+		uniforms: {
+	        depth: { // texture in slot 0, loaded with ImageUtils
+	            type: "t",
+	            value: this.depthTexture
+	        },
+			scale: {
+				type: "f",
+				value: this.radius
+			},
+			skin: {
+				type: "t",
+				value: this.texture
+			}
+	    },
+		vertexShader: this.planetVertex,
+		fragmentShader: this.planetFragment,
+		// wireframe: true
+	});
+	
 	this.initializeOptions(options);
 	
 	this.initializeWorker();
@@ -55,6 +80,8 @@ Planet.prototype.loadShaders = function () {
     this.frag = fs.readFileSync('shaders/FragmentShader.glsl');
     this.wfvertex = fs.readFileSync('shaders/WireframeVertexShader.glsl');
     this.wffragment = fs.readFileSync('shaders/WireframeFragmentShader.glsl');
+    this.planetVertex = fs.readFileSync('shaders/PlanetVertexShader.glsl');
+    this.planetFragment = fs.readFileSync('shaders/PlanetFragmentShader.glsl');
 
 };
 
@@ -177,8 +204,8 @@ Planet.prototype.buildNewMesh = function (mesh) {
 
     buff.computeBoundingSphere();
 	
+	
 
-    //var material = new THREE.ShaderMaterial({uniforms: {}, vertexShader: this.vertex, fragmentShader: this.frag, wireframe: true});
     //var material = new THREE.ShaderMaterial({uniforms: {width: {type:"f", value: mesh.width}, center: {type:"v3", value:mesh.center}},
     //    vertexShader: this.wfvertex, fragmentShader: this.wffragment, transparent: true});
     var color = new THREE.Color();
@@ -189,21 +216,44 @@ Planet.prototype.buildNewMesh = function (mesh) {
 	
 	var decimalColor = ((mesh.width/1E11) * 16777215);
 	
+	
     var R =	 decimalColor%256;
     var G =	 (decimalColor/256)%256;
     var B =	 ((decimalColor/256)/256)%256;
 	
 	
     color.r = R;
-
     color.g = G;
     color.b = B;
 	
-    var material = new THREE.MeshBasicMaterial({
-		wireframe: true,
-		color: color
+	//     this.material = new THREE.MeshBasicMaterial({
+	// 	wireframe: true,
+	// 	color: color
+	// });
+	this.material = new THREE.ShaderMaterial({
+		uniforms: {
+	        depth: { // texture in slot 0, loaded with ImageUtils
+	            type: "t",
+	            value: this.depthTexture
+	        },
+			scale: {
+				type: "f",
+				value: this.radius
+			},
+			skin: {
+				type: "t",
+				value: this.texture
+			}
+	    },
+		vertexShader: this.planetVertex,
+		fragmentShader: this.planetFragment,
+		// wireframe: true
 	});
-    var m = new THREE.Mesh(buff, material);
+	// var geo = new THREE.PlaneGeometry(mesh.width, mesh.width, 10, 10)
+	// geo.position = mesh.position;
+	// geo.computeBoundingSphere();
+	
+    var m = new THREE.Mesh(buff, this.material);
     m.position.x = mesh.center.x;
     m.position.y = mesh.center.y;
     m.position.z = mesh.center.z;
