@@ -176,16 +176,28 @@ Planet.prototype.buildNewMesh = function (mesh) {
     buff.attributes.uv.itemSize = 2;
 
     buff.computeBoundingSphere();
-
+	
 
     //var material = new THREE.ShaderMaterial({uniforms: {}, vertexShader: this.vertex, fragmentShader: this.frag, wireframe: true});
     //var material = new THREE.ShaderMaterial({uniforms: {width: {type:"f", value: mesh.width}, center: {type:"v3", value:mesh.center}},
     //    vertexShader: this.wfvertex, fragmentShader: this.wffragment, transparent: true});
     var color = new THREE.Color();
-    color.r = Math.random() + .5;
+    // color.r = mesh.width/1E7;
+    // 
+    // color.g = mesh.width/1E7;
+    // color.b = mesh.width/1E7;
+	
+	var decimalColor = ((mesh.width/1E11) * 16777215);
+	
+    var R =	 decimalColor%256;
+    var G =	 (decimalColor/256)%256;
+    var B =	 ((decimalColor/256)/256)%256;
+	
+	
+    color.r = R;
 
-    color.g = Math.random() + .5;
-    color.b = Math.random();
+    color.g = G;
+    color.b = B;
 	
     var material = new THREE.MeshBasicMaterial({
 		wireframe: true,
