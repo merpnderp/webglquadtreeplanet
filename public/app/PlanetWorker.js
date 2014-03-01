@@ -33,11 +33,14 @@ PlanetWorker.prototype.Update = function (data) {
         tree.rootNode.Update();
     });
     this.quadTrees.forEach(function (tree) {
+        tree.rootNode.CheckNeighbors();
+    });
+
+    this.quadTrees.forEach(function (tree) {
         tree.rootNode.Draw();
     });
 
 
-    this.returnObject['finished'] = Date.now() - this.returnObject.started;
     self.postMessage(this.returnObject, this.meshesToAdd);
 
 };
@@ -62,6 +65,7 @@ PlanetWorker.prototype.Init = function (data) {
     this.splitTable = [];
     this.BuildSplitTable();
     this.InitQuadTrees();
+    this.AssignNeighbors();
     self.postMessage({inited: true});
 };
 
@@ -76,11 +80,9 @@ self.onmessage = function (event) {
 
 PlanetWorker.prototype.BuildSplitTable = function () {
     var patchPixelWidth, i = 0, patchSize = this.patchSize;
-    self.postMessage({log: 'Starting buildsplittable: ' + this.vs.toString() + "\n"});
     while (i < 200) {
         patchPixelWidth = (Math.PI * this.radius * 2) / (patchSize * 6);
         this.splitTable[i] = patchPixelWidth / this.vs;
-        self.postMessage({log: "building splitTable:" + this.splitTable[i]});
         patchSize = patchSize * 2;
         if (this.splitTable[i] < 3) {
             this.maxLevel = i;
@@ -88,7 +90,6 @@ PlanetWorker.prototype.BuildSplitTable = function () {
         }
         i++;
     }
-    self.postMessage({log: "building splitTable" + this.maxLevel});
 };
 
 PlanetWorker.prototype.InitQuadTrees = function () {
@@ -107,12 +108,12 @@ PlanetWorker.prototype.InitQuadTrees = function () {
 
 
 PlanetWorker.prototype.AssignNeighbors = function () {
-    var bottom = this.quadTrees[0];
-    var front = this.quadTrees[1];
-    var left = this.quadTrees[2];
-    var top = this.quadTrees[3];
-    var back = this.quadTrees[4];
-    var right = this.quadTrees[5];
+    var bottom = this.quadTrees[0].rootNode;
+    var front = this.quadTrees[1].rootNode;
+    var left = this.quadTrees[2].rootNode;
+    var top = this.quadTrees[3].rootNode;
+    var back = this.quadTrees[4].rootNode;
+    var right = this.quadTrees[5].rootNode;
 
     this.quadTrees[0].AssignNeighbors(left, back, right, front);
     this.quadTrees[1].AssignNeighbors(left, top, right, bottom);

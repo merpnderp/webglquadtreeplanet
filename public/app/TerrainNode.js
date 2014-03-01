@@ -17,7 +17,8 @@ var TerrainNode = function (options) {
 
     this.width = this.tree.planet.radius * 2 / Math.pow(2, this.level);
     this.halfWidth = this.width / 2;
-    this.arcLength = (this.width / this.tree.planet.radius) / 1.43 //divided by fudge factor;
+    //this.arcLength = (this.width / this.tree.planet.radius) / 1.43 //divided by fudge factor;
+    this.arcLength = (this.width / this.tree.planet.radius)//divided by fudge factor;
 
     //This is the node's center location after the point is projected onto the sphere.
     this.center = this.FindCenter();
@@ -64,9 +65,60 @@ TerrainNode.prototype = {
         }
     },
 
-    ShouldDraw: function(){
-        this.tree.planet.meshesMightAdd.push({name: this.name, draw: this.Draw.bind(this)});
+    CheckNeighbors: function(){
+        if(this.topNeighbor && this.topNeighbor.isSplit && (this.topNeighbor.bottomLeftChild.isSplit || this.topNeighbor.bottomRightChild.isSplit)){
+            this.Split();
+        }
+        if(this.rightNeighbor &&this.rightNeighbor.isSplit && (this.rightNeighbor.bottomLeftChild.isSplit || this.rightNeighbor.topLeftChild.isSplit)){
+            this.Split();
+        }
+        if(this.bottomNeighbor && this.bottomNeighbor.isSplit && (this.bottomNeighbor.topLeftChild.isSplit || this.bottomNeighbor.topRightChild.isSplit)){
+            this.Split();
+        }
+        if(this.leftNeighbor && this.leftNeighbor.isSplit && (this.leftNeighbor.topRightChild.isSplit || this.leftNeighbor.bottomRightChild.isSplit)){
+            this.Split();
+        }
+        if(this.isSplit){
+            if(this.topNeighbor && this.topNeighbor.isSplit){
+                this.topLeftChild.topNeighbor = this.topNeighbor.bottomLeftChild;
+                this.topRightChild.topNeighbor = this.topNeighbor.bottomRightChild;
+            }
+            if(this.rightNeighbor && this.rightNeighbor.isSplit){
+                this.topRightChild.rightNeighbor = this.rightNeighbor.topLeftChild;
+                this.bottomRightChild.rightNeighbor = this.rightNeighbor.bottomLeftChild;
+            }
+            if(this.bottomNeighbor && this.bottomNeighbor.isSplit){
+                this.bottomLeftChild.bottomNeighbor = this.bottomNeighbor.topLeftChild;
+                this.bottomRightChild.bottomNeighbor = this.bottomNeighbor.topRightChild;
+            }
+            if(this.leftNeighbor && this.leftNeighbor.isSplit){
+                this.topLeftChild.leftNeighbor = this.leftNeighbor.topRightChild;
+                this.bottomLeftChild.leftNeighbor = this.leftNeighbor.bottomRightChild;
+            }
+
+            this.topLeftChild.rightNeighbor = this.topRightChild;
+            this.topLeftChild.bottomNeighbor = this.bottomLeftChild;
+
+            this.topRightChild.bottomNeighbor = this.bottomRightChild;
+            this.topRightChild.leftNeighbor = this.topLeftChild;
+
+            this.bottomLeftChild.topNeighbor = this.topLeftChild;
+            this.bottomLeftChild.rightNeighbor = this.bottomRightChild;
+
+            this.bottomRightChild.topNeighbor = this.topRightChild;
+            this.bottomRightChild.leftNeighbor = this.bottomLeftChild;
+
+            this.topLeftChild.CheckNeighbors();
+            this.topRightChild.CheckNeighbors();
+            this.bottomLeftChild.CheckNeighbors();
+            this.bottomRightChild.CheckNeighbors();
+        }
     },
+
+
+    /*ShouldDraw: function(){
+        this.tree.planet.meshesMightAdd.push({name: this.name, draw: this.Draw.bind(this)});
+    },*/
 
     Draw: function () {
 
@@ -250,6 +302,9 @@ TerrainNode.prototype = {
         var options;
 
         return function () {
+            if(this.isSplit){
+                return;
+            }
             options = {level: this.level + 1, parent: this, tree: this.tree};
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
@@ -273,7 +328,6 @@ TerrainNode.prototype = {
 
 
     Die: function () {
-        this.tree.planet.totalNodes--;
         if (this.isDrawn) {
             this.UnDraw();
         } else if (this.isSplit) {
