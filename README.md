@@ -99,15 +99,12 @@ cd public
 ```
 
 #####Alternatively
-Run ./build.sh which keeps two watchify processes running.
 
-
-This application must be run from a webserver and can not be accessed through file://
-An easy solutions is to run a simple python webserver or similar
+If you do not wish to run with the python SimpleHTTPServer you can with this command:
 
 ```
 
 cd public
-python -m SimpleHTTPServer
+./build-manager run-without-web-server
 
 ```
