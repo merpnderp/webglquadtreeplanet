@@ -226,7 +226,7 @@ Planet.prototype.buildNewMesh = function (mesh) {
     color.g = G;
     color.b = B;
 	
-	//     this.material = new THREE.MeshBasicMaterial({
+	// this.material = new THREE.MeshBasicMaterial({
 	// 	wireframe: true,
 	// 	color: color
 	// });
@@ -249,9 +249,7 @@ Planet.prototype.buildNewMesh = function (mesh) {
 		fragmentShader: this.planetFragment,
 		// wireframe: true
 	});
-	// var geo = new THREE.PlaneGeometry(mesh.width, mesh.width, 10, 10)
-	// geo.position = mesh.position;
-	// geo.computeBoundingSphere();
+
 	
     var m = new THREE.Mesh(buff, this.material);
     m.position.x = mesh.center.x;

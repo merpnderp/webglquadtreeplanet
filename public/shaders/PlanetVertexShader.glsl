@@ -1,4 +1,3 @@
-// varying vec4 position;
 varying vec2 vUv;
 uniform sampler2D skin;
 uniform sampler2D depth;
