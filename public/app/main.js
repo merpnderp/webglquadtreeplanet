@@ -12,6 +12,7 @@ var Stats = require('../libs/stats.js');
 var Logger = require('./Logger.js');
 var FlyControl = require('./FlyControls');
 var Application = require("./Application");
+var QuadMaterial = require("./QuadMaterial");
 
 
 var demo = new Application({
@@ -160,13 +161,99 @@ demo.addInitializationStage({
 demo.addInitializationStage({
 	name: "create-planet",
 	stage: function () {
+		
+		this.quadMaterial = new QuadMaterial({
+			
+			onCreate: function () {
+				// NOP
+			},
+			
+			getMaterialForQuad: function (centerPoint, position, radius, width) {
+		
+			    var color = new THREE.Color();
+			
+				var decimalColor = ((width/1E11) * 16777215);
+			
+			
+			    var R =	 decimalColor%256;
+			    var G =	 (decimalColor/256)%256;
+			    var B =	 ((decimalColor/256)/256)%256;
+			
+			    color.r = R;
+			    color.g = G;
+			    color.b = B;
+			
+				return new THREE.MeshBasicMaterial({wireframe: true, color: color});
+				
+			}
+			
+		});
+		// 
+		// this.quadMaterial = new QuadMaterial({
+		// 	onCreate: function () {
+		// 		
+		// 		var fs = require('fs');
+		// 		
+		// 	    this.planetVertex = fs.readFileSync('shaders/PlanetVertexShader.glsl');
+		// 	    this.planetFragment = fs.readFileSync('shaders/PlanetFragmentShader.glsl');
+		// 		
+		// 		this.depthTexture = THREE.ImageUtils.loadTexture("./earth_low.png", undefined, function () {
+		// 			console.log(arguments)
+		// 		});
+		// 		
+		// 		this.texture = THREE.ImageUtils.loadTexture("./earth.jpg");
+		// 		
+		// 	},
+		// 	getMaterialForQuad: function (centerPoint, position, radius, width) {
+		// 		
+		// 		var pos = centerPoint.sub(position);
+		// 		
+		// 		var x = pos.x / radius;
+		// 		var y = pos.y / radius;
+		// 		var z = pos.z / radius;
+		// 		
+		// 		var r = Math.sqrt( Math.pow( x, 2 ) + Math.pow( y, 2 ) + Math.pow( z, 2 ));
+		// 		var phi = Math.acos( z / r )
+		// 		var theta = Math.atan2( y, x );
+		// 		
+		// 		var lat = phi * (180/Math.PI);
+		// 		var lon = theta * (180/Math.PI);
+		// 		
+		// 		// console.log(lat, lon, width);
+		// 		// var tile = THREE.ImageUtils.loadTexture("http://localhost:4040/imageProxy?lat=" + lat + "&lon=" + lon + "&depth=" + Math.ceil(Math.log(r)/Math.log(2)), undefined, function () {});
+		// 		
+		// 		return new THREE.ShaderMaterial({
+		// 			uniforms: {
+		// 		        depth: { // texture in slot 0, loaded with ImageUtils
+		// 		            type: "t",
+		// 		            value: this.depthTexture
+		// 		        },
+		// 				scale: {
+		// 					type: "f",
+		// 					value: radius
+		// 				},
+		// 				skin: {
+		// 					type: "t",
+		// 					value: this.texture
+		// 				}
+		// 		    },
+		// 			vertexShader: this.planetVertex,
+		// 			fragmentShader: this.planetFragment,
+		// 			// wireframe: true
+		// 		});
+		// 		
+		// 		
+		// 
+		// 	}
+		// });
 
 	    this.planet = new Planet({
 			camera: this.camera,
 			radius: this.planetRadius,
 			patchSize: 8,
 			scene: this.scene,
-			fov: 30
+			fov: 30,
+			quadMaterial: this.quadMaterial
 		});
 	
 	}
