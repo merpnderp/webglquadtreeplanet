@@ -1,10 +1,19 @@
-webglquadtreeplanet
+#webglquadtreeplanet
 ===================
 
 A WebGL/Three.js implementaiton of a quadtree planet.
 
 
-#Dependencies
+## Building Project
+
+Under the public folder run the ./buildlib.sh script.
+
+
+## Running Project
+
+Run ./build.sh which keeps two watchify processes running.
+
+##Dependencies
 
 ####browserify
 
