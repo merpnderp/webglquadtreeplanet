@@ -21,26 +21,6 @@ var Planet = function (options) {
 	});
 	this.texture = THREE.ImageUtils.loadTexture("./earth.jpg");
 	
-	// this.material = new THREE.ShaderMaterial({
-	// 	uniforms: {
-	//         depth: { // texture in slot 0, loaded with ImageUtils
-	//             type: "t",
-	//             value: this.depthTexture
-	//         },
-	// 		scale: {
-	// 			type: "f",
-	// 			value: this.radius
-	// 		},
-	// 		skin: {
-	// 			type: "t",
-	// 			value: this.texture
-	// 		}
-	//     },
-	// 	vertexShader: this.planetVertex,
-	// 	fragmentShader: this.planetFragment,
-	// 	// wireframe: true
-	// });
-	
 	this.initializeOptions(options);
 	
 	this.initializeWorker();
@@ -219,44 +199,46 @@ Planet.prototype.buildNewMesh = function (mesh) {
     color.g = G;
     color.b = B;
 	
-
-	var pos = new THREE.Vector3(mesh.center.x, mesh.center.y, mesh.center.z).clone().sub(this.position);
+	// 
+	// var pos = new THREE.Vector3(mesh.center.x, mesh.center.y, mesh.center.z).clone().sub(this.position);
+	// 
+	// var x = pos.x / this.radius;
+	// var y = pos.y / this.radius;
+	// var z = pos.z / this.radius;
+	// 
+	// var r = Math.sqrt( Math.pow( x, 2 ) + Math.pow( y, 2 ) + Math.pow( z, 2 ));
+	// var phi = Math.acos( z / r )
+	// var theta = Math.atan2( y, x );
+	// 
+	// var lat = phi * (180/Math.PI);
+	// var lon = theta * (180/Math.PI);
+	// 
+	// console.log(lat, lon, mesh.width);
+	// // var tile = THREE.ImageUtils.loadTexture("http://localhost:4040/imageProxy?lat=" + lat + "&lon=" + lon + "&depth=" + Math.ceil(Math.log(r)/Math.log(2)), undefined, function () {});
+	// 
+	// this.material = new THREE.ShaderMaterial({
+	// 	uniforms: {
+	//         depth: { // texture in slot 0, loaded with ImageUtils
+	//             type: "t",
+	//             value: this.depthTexture
+	//         },
+	// 		scale: {
+	// 			type: "f",
+	// 			value: this.radius
+	// 		},
+	// 		skin: {
+	// 			type: "t",
+	// 			value: this.texture
+	// 		}
+	//     },
+	// 	vertexShader: this.planetVertex,
+	// 	fragmentShader: this.planetFragment,
+	// 	// wireframe: true
+	// });
+	// 
+	// 
 	
-	var x = pos.x / this.radius;
-	var y = pos.y / this.radius;
-	var z = pos.z / this.radius;
-
-	var r = Math.sqrt( Math.pow( x, 2 ) + Math.pow( y, 2 ) + Math.pow( z, 2 ));
-	var phi = Math.acos( z / r )
-	var theta = Math.atan2( y, x );
-	
-	var lat = phi * (180/Math.PI);
-	var lon = theta * (180/Math.PI);
-	
-	console.log(lat, lon, mesh.width);
-	// var tile = THREE.ImageUtils.loadTexture("http://localhost:4040/imageProxy?lat=" + lat + "&lon=" + lon + "&depth=" + Math.ceil(Math.log(r)/Math.log(2)), undefined, function () {});
-
-	this.material = new THREE.ShaderMaterial({
-		uniforms: {
-	        depth: { // texture in slot 0, loaded with ImageUtils
-	            type: "t",
-	            value: this.depthTexture
-	        },
-			scale: {
-				type: "f",
-				value: this.radius
-			},
-			skin: {
-				type: "t",
-				value: this.texture
-			}
-	    },
-		vertexShader: this.planetVertex,
-		fragmentShader: this.planetFragment,
-		// wireframe: true
-	});
-
-	
+	this.material = new THREE.MeshBasicMaterial({wireframe: true, color: color});
 	
 	
     var m = new THREE.Mesh(buff, this.material);
