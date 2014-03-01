@@ -20,14 +20,11 @@ var Planet = function (options) {
 	
 	this.initializeWorker();
 	
+	this.updateCounter = 0;
+	this.avg = 0;
 
 };
 
-/**
- * Static Members
- */
-Planet.update = 0;
-Planet.avg = 0;
 
 
 Planet.prototype = Object.create(THREE.Object3D.prototype);
@@ -129,15 +126,15 @@ Planet.prototype.onWorkerMessage = function (event) {
     if (data.newMeshes) {
         if (data.newMeshes.length > 0) {
 
-            Planet.updates += 1;
-            Planet.avg += (performance.now() - data.started);
+            this.updateCounters += 1;
+            this.avg += (performance.now() - data.started);
 			
-            this.meshBuildTimeAvg = Planet.avg / (Planet.updates);
+            this.meshBuildTimeAvg = this.avg / (this.updateCounters);
 			
-            if ( Planet.updates % 10 == 0 ) {
+            if ( this.updateCounters % 10 == 0 ) {
 				
-                Planet.avg = 0;
-				Planet.updates= 0;
+                this.avg = 0;
+				this.updateCounters= 0;
 				
             }
         }

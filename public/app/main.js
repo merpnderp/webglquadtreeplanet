@@ -101,7 +101,7 @@ demo.addInitializationStage({
 	    this.planetupdate = 0;
 		this.del = 0;
 		this.renderupdate = 0;
-		this.updateupdate = 0;
+		this.updateUpdate = 0;
 		this.count = 0;
 	    this.renderAverage = 0;
 		this.planetAverage = 0;
@@ -255,17 +255,17 @@ demo.addInitializationStage({
 	            this.logger.Log("Slowest Planet Move time ", (this.summaryAverage).toFixed(3));
 	            this.logger.Log("Slowest Planet update ", (this.planetupdate).toFixed(3));
 	            this.logger.Log("Slowest Render update ", (this.renderupdate).toFixed(3));
-	            this.logger.Log("Slowest update update ", (this.updateupdate).toFixed(3));
+	            this.logger.Log("Slowest update update ", (this.updateUpdate).toFixed(3));
 	            this.logger.Log("Average render: ", (this.renderAverage/this.count).toFixed(6));
 	            this.logger.Log("Average planet ", this.planet.meshBuildTimeAvg.toFixed(6));
 	            this.logger.Log("Average position ", (this.updateAverage/this.count).toFixed(6));
 	            this.updateAverage = 0
 				this.planetAverage = 0
 				this.renderAverage = 0;
-	            this.count =0
+	            this.count = 0
 	            this.del = this.updateClock.getDelta();
-	            if (this.del > this.updateupdate) {
-	                this.updateupdate = this.del;
+	            if (this.del > this.updateUpdate) {
+	                this.updateUpdate = this.del;
 	            }
 	        }
 
