@@ -1,5 +1,4 @@
 #webglquadtreeplanet
-===================
 
 A WebGL/Three.js implementaiton of a quadtree planet.
 
@@ -77,7 +76,31 @@ npm config set strict-ssl false
 
 Under the public folder run the ./buildlib.sh script.
 
+```
+
+cd public
+./buildlib.sh
+
+```
+
 
 ## Running Project
 
 Run ./build.sh which keeps two watchify processes running.
+
+```
+
+cd public
+./build.sh
+
+```
+
+This application must be run from a webserver and can not be accessed through file://
+An easy solutions is to run a simple python webserver or similar
+
+```
+
+cd public
+python -m SimpleHTTPServer
+
+```
