@@ -250,7 +250,7 @@ demo.addInitializationStage({
 	    this.planet = new Planet({
 			camera: this.camera,
 			radius: this.planetRadius,
-			patchSize: 8,
+			patchSize: 32,
 			scene: this.scene,
 			fov: 30,
 			quadMaterial: this.quadMaterial
