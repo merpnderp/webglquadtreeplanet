@@ -68,3 +68,7 @@ cd demo
 python -m SimpleHTTPServer
 
 ```
+
+![QuadSphere](https://raw.github.com/merpnderp/webglquadtreeplanet/master/documentation/quad-sphere.png)
+![DisplacementTest](https://raw.github.com/merpnderp/webglquadtreeplanet/master/documentation/displacement-test.png)
+![HorizonTest](https://raw.github.com/merpnderp/webglquadtreeplanet/master/documentation/horizon-test.png)
