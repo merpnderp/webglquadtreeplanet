@@ -20,6 +20,9 @@ A WebGL/Three.js implementaiton of a quadtree planet.
 
 ##Bulding Project
 
+
+##### Build Script Dependencies
+
 Builds depend on uglify-js to perform minification.
 
 ```
@@ -27,6 +30,8 @@ Builds depend on uglify-js to perform minification.
 sudo npm -g install uglify-js
 
 ```
+
+##### Build Script
 
 Once you have uglify-js installed simply run the build script.
 
@@ -43,7 +48,17 @@ The build will generate a bin folder in which you will find minified files. The 
 	* `QuadSphereWorker.min.js`    - The worker delegate for the QuadSphere
 
 
-## Running Project
+##### Build Cleanup
+
+To clean the builds from the working directory run
+
+```
+
+./build clean
+
+```
+
+## Running Demos
 
 Simply start a python simple http server
 
