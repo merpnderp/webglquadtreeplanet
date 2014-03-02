@@ -1,4 +1,4 @@
-#webglquadtreeplanet
+# WebGL Quad Tree Sphere
 
 A WebGL/Three.js implementaiton of a quadtree planet.
 
