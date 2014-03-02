@@ -193,7 +193,12 @@ Planet.prototype.buildNewMesh = function (mesh) {
 			mesh.width
 		)
 	);
-	
+    var color = new THREE.Color();
+    color.r = Math.random();
+    color.g = Math.random();
+    color.b = Math.random();
+    var material = new THREE.MeshBasicMaterial({wireframe: true, color: color});
+    newMesh.material = material;
     newMesh.position.x = mesh.center.x;
     newMesh.position.y = mesh.center.y;
     newMesh.position.z = mesh.center.z;

@@ -117,7 +117,7 @@ demo.addInitializationStage({
 	name: "create-camera",
 	stage: function () {
 
-	    this.camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 7000000);
+	    this.camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 7000000);
 	
 	    this.camera.position.z = this.planetRadius * 4;
 	    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
@@ -250,9 +250,9 @@ demo.addInitializationStage({
 	    this.planet = new Planet({
 			camera: this.camera,
 			radius: this.planetRadius,
-			patchSize: 32,
+			patchSize: 16,
 			scene: this.scene,
-			fov: 30,
+			fov: 60,
 			quadMaterial: this.quadMaterial
 		});
 	
