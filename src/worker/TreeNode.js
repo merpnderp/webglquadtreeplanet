@@ -1,13 +1,5 @@
-/**
- * Created by kalebmurphy on 10/8/13.
- */
 
-
-"use strict";
-
-var THREE = require('../libs/three.js');
-
-var TerrainNode = function (options) {
+THREE.TreeNode = function (options) {
     this.level = options.level;
     this.parent = options.parent;
     this.tree = options.tree;
@@ -31,7 +23,7 @@ var TerrainNode = function (options) {
 };
 
 
-TerrainNode.prototype = {
+THREE.TreeNode.prototype = {
 
 
     update: function () {
@@ -543,17 +535,17 @@ TerrainNode.prototype = {
 			};
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
-            this.topLeftChild = new TerrainNode(options);
+            this.topLeftChild = new THREE.TreeNode(options);
 
             options.position = this.position.clone().add(this.tree.heightDir.clone().multiplyScalar(this.halfWidth));
             options.position.add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
-            this.topRightChild = new TerrainNode(options);
+            this.topRightChild = new THREE.TreeNode(options);
 
             options.position = this.position.clone();
-            this.bottomLeftChild = new TerrainNode(options);
+            this.bottomLeftChild = new THREE.TreeNode(options);
 
             options.position = this.position.clone().add(this.tree.widthDir.clone().multiplyScalar(this.halfWidth));
-            this.bottomRightChild = new TerrainNode(options);
+            this.bottomRightChild = new THREE.TreeNode(options);
 
             this.isSplit = true;
 
@@ -624,8 +616,4 @@ TerrainNode.prototype = {
 
 
 };
-
-
-module.exports = TerrainNode;
-
 

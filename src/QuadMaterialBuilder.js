@@ -2,7 +2,7 @@
 // Supply a material to a quadrant.
 // To implement your configuration requires a getMaterialForQuad callback method.
 //
-var QuadMaterial = function (config) {
+var QuadMaterialBuilder = function (config) {
 	this.config = config;
 	try {
 		this.config.onCreate();
@@ -12,15 +12,15 @@ var QuadMaterial = function (config) {
 	}
 };
 
-QuadMaterial.prototype = {
+QuadMaterialBuilder.prototype = {
 	
 	/**
 	 * Vector3 position - The center point of the quad
 	 * float radius - Radius of the planet which hosts the quad
 	 */
-	getMaterialForQuad: function (centerPoint, position, radius, width) {
+	buildMaterial: function (centerPoint, position, radius, width) {
 		try {
-			return this.config.getMaterialForQuad(centerPoint, position, radius, width);
+			return this.config.buildMaterialForQuad(centerPoint, position, radius, width);
 		}
 		catch (e) {
 			console.error("Unable to build quad material.", e);
@@ -35,6 +35,3 @@ QuadMaterial.prototype = {
 	}
 	
 };
-
-
-module.exports = QuadMaterial;

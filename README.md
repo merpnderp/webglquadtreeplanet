@@ -2,109 +2,54 @@
 
 A WebGL/Three.js implementaiton of a quadtree planet.
 
+##Table of Contents
+
+* `build`			              - The build script for producing the packaged minified scripts.
+
+* `demo/`			              - A number of example implementations of the Quad Tree Sphere
+  * `shadedSphere/`               - A basic sphere with each level of depth shaded slightly off of the primary color.
+  * `depthMapping/`               - An example of how to depth map quad tree sphere.
+  * `proceduralLandscape/`        - A procedural landscape generated in real time.
+	* `scripts/`			      - Scripts used by the demos including minified versions of the QuadTreeSphere library and its delegate worker.
+	
+* `src/`                          - The main source files for the project.
+  * `worker/`                     - The worker and it's componants that perform the quadtree work.
+
+* `bin/`                          - The output directory for the build script.
 
 
-##Installing Dependencies
+##Bulding Project
 
-####browserify
-
-http://browserify.org/
-
-```
-
-npm install -g browserify
-
-```
-
-#### brfs
-
-https://www.npmjs.org/package/brfs
-
-```
-
-npm install brfs
+Builds depend on uglify-js to perform minification.
 
 ```
 
-####watchify
-
-https://github.com/substack/watchify
+sudo npm -g install uglify-js
 
 ```
 
-npm install -g watchify
+Once you have uglify-js installed simply run the build script.
 
 ```
 
-#####Trouble Shooting Install
-
-If you have issues with a self-signed cert error:
+./build
 
 ```
 
-npm ERR! Error: SELF_SIGNED_CERT_IN_CHAIN
-npm ERR!     at SecurePair.<anonymous> (tls.js:1362:32)
-npm ERR!     at SecurePair.EventEmitter.emit (events.js:92:17)
-npm ERR!     at SecurePair.maybeInitFinished (tls.js:974:10)
-npm ERR!     at CleartextStream.read [as _read] (tls.js:462:15)
-npm ERR!     at CleartextStream.Readable.read (_stream_readable.js:320:10)
-npm ERR!     at EncryptedStream.write [as _write] (tls.js:366:25)
-npm ERR!     at doWrite (_stream_writable.js:221:10)
-npm ERR!     at writeOrBuffer (_stream_writable.js:211:5)
-npm ERR!     at EncryptedStream.Writable.write (_stream_writable.js:180:11)
-npm ERR!     at write (_stream_readable.js:583:24)
-npm ERR!     at flow (_stream_readable.js:592:7)
-npm ERR!     at Socket.pipeOnReadable (_stream_readable.js:624:5)
-npm ERR! If you need help, you may report this log at:
-npm ERR!     <http://github.com/isaacs/npm/issues>
-npm ERR! or email it to:
-npm ERR!     <npm-@googlegroups.com>
+The build will generate a bin folder in which you will find minified files. The library and its delegate worker.
 
-```
-
-run this command:
-
-```
-
-npm config set strict-ssl false
-
-```
-
-
-
-## Building Project
-
-Under the public folder run the ./buildlib.sh script.
-
-```
-
-cd public
-./build-manager build
-
-```
+* `bin/`
+	* `QuadSphere.min.js`          - The quad tree sphere.
+	* `QuadSphereWorker.min.js`    - The worker delegate for the QuadSphere
 
 
 ## Running Project
 
-This project requires two watchify proccesses to properly function.
-Using the build-manager to run the project will start these processes for you.
-
-This will also start a python SimpleHTTPServer on port 8000
+Simply start a python simple http server
 
 ```
 
-cd public
-./build-manager run
-
-```
-
-#####Alternatively
-
-If you do not wish to run with the python SimpleHTTPServer you can with this command:
-
-```
-
-cd public
-./build-manager run-without-web-server
+cd demo
+python -m SimpleHTTPServer
 
 ```

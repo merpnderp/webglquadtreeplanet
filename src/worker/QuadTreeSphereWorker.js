@@ -1,16 +1,10 @@
-/**
- * Created by kalebmurphy on 2/16/14.
- */
+importScripts("Three.Lite.js", "Vector2.js", "Vector3.js", "QuadBuilder.js", "QuadTree.js", "TreeNode.js");
 
-var QuadTree = require('./QuadTree');
-var THREE = require('../libs/three.js');
-var GeometryProvider = require('./GeometryProvider');
-
-var PlanetWorker = function () {
+var QuadTreeSphereWorker = function () {
 	self.onmessage = this.handleMessage.bind(this);
 };
 
-PlanetWorker.prototype = {
+QuadTreeSphereWorker.prototype = {
 	
 	handleMessage: function (event) {
 	    if (event.data.Init) {
@@ -87,7 +81,7 @@ PlanetWorker.prototype = {
 	    this.radius = data.radius;
 	    this.patchSize = data.patchSize;
 	    this.fov = data.fov;
-	    this.geometryProvider = new GeometryProvider(this.patchSize);
+	    // this.geometryProvider = new GeometryProvider(this.patchSize);
 	    this.vs = Math.tan(this.fov / data.screenWidth);
 	    this.quadTrees = [];
 	    this.splitTable = [];
@@ -117,14 +111,14 @@ PlanetWorker.prototype = {
 	    var farCorner = nearCorner.clone().multiplyScalar(-1);
 		
 	    //Near quadtrees
-	    this.quadTrees.push(new QuadTree({name: "Bottom", corner: nearCorner, widthDir: new THREE.Vector3(0, 0, -1), heightDir: new THREE.Vector3(-1, 0, 0), planet: this}));
-	    this.quadTrees.push(new QuadTree({name: "Front", corner: nearCorner, widthDir: new THREE.Vector3(-1, 0, 0), heightDir: new THREE.Vector3(0, -1, 0), planet: this}));
-	    this.quadTrees.push(new QuadTree({name: "Left", corner: nearCorner, widthDir: new THREE.Vector3(0, -1, 0), heightDir: new THREE.Vector3(0, 0, -1), planet: this}));
+	    this.quadTrees.push(new THREE.QuadTree({name: "Bottom", corner: nearCorner, widthDir: new THREE.Vector3(0, 0, -1), heightDir: new THREE.Vector3(-1, 0, 0), planet: this}));
+	    this.quadTrees.push(new THREE.QuadTree({name: "Front", corner: nearCorner, widthDir: new THREE.Vector3(-1, 0, 0), heightDir: new THREE.Vector3(0, -1, 0), planet: this}));
+	    this.quadTrees.push(new THREE.QuadTree({name: "Left", corner: nearCorner, widthDir: new THREE.Vector3(0, -1, 0), heightDir: new THREE.Vector3(0, 0, -1), planet: this}));
 	    
 		//Far quadtrees
-	    this.quadTrees.push(new QuadTree({name: "Top", corner: farCorner, widthDir: new THREE.Vector3(1, 0, 0), heightDir: new THREE.Vector3(0, 0, 1), planet: this}));
-	    this.quadTrees.push(new QuadTree({name: "Back", corner: farCorner, widthDir: new THREE.Vector3(0, 1, 0), heightDir: new THREE.Vector3(1, 0, 0), planet: this}));
-	    this.quadTrees.push(new QuadTree({name: "Right", corner: farCorner, widthDir: new THREE.Vector3(0, 0, 1), heightDir: new THREE.Vector3(0, 1, 0), planet: this}));
+	    this.quadTrees.push(new THREE.QuadTree({name: "Top", corner: farCorner, widthDir: new THREE.Vector3(1, 0, 0), heightDir: new THREE.Vector3(0, 0, 1), planet: this}));
+	    this.quadTrees.push(new THREE.QuadTree({name: "Back", corner: farCorner, widthDir: new THREE.Vector3(0, 1, 0), heightDir: new THREE.Vector3(1, 0, 0), planet: this}));
+	    this.quadTrees.push(new THREE.QuadTree({name: "Right", corner: farCorner, widthDir: new THREE.Vector3(0, 0, 1), heightDir: new THREE.Vector3(0, 1, 0), planet: this}));
 
 	},
 	
@@ -148,4 +142,4 @@ PlanetWorker.prototype = {
 }
 
 
-var worker = new PlanetWorker();
+var worker = new QuadTreeSphereWorker();

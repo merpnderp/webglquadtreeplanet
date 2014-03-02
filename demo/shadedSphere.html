@@ -1,0 +1,177 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>WebGL Quad Sphere Demonstration</title>
+  <meta name="description" content="WebGL Quad Sphere Demonstration">
+  <meta name="author" content="Scott Byrns">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+  <script src="scripts/three.js"></script>
+  <script src="scripts/QuadTreeSphere.min.js"></script>
+  <script src="scripts/Application.js"></script>
+  
+<script>
+  
+	// Create a new demo application
+	var demo = new Application({
+		
+		// Dom element to append the application to.
+		domElement: document.body,
+		
+		// Called when the applications initialization stages have completed.
+		onInitialize: function () {
+
+		    this.scene.add(this.quadSphere);
+			// window.addEventListener("load", this.start.bind(this));
+			this.start.bind(this)();
+		},
+		
+		// Called when the application has been started.
+		onStart: function () {
+			console.log("start");
+		    this.render();
+
+		    window.addEventListener("keypress", function (key) {
+	
+		        if (key.key === "Spacebar") {
+		
+		            this.pause = !this.pause;
+		            this.quadSphere.pause = this.pause;
+
+		        }
+
+		    }.bind(this));
+		},
+		
+		// Called if there is an error during the initialization or starting of the applications.
+		onError: function (error) {
+			console.error(error);
+		}
+
+	});
+
+	demo.addInitializationStage({
+		name: "append-member-properties",
+		stage: function () {
+
+			this.quadSphereRadius = 6376136; // earth sized
+	
+		}
+	});
+
+	demo.addInitializationStage({
+		name: "create-camera",
+		stage: function () {
+
+		    this.camera = new THREE.PerspectiveCamera(
+				30,
+				window.innerWidth / window.innerHeight,
+				0.1,
+				7000000
+			);
+	
+		    this.camera.position.z = this.quadSphereRadius * 4;
+			
+		    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+	
+		}
+	});
+	
+
+
+	demo.addInitializationStage({
+		name: "create-three-enviornment",
+		stage: function () {
+
+		    this.scene = new THREE.Scene();
+
+		    this.renderer = new THREE.WebGLRenderer();
+		    this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+		    this.domElement.appendChild(this.renderer.domElement);
+
+		}
+	});
+	
+	
+
+	demo.addInitializationStage({
+		name: "create-quad-sphere",
+		stage: function () {
+		
+			this.quadMaterial = new QuadMaterialBuilder({
+			
+				onCreate: function () {
+					// NOP
+				},
+			
+				buildMaterialForQuad: function (centerPoint, position, radius, width) {
+		
+				    var color = new THREE.Color();
+			
+					var decimalColor = ((width/1E11) * 16777215);
+			
+			
+				    var R =	 decimalColor%256;
+				    var G =	 (decimalColor/256)%256;
+				    var B =	 ((decimalColor/256)/256)%256;
+			
+				    color.r = R;
+				    color.g = G;
+				    color.b = B;
+			
+					return new THREE.MeshBasicMaterial({wireframe: true, color: color});
+				
+				}
+			
+			});
+
+		    this.quadSphere = new THREE.QuadTreeSphere({
+				workerPath: "scripts/QuadTreeSphereWorker.min.js",
+				camera: this.camera,
+				radius: this.quadSphereRadius,
+				patchSize: 8,
+				scene: this.scene,
+				fov: 30,
+				quadMaterial: this.quadMaterial
+			});
+	
+		}
+	});
+
+
+
+	demo.addInitializationStage({
+		name: "append-render-callback-to-application",
+		stage: function () {
+	
+			this.render = function () {
+				
+		        this.quadSphere.update();
+				
+		        this.renderer.render(this.scene, this.camera);
+				
+		        requestAnimationFrame(this.render);
+
+
+			}.bind(this);
+
+		}
+	});
+
+
+	demo.initialize();
+
+
+</script>
+  
+</body>
+</html>

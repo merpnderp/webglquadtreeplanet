@@ -1,11 +1,3 @@
-/**
- * Created by kalebmurphy on 10/8/13.
- */
-
-"use strict";
-
-var THREE = require('../libs/three.js');
-
 var QuadBuilder = function () {
 
 };
@@ -43,6 +35,3 @@ QuadBuilder.prototype = {
         };
     }()
 };
-
-
-module.exports = QuadBuilder;

@@ -12,33 +12,36 @@ var Application = function (config) {
 Application.prototype = {
 	
 	addInitializationStage: function (stage) {
+		console.log("Adding Initialization Stage: " + stage.name);
 		this.initializationStages.push(stage.stage);
 	},
 	
 	initialize: function () {
+		console.log("Initializing Application");
 		for (var stage = 0, len = this.initializationStages.length; stage < len; stage += 1) {
 			if (this.initializationStages.hasOwnProperty(stage)) {
-				try {
+				// try {
 					this.initializationStages[stage].call(this);
-				}
-				catch (e) {
-					console.error("Initializaiton Failed")
-					this.configuration.onError(e);
-					return;
-				}
+				// }
+				// catch (e) {
+				// 	console.error("Initializaiton Failed")
+				// 	this.configuration.onError(e);
+				// 	return;
+				// }
 			}
 		}
-		try {
+		
+		// try {
 			if (this.configuration.onInitialize) {
 				this.configuration.onInitialize.call(this);
 			}
 			else {
 				console.warn("No application onInitialize callback.");
 			}
-		}
-		catch (e) {
-			console.error("Initialization callback failed:", e);
-		}
+		// }
+		// catch (e) {
+		// 	console.error("Initialization callback failed:", e);
+		// }
 	},
 	
 	start: function () {
@@ -47,5 +50,3 @@ Application.prototype = {
 	
 };
 
-
-module.exports = Application;

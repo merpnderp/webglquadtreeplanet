@@ -5,7 +5,7 @@
  */
 
 var THREE = { REVISION: '66' };
-module.exports = THREE;
+// module.exports = THREE;
 self.console = self.console || {
 
 	info: function () {},

@@ -1,11 +1,4 @@
-/**
- * Created by kalebmurphy on 2/16/14.
- */
-
-var THREE = require('../libs/three.js');
-var fs = require('fs');
-
-var Planet = function (options) {
+THREE.QuadTreeSphere = function (options) {
 	
     THREE.Object3D.call(this);
 	
@@ -14,7 +7,7 @@ var Planet = function (options) {
     this.meshes = {};
     this.meshBuildTimeAvg = 0;
 	
-	this.loadShaders();
+
 	
 	
 	this.initializeOptions(options);
@@ -23,16 +16,16 @@ var Planet = function (options) {
 	
 	this.updateCounter = 0;
 	this.avg = 0;
-
+	
 };
 
+THREE.QuadTreeSphere.prototype = Object.create(THREE.Object3D.prototype);
 
 
-Planet.prototype = Object.create(THREE.Object3D.prototype);
 
-Planet.prototype.initializeOptions = function (options, callback) {
+THREE.QuadTreeSphere.prototype.initializeOptions = function (options, callback) {
 	
-	this.workerPath = options.workerPath || "./pw.js";
+	this.workerPath = options.workerPath || "QuadTreeSphereWorker.js";
 	
 	this.configureCamera(options.camera);
 
@@ -45,23 +38,15 @@ Planet.prototype.initializeOptions = function (options, callback) {
 	
 };
 
-Planet.prototype.configureCamera = function ( camera ) {
+THREE.QuadTreeSphere.prototype.configureCamera = function ( camera ) {
 	
     this.camera = camera;
     this.cameraHeight = 0;
 	
 };
 
-Planet.prototype.loadShaders = function () {
 
-    this.vertex = fs.readFileSync('shaders/VertexShader.glsl');
-    this.frag = fs.readFileSync('shaders/FragmentShader.glsl');
-    this.wfvertex = fs.readFileSync('shaders/WireframeVertexShader.glsl');
-    this.wffragment = fs.readFileSync('shaders/WireframeFragmentShader.glsl');
-
-};
-
-Planet.prototype.initializeWorker = function () {
+THREE.QuadTreeSphere.prototype.initializeWorker = function () {
 
     this.worker = new Worker(this.workerPath);
     this.worker.onmessage = this.onWorkerMessage.bind(this);
@@ -77,7 +62,7 @@ Planet.prototype.initializeWorker = function () {
 	
 };
 
-Planet.prototype.update = function () {
+THREE.QuadTreeSphere.prototype.update = function () {
 
     return function () {
 
@@ -104,7 +89,7 @@ Planet.prototype.update = function () {
 
 
 
-Planet.prototype.onWorkerMessage = function (event) {
+THREE.QuadTreeSphere.prototype.onWorkerMessage = function (event) {
 
     // var me = this;
 	
@@ -152,9 +137,9 @@ Planet.prototype.onWorkerMessage = function (event) {
 };
 
 /**
- * Remove a mesh from the scene and the planet.
+ * Remove a mesh from the scene and the THREE.QuadTreeSphere.
  */
-Planet.prototype.removeMesh = function (name) {
+THREE.QuadTreeSphere.prototype.removeMesh = function (name) {
 
     this.scene.remove(this.meshes[name]);
     delete this.meshes[name];
@@ -162,7 +147,7 @@ Planet.prototype.removeMesh = function (name) {
 
 };
 
-Planet.prototype.buildNewMesh = function (mesh) {
+THREE.QuadTreeSphere.prototype.buildNewMesh = function (mesh) {
     var buff = new THREE.BufferGeometry();
 	
 	
@@ -186,7 +171,7 @@ Planet.prototype.buildNewMesh = function (mesh) {
 	
 	var newMesh = new THREE.Mesh(
 		buff, 
-		this.quadMaterial.getMaterialForQuad(
+		this.quadMaterial.buildMaterial(
 			new THREE.Vector3(mesh.center.x, mesh.center.y, mesh.center.z),
 			this.position,
 			this.radius,
@@ -205,4 +190,4 @@ Planet.prototype.buildNewMesh = function (mesh) {
 	delete mesh;
 }
 
-module.exports = Planet;
+
