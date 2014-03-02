@@ -1,11 +1,3 @@
-/**
- * Created by kalebmurphy on 10/18/13.
- */
-
-"use strict";
-
-var THREE = require('../libs/three.js');
-
 var Logger = function () {
 
     //Singleton code
@@ -57,6 +49,3 @@ Logger.prototype = {
     }
 
 };
-
-
-module.exports = Logger;

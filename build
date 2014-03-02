@@ -1,0 +1,73 @@
+#!/usr/bin/env node
+
+var sys = require('sys')
+var exec = require('child_process').exec;
+
+var args = process.argv.slice(2);
+
+if (args[0] == "clean") {
+
+    exec("rm -rf bin", function (error, stdout, stderr) {});
+    process.exit(0);
+
+}
+
+exec("rm -rf bin", function (error, stdout, stderr) {
+    exec("mkdir bin", function (error, stdout, stderr) {
+
+        exec("cat src/QuadMaterialBuilder.js src/QuadTreeSphere.js > bin/QuadTreeSphere.min.js", function (error, stdout, stderr) {
+
+            fs = require('fs')
+            fs.readFile('src/worker/QuadTreeSphereWorker.js', 'utf8', function (err, data) {
+                if (err) {
+                    return console.log(err);
+                }
+                data = data.replace('importScripts("Three.Lite.js", "Vector2.js", "Vector3.js", "QuadBuilder.js", "QuadTree.js", "TreeNode.js");', "");
+
+                fs.writeFile("/tmp/QuadTreeSphereWorker.js", data, function (err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+
+                        var command = [
+                            "cat",
+                            "src/worker/Three.Lite.js",
+                            "src/worker/Vector3.js",
+                            "src/worker/Vector2.js",
+                            "src/worker/TreeNode.js",
+                            "src/worker/QuadTree.js",
+                            "src/worker/QuadBuilder.js",
+                            "src/worker/GeometryProvider.js",
+                            "/tmp/QuadTreeSphereWorker.js",
+                            "> bin/QuadTreeSphereWorker.min.js"
+                        ].join(" ");
+
+
+                        exec(command, function (error, stdout, stderr) {
+
+
+                            exec("uglifyjs bin/QuadTreeSphere.min.js -o bin/QuadTreeSphere.min.js", function (error, stdout, stderr) {
+
+                                exec("uglifyjs bin/QuadTreeSphereWorker.min.js -o bin/QuadTreeSphereWorker.min.js", function (error, stdout, stderr) {
+
+                                    exec("cp bin/* demo/scripts/", function (error, stdout, stderr) {
+
+
+
+                                    });
+
+                                });
+
+                            });
+
+                        });
+                    }
+                });
+
+
+            });
+
+        });
+
+    });
+});

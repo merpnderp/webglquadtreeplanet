@@ -1,14 +1,3 @@
-/**
- * Created by kalebmurphy on 10/8/13.
- */
-
-"use strict";
-
-
-
-var THREE = require('../libs/three.js');
-var QuadBuilder = require('./QuadBuilder.js');
-
 var GeometryProvider = function (patchSize) {
     this.patchSize = patchSize;
     this.widthDir = new THREE.Vector3(1, 0, 0);
@@ -63,5 +52,3 @@ GeometryProvider.prototype = {
     }
 
 };
-
-module.exports = GeometryProvider;
