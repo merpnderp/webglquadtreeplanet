@@ -1,11 +1,7 @@
 .idea/
 node_modules/
 
+*.log
 
-public/pw.js
 
-public/app.js
-app.js
-public/libs.js
 
-public/.app.js
