@@ -2,7 +2,7 @@
 
 A WebGL/Three.js implementaiton of a quadtree planet.
 
-##Table of Contents
+##Repository Contents
 
 * `build`			              - The build script for producing the packaged minified scripts.
 
