@@ -1,6 +1,9 @@
 importScripts("Three.Lite.js", "Vector2.js", "Vector3.js", "QuadBuilder.js", "QuadTree.js", "TreeNode.js");
 
 var QuadTreeSphereWorker = function () {
+	
+	console.log("QuadTreeSphereWorker Spawned.");
+	
 	self.onmessage = this.handleMessage.bind(this);
 };
 

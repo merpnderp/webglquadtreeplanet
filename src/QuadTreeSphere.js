@@ -25,7 +25,7 @@ THREE.QuadTreeSphere.prototype = Object.create(THREE.Object3D.prototype);
 
 THREE.QuadTreeSphere.prototype.initializeOptions = function (options, callback) {
 	
-	this.workerPath = options.workerPath || "QuadTreeSphereWorker.js";
+	this.workerPath = options.workerPath || "QuadTreeSphereWorker.min.js";
 	
 	this.configureCamera(options.camera);
 
