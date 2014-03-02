@@ -7,10 +7,10 @@ A WebGL/Three.js implementaiton of a quadtree planet.
 * `build`			              - The build script for producing the packaged minified scripts.
 
 * `demo/`			              - A number of example implementations of the Quad Tree Sphere
+  * `scripts/`			          - Scripts used by the demos including minified versions of the QuadTreeSphere library and its delegate worker.
   * `shadedSphere.html`           - A basic sphere with each level of depth shaded slightly off of the primary color.
   * `depthMapping.html`           - (SOON) An example of how to depth map quad tree sphere.
   * `proceduralLandscape.html`    - (SOON) A procedural landscape generated in real time.
-	* `scripts/`			      - Scripts used by the demos including minified versions of the QuadTreeSphere library and its delegate worker.
 	
 * `src/`                          - The main source files for the project.
   * `worker/`                     - The worker and it's componants that perform the quadtree work.
