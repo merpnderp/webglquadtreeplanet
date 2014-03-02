@@ -145,6 +145,11 @@ python -m SimpleHTTPServer
 
 ```
 
+
+<p align="center">
+	<a href="https://vimeo.com/87995646"><img src="https://secure-b.vimeocdn.com/ts/466/301/466301987_640.jpg" /></a>
+</p>
+
 ![QuadSphere](https://raw.github.com/merpnderp/webglquadtreeplanet/master/documentation/quad-sphere.png)
 ![DisplacementTest](https://raw.github.com/merpnderp/webglquadtreeplanet/master/documentation/displacement-test.png)
 ![HorizonTest](https://raw.github.com/merpnderp/webglquadtreeplanet/master/documentation/horizon-test.png)
