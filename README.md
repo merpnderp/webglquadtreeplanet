@@ -13,7 +13,7 @@ A WebGL/Three.js implementaiton of a quadtree planet.
   * `proceduralLandscape.html`    - (SOON) A procedural landscape generated in real time.
 	
 * `src/`                          - The main source files for the project.
-  * `worker/`                     - The worker and it's componants that perform the quadtree work.
+  * `worker/`                     - The worker and it's components that perform the quadtree work.
 
 * `bin/`                          - The output directory for the build script.
 
